@@ -1,7 +1,7 @@
 from django.shortcuts import HttpResponse
 import json
+from models.models import User
 from tools.tools import *
-from models.models import *
 
 
 def register(request):
@@ -12,7 +12,7 @@ def register(request):
         password2 = request.POST['password2']
         email = request.POST['email']
         profile_photo = request.POST['profile_photo']
-        if User.objects.filter(u_name=name) is not None:
+        if User.objects.filter(u_name=name):
             re['msg'] = ERR_USERNAME_EXISTS
         elif password1 != password2:
             re['msg'] = ERR_PASSWORD_NOT_SAME
@@ -31,7 +31,7 @@ def login(request):
     if request.method == 'POST':
         u_name = request.POST['username']
         u_password = request.POST['password']
-        if User.objects.filter(u_name=u_name) is None:
+        if not User.objects.filter(u_name=u_name):
             re['msg'] = ERR_USER_NOT_EXISTS
         else:
             user = User.objects.get(u_name=u_name)
