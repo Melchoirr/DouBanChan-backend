@@ -75,8 +75,12 @@ WSGI_APPLICATION = "DouBanChan_Backend.wsgi.application"
 
 DATABASES = {
     "default": {
-        "ENGINE": "django.db.backends.sqlite3",
-        "NAME": BASE_DIR / "db.sqlite3",
+        'ENGINE': 'django.db.backends.mysql',   # 数据库引擎
+        'NAME': 'SE_project',  # 数据库名，先前创建的
+        'USER': 'neo',     # 用户名，可以自己创建用户
+        'PASSWORD': '123456',  # 密码
+        'HOST': '82.156.25.78',  # mysql服务所在的主机ip
+        'PORT': '3306',         # mysql服务端口
     }
 }
 
