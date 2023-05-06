@@ -5,6 +5,12 @@ from tools.tools import *
 
 
 def register(request):
+    """
+    /user/register POST
+    user register
+    :param request: username password1 password2 email profile_photo
+    :return: json, msg = 0 on success
+    """
     re = {}
     if request.method == 'POST':
         name = request.POST['username']
@@ -27,6 +33,12 @@ def register(request):
 
 
 def login(request):
+    """
+    /user/login POST
+    user register
+    :param request: username password
+    :return: json, msg = 0 on success
+    """
     re = {}
     if request.method == 'POST':
         u_name = request.POST['username']
@@ -46,6 +58,12 @@ def login(request):
 
 
 def logout(request):
+    """
+    /user/logout GET
+    user register
+    :param request:
+    :return: json, msg = 0 on success
+    """
     re = {}
     if request.method == 'GET':
         if request.session[CUR_USER_ID] == 0:
