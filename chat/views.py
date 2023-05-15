@@ -13,7 +13,7 @@ def create_chat(request):
         c_name = request.POST['c_name']
         c_description = request.POST['c_description']
         new_chat = Chat(c_name=c_name, c_description=c_description,
-                        c_create_time=timezone.now(), c_last_modify_time=timezone.now())
+                        c_create_time=timezone.now(), c_last_modify_time=timezone.now(), c_father_group_id=None)
         new_chat.save()
         re['msg'] = 0
         re['c_id'] = new_chat.c_id
