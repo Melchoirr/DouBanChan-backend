@@ -3,7 +3,7 @@ from chat.views import *
 
 
 urlpatterns = [
-    path("cerate/", create_chat),
+    path("create/", create_chat),
     path("delete/", delete_chat),
     path("query_single/", query_single_chat),
 ]

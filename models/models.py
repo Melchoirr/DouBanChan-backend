@@ -5,13 +5,19 @@
 #   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
+from django.conf import settings
 from django.db import models
+from django import forms
+
+
 # trash
 
 
 class Chat(models.Model):
     c_id = models.AutoField(primary_key=True)
     c_name = models.CharField(max_length=255)
+    c_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='m_profile_photo', blank=True,
+                                        null=True)
     c_description = models.CharField(max_length=255)
     c_create_time = models.DateTimeField()
     c_last_modify_date = models.DateTimeField()
@@ -24,6 +30,8 @@ class Chat(models.Model):
 class Group(models.Model):
     g_id = models.AutoField(primary_key=True)
     g_name = models.CharField(max_length=255)
+    g_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='m_profile_photo', blank=True,
+                                        null=True)
     g_description = models.CharField(max_length=255)
     g_create_time = models.DateTimeField()
     g_last_modify_time = models.DateTimeField()
@@ -40,7 +48,8 @@ class Media(models.Model):
     m_rate = models.FloatField(blank=True, null=True)
     m_rate_num = models.IntegerField(blank=True, null=True)
     m_heat = models.IntegerField(blank=True, null=True)
-    m_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='m_profile_photo', blank=True, null=True)
+    m_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='m_profile_photo', blank=True,
+                                        null=True)
     m_json = models.JSONField()
 
     class Meta:
@@ -70,7 +79,7 @@ class Mediagroup(models.Model):
 
 class Picture(models.Model):
     p_id = models.AutoField(primary_key=True)
-    p_content = models.TextField()
+    p_content = models.ImageField(upload_to=settings.IMAGE_ROOT)
     p_father_text_id = models.IntegerField(blank=True, null=True)
 
     class Meta:
@@ -110,7 +119,7 @@ class User(models.Model):
     u_id = models.AutoField(primary_key=True)
     u_name = models.CharField(max_length=255)
     u_password = models.CharField(max_length=255)
-    u_prifole_photo = models.ForeignKey(Picture, models.DO_NOTHING, db_column='u_prifole_photo', blank=True, null=True)
+    u_profile_photo = models.ForeignKey(Picture, models.DO_NOTHING, db_column='u_profile_photo', blank=True, null=True)
     u_email = models.CharField(max_length=255, blank=True, null=True)
 
     class Meta:
@@ -130,7 +139,8 @@ class Userchat(models.Model):
 
 
 class Usergroup(models.Model):
-    ug_u = models.OneToOneField(User, models.DO_NOTHING, primary_key=True)  # The composite primary key (ug_u_id, ug_g_id) found, that is not supported. The first column is selected.
+    ug_u = models.OneToOneField(User, models.DO_NOTHING,
+                                primary_key=True)  # The composite primary key (ug_u_id, ug_g_id) found, that is not supported. The first column is selected.
     ug_g = models.ForeignKey(Group, models.DO_NOTHING)
     ug_is_admin = models.IntegerField()
     ug_time = models.DateTimeField()

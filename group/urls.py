@@ -3,7 +3,7 @@ from group.views import *
 
 
 urlpatterns = [
-    path("cerate/", create_group),
+    path("create/", create_group),
     path("delete/", delete_group),
     path("query_single/", query_single_group),
 ]
