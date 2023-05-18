@@ -23,8 +23,6 @@ def register(request):
         name = request.POST['username']
         password1 = request.POST['password1']
         password2 = request.POST['password2']
-        #email = request.POST['email']
-        #profile_photo = request.POST['profile_photo']
         if User.objects.filter(u_name=name):
             re['msg'] = ERR_USERNAME_EXISTS
         elif password1 != password2:
