@@ -84,7 +84,7 @@ def logout(request):
     return HttpResponse(json.dumps(re))
 
 
-def uploadProfile(request):
+def upload_profile(request):
     """
 
     :param request:
@@ -122,7 +122,7 @@ def uploadProfile(request):
     return HttpResponse(json.dumps(re))
 
 
-def getUserPage(request):
+def get_user_page(request):
     re = {}
     if request.method == 'POST':
         u_id = request.session[CUR_USER_ID]
@@ -134,7 +134,7 @@ def getUserPage(request):
     return HttpResponse('Fail')
 
 
-def getUserBrief(request):
+def get_user_brief(request):
     re = {}
     if request.method == 'POST':
         u_id = request.session[CUR_USER_ID]
