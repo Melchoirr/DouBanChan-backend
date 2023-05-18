@@ -13,7 +13,6 @@ import os
 
 import django.contrib.staticfiles
 from pathlib import Path
-import corsheaders
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 

@@ -24,8 +24,6 @@ def register(request):
         name = request.POST['username']
         password1 = request.POST['password1']
         password2 = request.POST['password2']
-        #email = request.POST['email']
-        #profile_photo = request.POST['profile_photo']
         if User.objects.filter(u_name=name):
             re['msg'] = ERR_USERNAME_EXISTS
         elif password1 != password2:
@@ -85,7 +83,7 @@ def logout(request):
     return HttpResponse(json.dumps(re))
 
 
-def uploadProfile(request):
+def upload_profile(request):
     """
 
     :param request:
@@ -125,7 +123,7 @@ def uploadProfile(request):
     return HttpResponse(json.dumps(re))
 
 
-def getUserPage(request):
+def get_user_page(request):
     re = {}
     if request.method == 'POST':
         u_id = request.session[CUR_USER_ID]
@@ -137,7 +135,7 @@ def getUserPage(request):
     return HttpResponse('Fail')
 
 
-def getUserBrief(request):
+def get_user_brief(request):
     re = {}
     if request.method == 'POST':
         u_id = request.session[CUR_USER_ID]
