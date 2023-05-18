@@ -1,5 +1,6 @@
 from io import BytesIO
 
+from django.conf import settings
 from django.core.files.base import ContentFile
 from django.shortcuts import HttpResponse
 from PIL import Image
@@ -96,6 +97,8 @@ def uploadProfile(request):
         p_content = request.FILES['p_content']
         picture = Picture(p_content=p_content)
         picture.save()
+
+
 
         # with open(picture.p_content.path, 'rb') as f:
         #     image_data = f.read()

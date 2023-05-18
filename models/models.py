@@ -5,6 +5,8 @@
 #   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
+import os
+
 from django.conf import settings
 from django.db import models
 
@@ -76,7 +78,7 @@ class Mediagroup(models.Model):
 
 class Picture(models.Model):
     p_id = models.AutoField(primary_key=True)
-    p_content = models.ImageField(upload_to=settings.IMAGE_ROOT)
+    p_content = models.ImageField(upload_to=settings.STATIC_ROOT)
     p_father_text_id = models.IntegerField(blank=True, null=True)
 
     class Meta:
@@ -271,3 +273,8 @@ class DjangoSession(models.Model):
     class Meta:
         managed = False
         db_table = 'django_session'
+
+
+
+
+
