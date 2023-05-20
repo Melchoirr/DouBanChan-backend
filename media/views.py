@@ -1,3 +1,5 @@
+from django.http import JsonResponse
+
 from tools.imports import *
 
 
@@ -51,11 +53,7 @@ def query_single_media(request):
     """
     re = {}
     if request.method == 'POST':
-        print('=========================================')
-        print(request.POST)
-        print('=========================================')
-        m_id = request.POST['m_id']
-        print(m_id)
+        m_id = request.POST.get('m_id')
         if not Media.objects.filter(m_id=m_id):
             re['msg'] = ERR_MEDIA_NOT_EXISTS
         else:
