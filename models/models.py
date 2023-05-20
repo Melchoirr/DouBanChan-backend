@@ -31,7 +31,7 @@ class Media(models.Model):
             'm_rate': self.m_rate,
             'm_rate_num': self.m_rate_num,
             'm_heat': self.m_heat,
-            'm_profile_photo': None,  # ???
+            'm_profile_photo': self.m_profile_photo.url,
             'm_json': self.m_json
         }
 
@@ -56,10 +56,10 @@ class Chat(models.Model):
         return {
             'c_id': self.c_id,
             'c_name': self.c_name,
-            'c_profile_photo': None,  # ???
+            'c_profile_photo': self.c_profile_photo.url,
             'c_description': self.c_description,
             'c_create_time': self.c_create_time,
-            'c_father_group': None,  # ???
+            'c_father_group': self.c_father_group.g_id
         }
 
 
@@ -82,7 +82,7 @@ class Group(models.Model):
         return {
             'g_id': self.g_id,
             'g_name': self.g_name,
-            'g_profile_photo': None,  #???
+            'g_profile_photo': self.g_profile_photo.url,
             'g_description': self.g_description,
             'g_create_time': self.g_create_time,
             'g_last_modify_time': self.g_last_modify_time
@@ -101,8 +101,8 @@ class Picture(models.Model):
     def to_dict(self):
         return {
             'p_id': self.p_id,
-            'p_content': None,  #???
-            'p_father_text': None  #???
+            'p_content': self.p_content.url,
+            'p_father_text': self.p_father_text.t_id
         }
 
 
@@ -119,8 +119,8 @@ class Report(models.Model):
     def to_dict(self):
         return {
             'r_id': self.r_id,
-            'r_user': None,  #???
-            'r_text': None,  #???
+            'r_user': self.r_user.u_id,
+            'r_text': self.r_text.t_id,
             'r_details': self.r_details
         }
 
@@ -133,7 +133,7 @@ class Text(models.Model):
     t_rate = models.FloatField(default=None)
     t_like = models.IntegerField(default=0)
     t_dislike = models.IntegerField(default=0)
-    t_description = models.TextField()
+    t_description = models.TextField(default='')
     t_topic = models.CharField(max_length=255, default=None)
     t_father = models.ForeignKey('self', models.DO_NOTHING, default=None)
 
@@ -145,14 +145,14 @@ class Text(models.Model):
         return {
             't_id': self.t_id,
             't_type': self.t_type,
-            't_user': None,  #???
-            't_media': None,  #???
+            't_user': self.t_user.u_id,
+            't_media': self.t_media.m_id,
             't_rate': self.t_rate,
             't_like': self.t_like,
             't_dislike': self.t_dislike,
             't_description': self.t_description,
             't_topic': self.t_topic,
-            't_father': None  #???
+            't_father': self.t_father.t_id
         }
 
 
@@ -174,7 +174,7 @@ class User(models.Model):
             'u_id': self.u_id,
             'u_name': self.u_name,
             'u_password': self.u_password,
-            'u_profile_photo': None,
+            'u_profile_photo': self.u_profile_photo.url,
             'u_email': self.u_email.__str__()
         }
 
