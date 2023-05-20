@@ -51,7 +51,9 @@ def query_single_media(request):
     """
     re = {}
     if request.method == 'POST':
+        print('=========================================')
         print(request.POST)
+        print('=========================================')
         m_id = request.POST['m_id']
         print(m_id)
         if not Media.objects.filter(m_id=m_id):
