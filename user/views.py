@@ -72,7 +72,7 @@ def logout(request):
     """
     re = {}
     if request.method == 'GET':
-        if CUR_USER_ID in request.session:
+        if CUR_USER_ID not in request.session:
             re['msg'] = ERR_NO_CURRENT_USER
         else:
             request.session[CUR_USER_ID] = 0
