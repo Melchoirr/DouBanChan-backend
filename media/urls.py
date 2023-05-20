@@ -6,4 +6,6 @@ urlpatterns = [
     path("create/", create_media),
     path("delete/", delete_media),
     path("query_single/", query_single_media),
+
+    path("like/", query_single_media),
 ]

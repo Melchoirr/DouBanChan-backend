@@ -62,7 +62,7 @@ class Group(models.Model):
 
 class Picture(models.Model):
     p_id = models.AutoField(primary_key=True)
-    p_content = models.ImageField(upload_to=settings.STATIC_ROOT)
+    p_content = models.ImageField(upload_to='')
     p_father_text_id = models.IntegerField(blank=True, null=True)
 
     class Meta:

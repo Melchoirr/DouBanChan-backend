@@ -21,15 +21,15 @@ def register(request):
     """
     re = {}
     if request.method == 'POST':
-        name = request.POST['username']
+        username = request.POST['username']
         password1 = request.POST['password1']
         password2 = request.POST['password2']
-        if User.objects.filter(u_name=name):
+        if User.objects.filter(u_name=username):
             re['msg'] = ERR_USERNAME_EXISTS
         elif password1 != password2:
             re['msg'] = ERR_PASSWORD_NOT_SAME
         else:
-            user = User(u_name=name, u_password=password1)
+            user = User(u_name=username, u_password=password1)
             user.save()
             re['msg'] = 0
             re['u_id'] = user.u_id
@@ -83,6 +83,9 @@ def logout(request):
     return HttpResponse(json.dumps(re))
 
 
+def chage_password(request):
+    return
+
 def upload_profile(request):
     """
 
@@ -95,7 +98,6 @@ def upload_profile(request):
         p_content = request.FILES['p_content']
         picture = Picture(p_content=p_content)
         picture.save()
-
 
 
         # with open(picture.p_content.path, 'rb') as f:
