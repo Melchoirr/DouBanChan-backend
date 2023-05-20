@@ -8,7 +8,6 @@ from PIL import Image
 import json
 from django import forms
 from models.models import User, Picture, Text
-from tools.processing import getPicture
 from tools.tools import *
 
 
@@ -130,11 +129,11 @@ def get_user_page(request):
     if request.method == 'POST':
         u_id = request.session[CUR_USER_ID]
         user = User.objects.get(u_id=u_id)
-        u_profile_photo = getPicture(user.u_profile_photo)
-        re['u_profile_photo'] = u_profile_photo
-        re['u_name'] = user.u_name
+        re['user'] = user.to_dict()
+        re['msg'] = 0
         return HttpResponse(json.dumps(re))
-    return HttpResponse('Fail')
+    re['msg'] = 1
+    return HttpResponse(json.dumps(re))
 
 
 def get_user_brief(request):
@@ -142,8 +141,8 @@ def get_user_brief(request):
     if request.method == 'POST':
         u_id = request.session[CUR_USER_ID]
         user = User.objects.get(u_id=u_id)
-        u_profile_photo = getPicture(user.u_profile_photo)
-        re['u_profile_photo'] = u_profile_photo
-        re['u_name'] = user.u_name
+        re['user'] = user.to_dict()
+        re['msg'] = 0
         return HttpResponse(json.dumps(re))
-    return HttpResponse('Fail')
+    re['msg'] = 1
+    return HttpResponse(json.dumps(re))
