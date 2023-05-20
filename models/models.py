@@ -66,7 +66,7 @@ class Chat(models.Model):
 class Group(models.Model):
     g_id = models.AutoField(primary_key=True)
     g_name = models.CharField(max_length=255)
-    g_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='m_profile_photo', default=None)
+    g_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='g_profile_photo', default=None)
     g_description = models.CharField(max_length=255)
     g_create_time = models.DateTimeField(auto_now=True)
     g_last_modify_time = models.DateTimeField(auto_now=True)
@@ -92,7 +92,7 @@ class Group(models.Model):
 class Picture(models.Model):
     p_id = models.AutoField(primary_key=True)
     p_content = models.ImageField(upload_to='')
-    p_father_text = models.ForeignKey('Text', models.DO_NOTHING, default=None)
+    p_father_text = models.ForeignKey('Text', models.DO_NOTHING, db_column='p_father_text', default=None)
 
     class Meta:
         managed = True
