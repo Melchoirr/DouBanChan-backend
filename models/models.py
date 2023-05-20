@@ -31,7 +31,7 @@ class Media(models.Model):
             'm_rate': self.m_rate,
             'm_rate_num': self.m_rate_num,
             'm_heat': self.m_heat,
-            'm_profile_photo': self.m_profile_photo.url,
+            'm_profile_photo': self.m_profile_photo.p_content.url,
             'm_json': self.m_json
         }
 
@@ -92,7 +92,7 @@ class Group(models.Model):
 class Picture(models.Model):
     p_id = models.AutoField(primary_key=True)
     p_content = models.ImageField(upload_to='')
-    p_father_text = models.ForeignKey('Text', models.DO_NOTHING, default=None)
+    p_father_text = models.ForeignKey('Text', models.DO_NOTHING, db_column='p_father_text', default=None)
 
     class Meta:
         managed = True

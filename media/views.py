@@ -51,7 +51,9 @@ def query_single_media(request):
     """
     re = {}
     if request.method == 'POST':
+        print(request.POST)
         m_id = request.POST['m_id']
+        print(m_id)
         if not Media.objects.filter(m_id=m_id):
             re['msg'] = ERR_MEDIA_NOT_EXISTS
         else:
