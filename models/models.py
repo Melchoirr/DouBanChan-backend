@@ -10,14 +10,25 @@ from django.db import models
 
 
 class Media(models.Model):
+    # public
     m_id = models.AutoField(primary_key=True)
     m_name = models.CharField(max_length=255)
-    m_type = models.IntegerField()
+    m_type = models.IntegerField()  # 1 -> movie  2 -> series  3 -> book
     m_rate = models.FloatField(default=None)
     m_rate_num = models.IntegerField(default=0)
-    m_heat = models.IntegerField(default=None)
+    m_heat = models.IntegerField(default=0)
     m_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='m_profile_photo', default=None)
-    m_json = models.JSONField(default=None)
+    m_genre = models.CharField(max_length=255, default=None)
+    m_description = models.TextField(max_length=65535, default=None)
+    m_time = models.IntegerField(default=None)
+    m_region = models.CharField(max_length=255, default=None)
+    # movie
+    m_director = models.CharField(max_length=255, default=None)
+    m_actor = models.CharField(max_length=255, default=None)
+    # series
+    m_episode_num = models.IntegerField(default=None)
+    # book
+    m_author = models.CharField(max_length=255, default=None)
 
     class Meta:
         managed = True
@@ -32,7 +43,14 @@ class Media(models.Model):
             'm_rate_num': self.m_rate_num,
             'm_heat': self.m_heat,
             'm_profile_photo': self.m_profile_photo.p_content.url,
-            'm_json': self.m_json
+            'm_genre': self.m_genre,
+            'm_description': self.m_description,
+            'm_time': self.m_time,
+            'm_region': self.m_region,
+            'm_director': self.m_director,
+            'm_actor': self.m_actor,
+            'm_episode_num': self.m_episode_num,
+            'm_author': self.m_author
         }
 
 
@@ -56,7 +74,7 @@ class Chat(models.Model):
         return {
             'c_id': self.c_id,
             'c_name': self.c_name,
-            'c_profile_photo': self.c_profile_photo.url,
+            'c_profile_photo': self.c_profile_photo.p_content.url,
             'c_description': self.c_description,
             'c_create_time': self.c_create_time,
             'c_father_group': self.c_father_group.g_id
@@ -82,7 +100,7 @@ class Group(models.Model):
         return {
             'g_id': self.g_id,
             'g_name': self.g_name,
-            'g_profile_photo': self.g_profile_photo.url,
+            'g_profile_photo': self.g_profile_photo.p_content.url,
             'g_description': self.g_description,
             'g_create_time': self.g_create_time,
             'g_last_modify_time': self.g_last_modify_time
@@ -127,7 +145,7 @@ class Report(models.Model):
 
 class Text(models.Model):
     t_id = models.AutoField(primary_key=True)
-    t_type = models.IntegerField()
+    t_type = models.IntegerField()  # 1 -> 长评  2 -> 帖子  3 -> 回复
     t_user = models.ForeignKey('User', models.DO_NOTHING, default=None)
     t_media = models.ForeignKey('Media', models.DO_NOTHING, default=None)
     t_rate = models.FloatField(default=None)
@@ -140,7 +158,7 @@ class Text(models.Model):
     class Meta:
         managed = True
         db_table = 'Text'
-        
+
     def to_dict(self):
         return {
             't_id': self.t_id,
@@ -174,7 +192,7 @@ class User(models.Model):
             'u_id': self.u_id,
             'u_name': self.u_name,
             'u_password': self.u_password,
-            'u_profile_photo': self.u_profile_photo.url,
+            'u_profile_photo': self.u_profile_photo.p_content.url,
             'u_email': self.u_email.__str__()
         }
 

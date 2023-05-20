@@ -15,7 +15,7 @@ def register(request):
     """
     /user/register POST
     user register
-    :param request: username password1 password2 email profile_photo
+    :param request: username password1 password2
     :return: json, msg = 0 on success
     """
     re = {}
