@@ -31,7 +31,7 @@ class Media(models.Model):
             'm_rate': self.m_rate,
             'm_rate_num': self.m_rate_num,
             'm_heat': self.m_heat,
-            'm_profile_photo': self.m_profile_photo.url,
+            'm_profile_photo': self.m_profile_photo.p_content.url,
             'm_json': self.m_json
         }
 
