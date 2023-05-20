@@ -57,7 +57,8 @@ def query_single_chat(request):
             re['msg'] = ERR_CHAT_NOT_EXISTS
         else:
             chat = Chat.objects.get(c_id=c_id)
-            re['chat'] = json.dumps(chat, cls=MyEncoder)
+            re['msg'] = 0
+            re['chat'] = chat.to_dict()
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))

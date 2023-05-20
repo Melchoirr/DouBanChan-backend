@@ -57,7 +57,8 @@ def query_single_group(request):
             re['msg'] = ERR_GROUP_NOT_EXISTS
         else:
             group = Group.objects.get(g_id=g_id)
-            re['group'] = json.dumps(group, cls=MyEncoder)
+            re['msg'] = 0
+            re['group'] = group.to_dict()
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))

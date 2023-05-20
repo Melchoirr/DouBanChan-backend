@@ -12,8 +12,7 @@ def create_media(request):
     if request.method == 'POST':
         m_name = request.POST['m_name']
         m_type = request.POST['m_type']
-        media = Media(m_name=m_name, m_type=m_type, m_rate=None, m_rate_num=0, m_heat=0,
-                      m_profile_photo=None, m_json=None)
+        media = Media(m_name=m_name, m_type=m_type)
         media.save()
         re['m_id'] = media.m_id
         re['msg'] = 0
@@ -57,7 +56,8 @@ def query_single_media(request):
             re['msg'] = ERR_MEDIA_NOT_EXISTS
         else:
             media = Media.objects.get(m_id=m_id)
-            re['media'] = json.dumps(media, cls=MyEncoder)
+            re['msg'] = 0
+            re['media'] = media.to_dict()
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))

@@ -21,15 +21,15 @@ def register(request):
     """
     re = {}
     if request.method == 'POST':
-        name = request.POST['username']
+        username = request.POST['username']
         password1 = request.POST['password1']
         password2 = request.POST['password2']
-        if User.objects.filter(u_name=name):
+        if User.objects.filter(u_name=username):
             re['msg'] = ERR_USERNAME_EXISTS
         elif password1 != password2:
             re['msg'] = ERR_PASSWORD_NOT_SAME
         else:
-            user = User(u_name=name, u_password=password1)
+            user = User(u_name=username, u_password=password1)
             user.save()
             re['msg'] = 0
             re['u_id'] = user.u_id
