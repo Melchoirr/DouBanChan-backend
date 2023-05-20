@@ -1,4 +1,3 @@
-
 # This is an auto-generated Django model module.
 # You'll have to do the following manually to clean this up:
 #   * Rearrange models' order
@@ -6,8 +5,6 @@
 #   * Make sure each ForeignKey and OneToOneField has `on_delete` set to the desired behavior
 #   * Remove `managed = False` lines if you wish to allow Django to create, modify, and delete the table
 # Feel free to rename the models, but don't rename db_table values or field names.
-import os
-
 from django.conf import settings
 from django.db import models
 
@@ -16,25 +13,37 @@ class Media(models.Model):
     m_id = models.AutoField(primary_key=True)
     m_name = models.CharField(max_length=255)
     m_type = models.IntegerField()
-    m_rate = models.FloatField(blank=True, null=True)
-    m_rate_num = models.IntegerField(blank=True, null=True)
-    m_heat = models.IntegerField(blank=True, null=True)
-    m_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='m_profile_photo', blank=True, null=True)
-    m_json = models.JSONField()
+    m_rate = models.FloatField(default=None)
+    m_rate_num = models.IntegerField(default=0)
+    m_heat = models.IntegerField(default=None)
+    m_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='m_profile_photo', default=None)
+    m_json = models.JSONField(default=None)
 
     class Meta:
         managed = True
         db_table = 'Media'
 
+    def to_dict(self):
+        return {
+            'm_id': self.m_id,
+            'm_name': self.m_name,
+            'm_type': self.m_type,
+            'm_rate': self.m_rate,
+            'm_rate_num': self.m_rate_num,
+            'm_heat': self.m_heat,
+            'm_profile_photo': None,  # ???
+            'm_json': self.m_json
+        }
+
 
 class Chat(models.Model):
     c_id = models.AutoField(primary_key=True)
     c_name = models.CharField(max_length=255)
-    c_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='m_profile_photo', blank=True, null=True)
+    c_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='m_profile_photo', default=None)
     c_description = models.CharField(max_length=255)
-    c_create_time = models.DateTimeField()
-    c_last_modify_date = models.DateTimeField()
-    c_father_group_id = models.ForeignKey('Group', models.DO_NOTHING)
+    c_create_time = models.DateTimeField(auto_now=True)
+    c_last_modify_date = models.DateTimeField(auto_now=True)
+    c_father_group = models.ForeignKey('Group', models.DO_NOTHING, default=None)
 
     c_medias = models.ManyToManyField(Media, related_name='m_chats')
     c_users = models.ManyToManyField('User', related_name='u_chats')
@@ -43,14 +52,24 @@ class Chat(models.Model):
         managed = True
         db_table = 'Chat'
 
+    def to_dict(self):
+        return {
+            'c_id': self.c_id,
+            'c_name': self.c_name,
+            'c_profile_photo': None,  # ???
+            'c_description': self.c_description,
+            'c_create_time': self.c_create_time,
+            'c_father_group': None,  # ???
+        }
+
 
 class Group(models.Model):
     g_id = models.AutoField(primary_key=True)
     g_name = models.CharField(max_length=255)
-    g_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='m_profile_photo', blank=True, null=True)
+    g_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='m_profile_photo', default=None)
     g_description = models.CharField(max_length=255)
-    g_create_time = models.DateTimeField()
-    g_last_modify_time = models.DateTimeField()
+    g_create_time = models.DateTimeField(auto_now=True)
+    g_last_modify_time = models.DateTimeField(auto_now=True)
 
     g_medias = models.ManyToManyField(Media, related_name='m_groups')
     g_users = models.ManyToManyField('User', related_name='u_groups')
@@ -59,51 +78,90 @@ class Group(models.Model):
         managed = True
         db_table = 'Group'
 
+    def to_dict(self):
+        return {
+            'g_id': self.g_id,
+            'g_name': self.g_name,
+            'g_profile_photo': None,  #???
+            'g_description': self.g_description,
+            'g_create_time': self.g_create_time,
+            'g_last_modify_time': self.g_last_modify_time
+        }
+
 
 class Picture(models.Model):
     p_id = models.AutoField(primary_key=True)
     p_content = models.ImageField(upload_to='')
-    p_father_text_id = models.IntegerField(blank=True, null=True)
+    p_father_text = models.ForeignKey('Text', models.DO_NOTHING, default=None)
 
     class Meta:
         managed = True
         db_table = 'Picture'
 
+    def to_dict(self):
+        return {
+            'p_id': self.p_id,
+            'p_content': None,  #???
+            'p_father_text': None  #???
+        }
+
 
 class Report(models.Model):
     r_id = models.AutoField(primary_key=True)
-    r_user = models.ForeignKey('User', models.DO_NOTHING)
-    r_text = models.ForeignKey('Text', models.DO_NOTHING)
+    r_user = models.ForeignKey('User', models.DO_NOTHING, default=None)
+    r_text = models.ForeignKey('Text', models.DO_NOTHING, default=None)
     r_details = models.TextField()
 
     class Meta:
         managed = True
         db_table = 'Report'
 
+    def to_dict(self):
+        return {
+            'r_id': self.r_id,
+            'r_user': None,  #???
+            'r_text': None,  #???
+            'r_details': self.r_details
+        }
+
 
 class Text(models.Model):
     t_id = models.AutoField(primary_key=True)
     t_type = models.IntegerField()
-    t_user = models.ForeignKey('User', models.DO_NOTHING)
-    t_media = models.ForeignKey('Media', models.DO_NOTHING)
-    t_rate = models.FloatField(blank=True, null=True)
-    t_like = models.IntegerField(blank=True, null=True)
-    t_dislike = models.IntegerField(blank=True, null=True)
-    t_description = models.TextField(blank=True, null=True)
-    t_topic = models.CharField(max_length=255, blank=True, null=True)
-    t_father = models.ForeignKey('self', models.DO_NOTHING)
+    t_user = models.ForeignKey('User', models.DO_NOTHING, default=None)
+    t_media = models.ForeignKey('Media', models.DO_NOTHING, default=None)
+    t_rate = models.FloatField(default=None)
+    t_like = models.IntegerField(default=0)
+    t_dislike = models.IntegerField(default=0)
+    t_description = models.TextField()
+    t_topic = models.CharField(max_length=255, default=None)
+    t_father = models.ForeignKey('self', models.DO_NOTHING, default=None)
 
     class Meta:
         managed = True
         db_table = 'Text'
+        
+    def to_dict(self):
+        return {
+            't_id': self.t_id,
+            't_type': self.t_type,
+            't_user': None,  #???
+            't_media': None,  #???
+            't_rate': self.t_rate,
+            't_like': self.t_like,
+            't_dislike': self.t_dislike,
+            't_description': self.t_description,
+            't_topic': self.t_topic,
+            't_father': None  #???
+        }
 
 
 class User(models.Model):
     u_id = models.AutoField(primary_key=True)
     u_name = models.CharField(max_length=255)
     u_password = models.CharField(max_length=255)
-    u_profile_photo = models.ForeignKey(Picture, models.DO_NOTHING, db_column='u_profile_photo', blank=True, null=True)
-    u_email = models.EmailField(max_length=255, blank=True, null=True)
+    u_profile_photo = models.ForeignKey(Picture, models.DO_NOTHING, db_column='u_profile_photo', default=None)
+    u_email = models.EmailField(max_length=255, default=None)
 
     u_medias = models.ManyToManyField(Media, related_name='m_users')
 
@@ -111,11 +169,14 @@ class User(models.Model):
         managed = True
         db_table = 'User'
 
-
-
-
-
-
+    def to_dict(self):
+        return {
+            'u_id': self.u_id,
+            'u_name': self.u_name,
+            'u_password': self.u_password,
+            'u_profile_photo': None,
+            'u_email': self.u_email.__str__()
+        }
 
 ########################################################################################################################
 # class AuthGroup(models.Model):
