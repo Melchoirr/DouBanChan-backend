@@ -181,7 +181,8 @@ class User(models.Model):
     u_profile_photo = models.ForeignKey(Picture, models.DO_NOTHING, db_column='u_profile_photo', default=None)
     u_email = models.EmailField(max_length=255, default=None)
 
-    u_medias = models.ManyToManyField(Media, related_name='m_users')
+    u_medias = models.ManyToManyField(Media, related_name='m_users', through='UserMedia')
+    u_texts = models.ManyToManyField(Text, related_name='t_users')
 
     class Meta:
         managed = True
@@ -195,6 +196,10 @@ class User(models.Model):
             'u_profile_photo': self.u_profile_photo.p_content.url,
             'u_email': self.u_email.__str__()
         }
+
+
+class UserMedia(models.Model):
+    type = models.IntegerField()
 
 ########################################################################################################################
 # class AuthGroup(models.Model):

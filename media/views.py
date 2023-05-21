@@ -58,8 +58,29 @@ def query_single_media(request):
             re['msg'] = ERR_MEDIA_NOT_EXISTS
         else:
             media = Media.objects.get(m_id=m_id)
+            media.m_heat += 1
+            media.save()
             re['msg'] = 0
             re['media'] = media.to_dict()
+    else:
+        re['msg'] = ERR_REQUEST_METHOD_WRONG
+    return HttpResponse(json.dumps(re))
+
+
+def media_home(request):
+    re = {}
+    if request.method == 'POST':
+        heat_set = list(Media.objects.all().order_by('-m_heat')[:3])
+        heat_list = []
+        for each in heat_set:
+            heat_list.append(each.to_dict())
+        score_set = list(Media.objects.all().order_by('-m_rate')[:3])
+        score_list = []
+        for each in score_set:
+            score_list.append(each.to_dict())
+        re['heat_list'] = heat_list
+        re['score_list'] = score_list
+        #用户相关列表 随机列表？
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
