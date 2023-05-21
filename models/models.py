@@ -14,21 +14,21 @@ class Media(models.Model):
     m_id = models.AutoField(primary_key=True)
     m_name = models.CharField(max_length=255)
     m_type = models.IntegerField()  # 1 -> movie  2 -> series  3 -> book
-    m_rate = models.FloatField(default=None)
+    m_rate = models.FloatField(default=0)
     m_rate_num = models.IntegerField(default=0)
     m_heat = models.IntegerField(default=0)
     m_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='m_profile_photo', default=None)
-    m_genre = models.CharField(max_length=255, default=None)
-    m_description = models.TextField(max_length=65535, default=None)
+    m_genre = models.CharField(max_length=255, default='')
+    m_description = models.TextField(max_length=65535, default='')
     m_time = models.IntegerField(default=None)
-    m_region = models.CharField(max_length=255, default=None)
+    m_region = models.CharField(max_length=255, default='')
     # movie
-    m_director = models.CharField(max_length=255, default=None)
-    m_actor = models.CharField(max_length=255, default=None)
+    m_director = models.CharField(max_length=255, default='')
+    m_actor = models.CharField(max_length=255, default='')
     # series
-    m_episode_num = models.IntegerField(default=None)
+    m_episode_num = models.IntegerField(default=0)
     # book
-    m_author = models.CharField(max_length=255, default=None)
+    m_author = models.CharField(max_length=255, default='')
 
     class Meta:
         managed = True
@@ -58,7 +58,7 @@ class Chat(models.Model):
     c_id = models.AutoField(primary_key=True)
     c_name = models.CharField(max_length=255)
     c_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='m_profile_photo', default=None)
-    c_description = models.CharField(max_length=255)
+    c_description = models.CharField(max_length=255, default='')
     c_create_time = models.DateTimeField(auto_now=True)
     c_last_modify_date = models.DateTimeField(auto_now=True)
     c_father_group = models.ForeignKey('Group', models.DO_NOTHING, default=None)
@@ -75,9 +75,9 @@ class Chat(models.Model):
             'c_id': self.c_id,
             'c_name': self.c_name,
             'c_profile_photo': self.c_profile_photo.p_content.url,
-            'c_description': self.c_description,
-            'c_create_time': self.c_create_time,
-            'c_father_group': self.c_father_group.g_id
+            'c_description': self.c_description.__str__(),
+            'c_create_time': self.c_create_time.__str__(),
+            # 'c_father_group': self.c_father_group.g_id
         }
 
 
@@ -85,7 +85,7 @@ class Group(models.Model):
     g_id = models.AutoField(primary_key=True)
     g_name = models.CharField(max_length=255)
     g_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='g_profile_photo', default=None)
-    g_description = models.CharField(max_length=255)
+    g_description = models.CharField(max_length=255, default='')
     g_create_time = models.DateTimeField(auto_now=True)
     g_last_modify_time = models.DateTimeField(auto_now=True)
 
@@ -102,8 +102,8 @@ class Group(models.Model):
             'g_name': self.g_name,
             'g_profile_photo': self.g_profile_photo.p_content.url,
             'g_description': self.g_description,
-            'g_create_time': self.g_create_time,
-            'g_last_modify_time': self.g_last_modify_time
+            'g_create_time': self.g_create_time.__str__(),
+            'g_last_modify_time': self.g_last_modify_time.__str__()
         }
 
 
@@ -127,7 +127,7 @@ class Picture(models.Model):
 class Report(models.Model):
     r_id = models.AutoField(primary_key=True)
     r_user = models.ForeignKey('User', models.DO_NOTHING, default=None)
-    r_text = models.ForeignKey('Text', models.DO_NOTHING, default=None)
+    r_text = models.ForeignKey('Text', models.DO_NOTHING, default='')
     r_details = models.TextField()
 
     class Meta:
@@ -152,7 +152,7 @@ class Text(models.Model):
     t_like = models.IntegerField(default=0)
     t_dislike = models.IntegerField(default=0)
     t_description = models.TextField(default='')
-    t_topic = models.CharField(max_length=255, default=None)
+    t_topic = models.CharField(max_length=255, default='')
     t_father = models.ForeignKey('self', models.DO_NOTHING, default=None)
 
     class Meta:
@@ -181,7 +181,7 @@ class User(models.Model):
     u_profile_photo = models.ForeignKey(Picture, models.DO_NOTHING, db_column='u_profile_photo', default=None)
     u_email = models.EmailField(max_length=255, default=None)
 
-    u_medias = models.ManyToManyField(Media, related_name='m_users', through='UserMedia')
+    u_medias = models.ManyToManyField(Media, related_name='m_users')
     u_texts = models.ManyToManyField(Text, related_name='t_users')
 
     class Meta:
@@ -197,9 +197,6 @@ class User(models.Model):
             'u_email': self.u_email.__str__()
         }
 
-
-class UserMedia(models.Model):
-    type = models.IntegerField()
 
 ########################################################################################################################
 # class AuthGroup(models.Model):
