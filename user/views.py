@@ -15,23 +15,20 @@ def register(request):
     """
     /user/register POST
     user register
-    :param request: username password1 password2
+    :param request: username password
     :return: json, msg = 0 on success
     """
     re = {}
     if request.method == 'POST':
         username = request.POST['username']
-        password1 = request.POST['password1']
-        password2 = request.POST['password2']
+        password = request.POST['password']
         if User.objects.filter(u_name=username):
             re['msg'] = ERR_USERNAME_EXISTS
-        elif password1 != password2:
-            re['msg'] = ERR_PASSWORD_NOT_SAME
         else:
-            user = User(u_name=username, u_password=password1)
+            user = User(u_name=username, u_password=password)
             user.save()
             re['msg'] = 0
-            re['u_id'] = user.u_id
+            re['user'] = user.to_dict()
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
@@ -74,7 +71,7 @@ def logout(request):
         if CUR_USER_ID not in request.session:
             re['msg'] = ERR_NO_CURRENT_USER
         else:
-            request.session[CUR_USER_ID] = 0
+            request.session[CUR_USER_ID] = -1
             re['msg'] = 0
 
     else:

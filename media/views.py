@@ -1,3 +1,5 @@
+import copy
+
 from django.http import JsonResponse
 
 from tools.imports import *
@@ -62,6 +64,34 @@ def query_single_media(request):
             media.save()
             re['msg'] = 0
             re['media'] = media.to_dict()
+            tmp = []
+            text_to_media = list(Text.objects.filter(t_media=media))
+            if CUR_USER_ID in request.session:
+                for item in text_to_media:
+                    tt = {
+                        'text': item.to_dict(),
+                        'is_liked': 0,
+                        'is_disliked': 0
+                    }
+                    cur_user = User.objects.get(u_id=request.session[CUR_USER_ID])
+                    if UserText.objects.filter(user=cur_user, text=item, is_liked=1):
+                        tt['is_liked'] = 1
+                    if UserText.objects.filter(user=cur_user, text=item, is_disliked=1):
+                        tt['is_disliked'] = 1
+                    tmp.append(tt)
+            else:
+                for item in text_to_media:
+                    tmp.append({
+                        'text': item.to_dict(),
+                        'is_liked': 0,
+                        'is_disliked': 0
+                    })
+            re['text_by_time'] = copy.deepcopy(tmp)
+            re['text_by_like'] = copy.deepcopy(tmp)
+            sorted(re['text_by_time'], key=lambda x: x['text']['t_create_time'])
+            sorted(re['text_by_like'], key=lambda x: x['text']['t_like'])
+            re['text_by_time'].reverse()
+            re['text_by_like'].reverse()
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
