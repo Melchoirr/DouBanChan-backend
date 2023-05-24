@@ -7,7 +7,7 @@ urlpatterns = [
     path("logout/", logout),
 
     path("upload_profile/", upload_profile),
-    path("chage_password", chage_password),
+    path("chage_password", change_password),
 
     path("home/", get_user_page),
     path("get_user_brief/", get_user_brief),

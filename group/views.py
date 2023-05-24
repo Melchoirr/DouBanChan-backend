@@ -12,11 +12,12 @@ def create_group(request):
     if request.method == 'POST':
         g_name = request.POST['g_name']
         g_description = request.POST['g_description']
-        new_group = Group(g_name=g_name, g_description=g_description,
+        default_profile_photo = get_picture_by_id(DEFAULT_PROFILE_PHOTO_ID)
+        new_group = Group(g_name=g_name, g_description=g_description, g_profile_photo=default_profile_photo,
                           g_create_time=timezone.now(), g_last_modify_time=timezone.now())
         new_group.save()
         re['msg'] = 0
-        re['g_id'] = new_group.g_id
+        re['group'] = new_group.to_dict()
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))

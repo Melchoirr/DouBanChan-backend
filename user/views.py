@@ -1,14 +1,8 @@
-from io import BytesIO
-
-from django.conf import settings
-from django.core.files.base import ContentFile
 from django.shortcuts import HttpResponse
-from PIL import Image
-
 import json
-from django import forms
-from models.models import User, Picture, Text
+from models.models import User, Picture
 from tools.tools import *
+from tools.imports import *
 
 
 def register(request):
@@ -25,7 +19,8 @@ def register(request):
         if User.objects.filter(u_name=username):
             re['msg'] = ERR_USERNAME_EXISTS
         else:
-            user = User(u_name=username, u_password=password)
+            default_profile_photo = get_picture_by_id(DEFAULT_PROFILE_PHOTO_ID)
+            user = User(u_name=username, u_password=password, u_profile_photo=default_profile_photo, u_email='')
             user.save()
             re['msg'] = 0
             re['user'] = user.to_dict()
@@ -61,13 +56,13 @@ def login(request):
 
 def logout(request):
     """
-    /user/logout GET
+    /user/logout POST
     user register
     :param request:
     :return: json, msg = 0 on success
     """
     re = {}
-    if request.method == 'GET':
+    if request.method == 'POST':
         if CUR_USER_ID not in request.session:
             re['msg'] = ERR_NO_CURRENT_USER
         else:
@@ -79,8 +74,9 @@ def logout(request):
     return HttpResponse(json.dumps(re))
 
 
-def chage_password(request):
-    return
+def change_password(request):
+    pass
+
 
 def upload_profile(request):
     """
@@ -94,8 +90,6 @@ def upload_profile(request):
         p_content = request.FILES['p_content']
         picture = Picture(p_content=p_content)
         picture.save()
-
-
         # with open(picture.p_content.path, 'rb') as f:
         #     image_data = f.read()
         # image = Image.open(BytesIO(image_data))
@@ -143,3 +137,7 @@ def get_user_brief(request):
         return HttpResponse(json.dumps(re))
     re['msg'] = 1
     return HttpResponse(json.dumps(re))
+
+
+def is_logged_in(request):
+    return CUR_USER_ID in request.session

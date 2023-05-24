@@ -1,7 +1,4 @@
 import copy
-
-from django.http import JsonResponse
-
 from tools.imports import *
 
 
@@ -16,9 +13,21 @@ def create_media(request):
     if request.method == 'POST':
         m_name = request.POST['m_name']
         m_type = request.POST['m_type']
-        media = Media(m_name=m_name, m_type=m_type)
+        m_genre = request.POST['m_genre']
+        m_description = request.POST['m_description']
+        m_year = request.POST['m_year']
+        m_director = request.POST['m_director']
+        m_actor = request.POST['m_actor']
+        m_episode_num = request.POST['m_episode_num']
+        m_duration = request.POST['m_duration']
+        m_author = request.POST['m_author']
+        m_characters = request.POST['m_characters']
+        default_profile_photo = get_picture_by_id(DEFAULT_PROFILE_PHOTO_ID)
+        media = Media(m_name=m_name, m_type=m_type, m_profile_photo=default_profile_photo, m_genre=m_genre,
+                      m_description=m_description, m_year=m_year, m_director=m_director, m_actor=m_actor,
+                      m_episode_num=m_episode_num, m_duration=m_duration, m_author=m_author, m_characters=m_characters)
         media.save()
-        re['m_id'] = media.m_id
+        re['media'] = media.to_dict()
         re['msg'] = 0
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG

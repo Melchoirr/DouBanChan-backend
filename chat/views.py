@@ -12,11 +12,12 @@ def create_chat(request):
     if request.method == 'POST':
         c_name = request.POST['c_name']
         c_description = request.POST['c_description']
-        new_chat = Chat(c_name=c_name, c_description=c_description,
+        default_profile_photo = get_picture_by_id(DEFAULT_PROFILE_PHOTO_ID)
+        new_chat = Chat(c_name=c_name, c_description=c_description, c_profile_photo=default_profile_photo,
                         c_create_time=timezone.now(), c_last_modify_time=timezone.now(), c_father_group_id=None)
         new_chat.save()
         re['msg'] = 0
-        re['c_id'] = new_chat.c_id
+        re['chat'] = new_chat.to_dict()
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
