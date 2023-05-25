@@ -23,8 +23,9 @@ def create_media(request):
         m_duration = request.POST['m_duration']
         m_author = request.POST['m_author']
         m_characters = request.POST['m_characters']
+        m_profile_photo = request.FILES['m_profile_photo']
         default_profile_photo = get_picture_by_id(DEFAULT_PROFILE_PHOTO_ID)
-        media = Media(m_name=m_name, m_type=m_type, m_profile_photo=default_profile_photo, m_genre=m_genre,
+        media = Media(m_name=m_name, m_type=m_type, m_profile_photo=m_profile_photo, m_genre=m_genre,
                       m_description=m_description, m_year=m_year, m_director=m_director, m_actor=m_actor,
                       m_episode_num=m_episode_num, m_duration=m_duration, m_author=m_author, m_characters=m_characters)
         media.save()
@@ -102,6 +103,7 @@ def query_single_media(request):
             sorted(re['text_by_like'], key=lambda x: x['text']['t_like'])
             re['text_by_time'].reverse()
             re['text_by_like'].reverse()
+            re['m_chats'] = [x.to_dict() for x in list(media.m_chats)]
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
@@ -120,7 +122,7 @@ def media_home(request):
             score_list.append(each.to_dict())
         re['heat_list'] = heat_list
         re['score_list'] = score_list
-        #用户相关列表 随机列表？
+        # 用户相关列表 随机列表？
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
@@ -210,6 +212,30 @@ def set_favourite(request):
             else:
                 user_media = UserMedia(user=user, media=media, is_in_collection=op)
                 user_media.save()
+            re['msg'] = 0
+        else:
+            re['msg'] = ERR_NOT_LOGGED_IN
+    else:
+        re['msg'] = ERR_REQUEST_METHOD_WRONG
+    return HttpResponse(json.dumps(re))
+
+
+def comment_media(request):
+    re = {}
+    if request.method == 'POST':
+        if is_logged_in(request):
+            user = get_cur_user(request)
+            m_id = request.POST['m_id']
+            media = Media.objects.get(m_id=m_id)
+            text = Text(t_type=1,
+                        t_user=user,
+                        t_media=media,
+                        t_rate=float(request.POST['t_rate']),
+                        t_like=0,
+                        t_dilike=0,
+                        t_description=request.POST['t_description'],
+                        t_topic=request.POST['t_topic'], )
+            text.save()
             re['msg'] = 0
         else:
             re['msg'] = ERR_NOT_LOGGED_IN

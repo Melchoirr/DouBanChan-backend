@@ -44,7 +44,7 @@ class Media(models.Model):
             'm_episode_num': self.m_episode_num,
             'm_duration': self.m_duration,
             'm_author': self.m_author,
-            'm_characters': self.m_characters
+            'm_characters': self.m_characters,
         }
         if self.m_profile_photo is not None:
             re['m_profile_photo'] = self.m_profile_photo.p_content.url
@@ -212,6 +212,15 @@ class User(models.Model):
         else:
             re['u_profile_photo'] = ''
         return re
+
+
+class Post(models.Model):
+    p_id = models.AutoField(primary_key=True)
+    p_chat = models.ForeignKey(Chat, models.DO_NOTHING)
+    p_topic = models.CharField(max_length=255, default='')
+    p_like = models.IntegerField(default=0)
+    p_dislike = models.IntegerField(default=0)
+    # p_time = models.
 
 
 class UserText(models.Model):
