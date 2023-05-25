@@ -10,4 +10,5 @@ urlpatterns = [
     path("set_watching/", set_watching),
     path("set_to_be_watched/", set_to_be_watched),
     path("set_favourite/", set_favourite),
+    path("comment_media/", comment_media),
 ]

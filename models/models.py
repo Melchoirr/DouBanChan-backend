@@ -44,7 +44,7 @@ class Media(models.Model):
             'm_episode_num': self.m_episode_num,
             'm_duration': self.m_duration,
             'm_author': self.m_author,
-            'm_characters': self.m_characters
+            'm_characters': self.m_characters,
         }
         if self.m_profile_photo is not None:
             re['m_profile_photo'] = self.m_profile_photo.p_content.url
