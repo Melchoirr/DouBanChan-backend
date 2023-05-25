@@ -19,15 +19,16 @@ DEFAULT_PROFILE_PHOTO_ID = 4  # make this right before running !!!
 
 
 def is_logged_in(request):
-    return True  # Wrong !!!
+    return True
 
 
 def get_cur_user(request):
-    return User.objects.get(u_id=6)  # Wrong !!!
+    u_id = request.POST['u_id']
+    return User.objects.get(u_id=u_id)
 
 
 def get_cur_user_id(request):
-    return 6  # Wrong !!!
+    return int(request.POST['u_id'])
 
 
 def get_chat_by_id(i):

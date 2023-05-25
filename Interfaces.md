@@ -182,5 +182,5 @@ return: msg picture
 
 ### dislike text
 
-## 帖子
-### query single 帖子
+## post
+### query single post

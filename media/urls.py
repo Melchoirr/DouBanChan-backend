@@ -1,7 +1,6 @@
 from django.urls import path
 from media.views import *
 
-
 urlpatterns = [
     path("create/", create_media),
     path("delete/", delete_media),
@@ -12,3 +11,5 @@ urlpatterns = [
     path("set_to_be_watched/", set_to_be_watched),
     path("set_favourite/", set_favourite),
 ]
+
+# zdwnb
