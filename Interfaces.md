@@ -57,7 +57,7 @@ return: msg
 ```
 ### change profile photo
 
-### query single user
+### _query single user_
 ```
 url:    /user/query_single
 param:  u_id
@@ -72,7 +72,7 @@ return: msg
 ```
 ### delete media
 ```
-url:    /media/delet
+url:    /media/delete
 param:  m_id
 return: msg
 ```
@@ -137,6 +137,12 @@ url:    /chat/quit_chat
 param:  c_id
 return: msg
 ```
+### add post (发帖)
+
+### reply post (回帖)
+
+### delete post
+
 ## group
 ### create group
 ```
@@ -158,6 +164,8 @@ return: msg group
 ```
 ### add chat
 
+### delete chat
+
 ### join group
 
 ### quit group
@@ -174,7 +182,10 @@ param:  p_content
 return: msg picture
 ```
 ## text
-### post text
+
+### query single text
+
+### reply text (回复)
 
 ### delete text
 
@@ -184,3 +195,11 @@ return: msg picture
 
 ## post
 ### query single post
+
+### like post
+
+### dislike post
+
+### add text
+
+### delete text
