@@ -63,3 +63,38 @@ def query_single_chat(request):
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
+
+
+def join_chat(request):
+    re = {}
+    if basic_check(request):
+        c_id = request.POST['c_id']
+        user = get_cur_user(request)
+        chat = get_chat_by_id(c_id)
+        if UserChat.objects.filter(user=user, chat=chat):
+            re['msg'] = ERR_ALREADY_JOINED
+        else:
+            user_chat = UserChat(user=user, chat=chat)
+            user_chat.save()
+            re['msg'] = 0
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def quit_chat(request):
+    re = {}
+    if basic_check(request):
+        c_id = request.POST['c_id']
+        user = get_cur_user(request)
+        chat = get_chat_by_id(c_id)
+        if UserChat.objects.filter(user=user, chat=chat):
+            user_chat = UserChat.objects.get(user=user, chat=chat)
+            print(user_chat)
+            user_chat.delete()
+            re['msg'] = 0
+        else:
+            re['msg'] = ERR_NOT_JOINED
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))

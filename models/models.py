@@ -220,6 +220,10 @@ class UserText(models.Model):
     is_liked = models.IntegerField(default=0)
     is_disliked = models.IntegerField(default=0)
 
+    class Meta:
+        managed = True
+        db_table = 'UserText'
+
 
 class UserMedia(models.Model):
     user = models.ForeignKey(User, models.DO_NOTHING)
@@ -229,6 +233,10 @@ class UserMedia(models.Model):
     is_watching = models.IntegerField(default=0)
     is_watched = models.IntegerField(default=0)
 
+    class Meta:
+        managed = True
+        db_table = 'UserMedia'
+
 
 class UserGroup(models.Model):
     user = models.ForeignKey(User, models.DO_NOTHING)
@@ -236,6 +244,10 @@ class UserGroup(models.Model):
     is_admin = models.IntegerField(default=0)
     join_time = models.DateTimeField(auto_now=True)
     user_heat = models.IntegerField(default=0)
+
+    class Meta:
+        managed = True
+        db_table = 'UserGroup'
 
 
 class UserChat(models.Model):
@@ -245,12 +257,24 @@ class UserChat(models.Model):
     join_time = models.DateTimeField(auto_now=True)
     user_heat = models.IntegerField(default=0)
 
+    class Meta:
+        managed = True
+        db_table = 'UserChat'
+
 
 class MediaGroup(models.Model):
     media = models.ForeignKey(Media, models.DO_NOTHING)
     group = models.ForeignKey(Group, models.DO_NOTHING)
 
+    class Meta:
+        managed = True
+        db_table = 'MediaGroup'
+
 
 class MediaChat(models.Model):
     media = models.ForeignKey(Media, models.DO_NOTHING)
     chat = models.ForeignKey(Chat, models.DO_NOTHING)
+
+    class Meta:
+        managed = True
+        db_table = 'MediaChat'

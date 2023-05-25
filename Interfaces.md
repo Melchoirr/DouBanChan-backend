@@ -1,22 +1,41 @@
 # Interfaces
-```
-group = [
-    chat = [
-        tiezi = [
-            text(1)
-            text
-                text
-                text
-                ...
-            ...
-        ]
-        ...
-    ]
-    ...
-]
-```
 ## base
-### 
+### query base
+```
+url:    /base/query_base
+param:  qstr
+return: msg data
+```
+### query user
+```
+url:    /base/query_user
+param:  qstr
+return: msg data
+```
+### query chat
+```
+url:    /base/query_chat
+param:  qstr
+return: msg data
+```
+### query group
+```
+url:    /base/query_group
+param:  qstr
+return: msg data
+```
+### query media
+```
+url:    /base/query_media
+param:  qstr
+return: msg data
+```
+### query report
+```
+url:    /base/query_report
+param:  qstr
+return: msg data
+```
 ## user
 ### register
 ```
@@ -36,10 +55,14 @@ url:    /user/logout
 param:  
 return: msg
 ```
-### 更改头像
+### change profile photo
 
 ### query single user
-
+```
+url:    /user/query_single
+param:  u_id
+return: msg user
+```
 ## media
 ### create media
 ```
@@ -59,16 +82,30 @@ url:    /media/query_single
 param:  m_id
 return: msg media text_by_time text_by_like
 ```
-### like
-
-### dislike
-
-### 想看
-
-### 在看
-
-### 看过
-
+### set to be watched
+```
+url:    /media/set_to_be_watched
+param:  m_id op
+return: msg
+```
+### set watching
+```
+url:    /media/set_watching
+param:  m_id op
+return: msg
+```
+### set watched
+```
+url:    /media/set_watched
+param:  m_id op
+return: msg
+```
+### set favourite
+```
+url:    /media/set_favourite
+param:  m_id op
+return: msg
+```
 ## chat
 ### create chat
 ```
@@ -88,10 +125,18 @@ url:    /chat/query_single
 param:  c_id
 return: msg chat
 ```
-### 加入话题
-
-### 退出话题
-
+### join chat
+```
+url:    /chat/join_chat
+param:  c_id
+return: msg
+```
+### quit chat
+```
+url:    /chat/quit_chat
+param:  c_id
+return: msg
+```
 ## group
 ### create group
 ```
@@ -111,15 +156,15 @@ url:    /media/query_single
 param:  g_id
 return: msg group
 ```
-### 添加话题
+### add chat
 
-### 加入小组
+### join group
 
-### 退出小组
+### quit group
 
-### 申请成为管理员
+### apply to be admin of group
 
-### 更改头像
+### change group profile photo
 
 ## picture
 ### upload single picture
@@ -129,13 +174,13 @@ param:  p_content
 return: msg picture
 ```
 ## text
-### 发评论
+### post text
 
-### 删评论
+### delete text
 
-### 点赞评论
+### like text
 
-### 点踩评论
+### dislike text
 
 ## 帖子
 ### query single 帖子

@@ -68,7 +68,21 @@ def logout(request):
         else:
             request.session[CUR_USER_ID] = -1
             re['msg'] = 0
+    else:
+        re['msg'] = ERR_REQUEST_METHOD_WRONG
+    return HttpResponse(json.dumps(re))
 
+
+def query_single_user(request):
+    re = {}
+    if request.method == 'POST':
+        u_id = request.session['u_id']
+        if User.objects.filter(u_id=u_id):
+            user = User.objects.get(u_id=u_id)
+            re['msg'] = 0
+            re['user'] = user.to_dict()
+        else:
+            re['msg'] = ERR_USER_NOT_EXISTS
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
@@ -137,7 +151,3 @@ def get_user_brief(request):
         return HttpResponse(json.dumps(re))
     re['msg'] = 1
     return HttpResponse(json.dumps(re))
-
-
-def is_logged_in(request):
-    return CUR_USER_ID in request.session

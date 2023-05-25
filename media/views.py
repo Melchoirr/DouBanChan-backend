@@ -1,5 +1,6 @@
 import copy
 from tools.imports import *
+from tools.tools import *
 
 
 def create_media(request):
@@ -120,6 +121,98 @@ def media_home(request):
         re['heat_list'] = heat_list
         re['score_list'] = score_list
         #用户相关列表 随机列表？
+    else:
+        re['msg'] = ERR_REQUEST_METHOD_WRONG
+    return HttpResponse(json.dumps(re))
+
+
+def set_watched(request):
+    re = {}
+    if request.method == 'POST':
+        if is_logged_in(request):
+            user = get_cur_user(request)
+            m_id = request.POST['m_id']
+            op = int(request.POST['op'])
+            media = Media.objects.get(m_id=m_id)
+            if UserMedia.objects.filter(user=user, media=media):
+                user_media = UserMedia.objects.get(user=user, media=media)
+                user_media.is_watched = op
+                user_media.save()
+            else:
+                user_media = UserMedia(user=user, media=media, is_watched=op)
+                user_media.save()
+            re['msg'] = 0
+        else:
+            re['msg'] = ERR_NOT_LOGGED_IN
+    else:
+        re['msg'] = ERR_REQUEST_METHOD_WRONG
+    return HttpResponse(json.dumps(re))
+
+
+def set_watching(request):
+    re = {}
+    if request.method == 'POST':
+        if is_logged_in(request):
+            user = get_cur_user(request)
+            m_id = request.POST['m_id']
+            op = int(request.POST['op'])
+            media = Media.objects.get(m_id=m_id)
+            if UserMedia.objects.filter(user=user, media=media):
+                user_media = UserMedia.objects.get(user=user, media=media)
+                user_media.is_watching = op
+                user_media.save()
+            else:
+                user_media = UserMedia(user=user, media=media, is_watching=op)
+                user_media.save()
+            re['msg'] = 0
+        else:
+            re['msg'] = ERR_NOT_LOGGED_IN
+    else:
+        re['msg'] = ERR_REQUEST_METHOD_WRONG
+    return HttpResponse(json.dumps(re))
+
+
+def set_to_be_watched(request):
+    re = {}
+    if request.method == 'POST':
+        if is_logged_in(request):
+            user = get_cur_user(request)
+            m_id = request.POST['m_id']
+            op = int(request.POST['op'])
+            media = Media.objects.get(m_id=m_id)
+            if UserMedia.objects.filter(user=user, media=media):
+                user_media = UserMedia.objects.get(user=user, media=media)
+                user_media.is_to_be_watched = op
+                user_media.save()
+            else:
+                user_media = UserMedia(user=user, media=media, is_to_be_watched=op)
+                user_media.save()
+            re['msg'] = 0
+        else:
+            re['msg'] = ERR_NOT_LOGGED_IN
+    else:
+        re['msg'] = ERR_REQUEST_METHOD_WRONG
+    return HttpResponse(json.dumps(re))
+
+
+def set_favourite(request):
+    re = {}
+    if request.method == 'POST':
+        if is_logged_in(request):
+            user = get_cur_user(request)
+            m_id = request.POST['m_id']
+            op = int(request.POST['op'])
+            media = Media.objects.get(m_id=m_id)
+            if UserMedia.objects.filter(user=user, media=media):
+                user_media = UserMedia.objects.get(user=user, media=media)
+                user_media.is_in_collection = op
+                user_media.save()
+            else:
+                user_media = UserMedia(user=user, media=media, is_in_collection=op)
+                user_media.save()
+            re['msg'] = 0
+        else:
+            re['msg'] = ERR_NOT_LOGGED_IN
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))

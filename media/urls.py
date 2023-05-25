@@ -7,9 +7,8 @@ urlpatterns = [
     path("delete/", delete_media),
     path("query_single/", query_single_media),
     path("video_home/", media_home),
-    #path("book_home/", book_home),
-
-    path("like/", query_single_media),
-
-
+    path("set_watched/", set_watched),
+    path("set_watching/", set_watching),
+    path("set_to_be_watched/", set_to_be_watched),
+    path("set_favourite/", set_favourite),
 ]
