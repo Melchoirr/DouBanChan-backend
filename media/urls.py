@@ -13,3 +13,5 @@ urlpatterns = [
     path("set_favourite/", set_favourite),
     path("comment_media/", comment_media),
 ]
+
+#the following
