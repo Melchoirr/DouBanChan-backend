@@ -1,4 +1,22 @@
 # Interfaces
+```
+group = [
+    chat = [
+        tiezi = [
+            text(1)
+            text
+                text
+                text
+                ...
+            ...
+        ]
+        ...
+    ]
+    ...
+]
+```
+## base
+### 
 ## user
 ### register
 ```
@@ -18,6 +36,10 @@ url:    /user/logout
 param:  
 return: msg
 ```
+### 更改头像
+
+### query single user
+
 ## media
 ### create media
 ```
@@ -37,6 +59,16 @@ url:    /media/query_single
 param:  m_id
 return: msg media text_by_time text_by_like
 ```
+### like
+
+### dislike
+
+### 想看
+
+### 在看
+
+### 看过
+
 ## chat
 ### create chat
 ```
@@ -56,6 +88,10 @@ url:    /chat/query_single
 param:  c_id
 return: msg chat
 ```
+### 加入话题
+
+### 退出话题
+
 ## group
 ### create group
 ```
@@ -75,6 +111,16 @@ url:    /media/query_single
 param:  g_id
 return: msg group
 ```
+### 添加话题
+
+### 加入小组
+
+### 退出小组
+
+### 申请成为管理员
+
+### 更改头像
+
 ## picture
 ### upload single picture
 ```
@@ -82,3 +128,14 @@ url:    /picture/upload
 param:  p_content
 return: msg picture
 ```
+## text
+### 发评论
+
+### 删评论
+
+### 点赞评论
+
+### 点踩评论
+
+## 帖子
+### query single 帖子
