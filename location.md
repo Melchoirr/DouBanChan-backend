@@ -14,3 +14,8 @@ group = [
     ...
 ]
 ```
+```
+text -> media
+text -> post -> chat -> group
+text -> text
+```

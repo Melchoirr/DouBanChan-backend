@@ -94,6 +94,7 @@ class Group(models.Model):
     g_create_time = models.DateTimeField(auto_now=True)
     g_last_modify_time = models.DateTimeField(auto_now=True)
     g_users_num = models.IntegerField(default=0)
+    g_tag = models.CharField(max_length=255, default='')
 
     g_medias = models.ManyToManyField(Media, related_name='m_groups', through='MediaGroup')
     g_users = models.ManyToManyField('User', related_name='u_groups', through='UserGroup')
@@ -109,7 +110,8 @@ class Group(models.Model):
             'g_description': self.g_description,
             'g_create_time': self.g_create_time.__str__(),
             'g_last_modify_time': self.g_last_modify_time.__str__(),
-            'g_users_num': self.g_users_num
+            'g_users_num': self.g_users_num,
+            'g_tag': self.g_tag
         }
         if self.g_profile_photo is not None:
             re['g_profile_photo'] = self.g_profile_photo.p_content.url
@@ -157,14 +159,19 @@ class Text(models.Model):
     t_id = models.AutoField(primary_key=True)
     t_type = models.IntegerField()  # 1 -> 长评  2 -> 帖子  3 -> 回复
     t_user = models.ForeignKey('User', models.DO_NOTHING, default=None)
-    t_media = models.ForeignKey('Media', models.DO_NOTHING, default=None)
     t_rate = models.FloatField(default=None)
     t_like = models.IntegerField(default=0)
     t_dislike = models.IntegerField(default=0)
     t_description = models.TextField(default='')
     t_topic = models.CharField(max_length=255, default='')
-    t_father = models.ForeignKey('self', models.DO_NOTHING, default=None)
     t_create_time = models.DateTimeField(auto_now=True)
+    # text -> media                     1
+    t_media = models.ForeignKey('Media', models.DO_NOTHING, default=None, blank=True, null=True)
+    # text -> post -> chat -> group     2
+    t_text = models.ForeignKey('self', models.DO_NOTHING, default=None, blank=True, null=True)
+    t_floor = models.IntegerField(default=0, blank=True, null=True)
+    # text -> text                      3
+    t_post = models.ForeignKey('Post', models.DO_NOTHING, default=None, blank=True, null=True)
 
     class Meta:
         managed = True
@@ -181,7 +188,6 @@ class Text(models.Model):
             't_dislike': self.t_dislike,
             't_description': self.t_description,
             't_topic': self.t_topic,
-            't_father': self.t_father.t_id,
             't_create_time': self.t_create_time.__str__()
         }
 
@@ -212,6 +218,29 @@ class User(models.Model):
         else:
             re['u_profile_photo'] = ''
         return re
+
+
+class Post(models.Model):
+    p_id = models.AutoField(primary_key=True)
+    p_title = models.CharField(max_length=255, default='')
+    p_like = models.IntegerField(default=0)
+    p_dislike = models.IntegerField(default=0)
+    p_create_time = models.DateTimeField(auto_now=True)
+    p_chat = models.ForeignKey('Chat', models.DO_NOTHING)
+    p_first_floor_text = models.ForeignKey('Text', models.DO_NOTHING)
+
+    class Meta:
+        managed = True
+        db_table = 'Post'
+
+    def to_dict(self):
+        return {
+            'p_id': self.p_id,
+            'p_title': self.p_title,
+            'p_like': self.p_like,
+            'p_dislike': self.p_dislike,
+            'p_create_time': self.p_create_time.__str__()
+        }
 
 
 class UserText(models.Model):
