@@ -23,7 +23,7 @@ def register(request):
             user = User(u_name=username, u_password=password, u_profile_photo=default_profile_photo, u_email='')
             user.save()
             re['msg'] = 0
-            re['user'] = user.to_dict()
+            re['user'] = user.to_dict()  # 不必要
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
@@ -49,6 +49,7 @@ def login(request):
             else:
                 re['msg'] = 0
                 request.session[CUR_USER_ID] = user.u_id
+                re['user'] = user.to_dict()
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
@@ -128,26 +129,3 @@ def upload_profile(request):
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
 
-
-def get_user_page(request):
-    re = {}
-    if request.method == 'POST':
-        u_id = request.session[CUR_USER_ID]
-        user = User.objects.get(u_id=u_id)
-        re['user'] = user.to_dict()
-        re['msg'] = 0
-        return HttpResponse(json.dumps(re))
-    re['msg'] = 1
-    return HttpResponse(json.dumps(re))
-
-
-def get_user_brief(request):
-    re = {}
-    if request.method == 'POST':
-        u_id = request.session[CUR_USER_ID]
-        user = User.objects.get(u_id=u_id)
-        re['user'] = user.to_dict()
-        re['msg'] = 0
-        return HttpResponse(json.dumps(re))
-    re['msg'] = 1
-    return HttpResponse(json.dumps(re))

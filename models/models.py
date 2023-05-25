@@ -63,7 +63,7 @@ class Chat(models.Model):
     c_father_group = models.ForeignKey('Group', models.DO_NOTHING, default=None)
     c_users_num = models.IntegerField(default=0)
 
-    c_medias = models.ManyToManyField(Media, related_name='m_chats', through='MediaChat')
+    c_medias = models.ManyToManyField(Media, related_name='m_chats', through='MediaChat')  # 话题和作品的关系
     c_users = models.ManyToManyField('User', related_name='u_chats', through='UserChat')
 
     class Meta:
