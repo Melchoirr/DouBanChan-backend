@@ -12,3 +12,5 @@ urlpatterns = [
     path("set_to_be_watched/", set_to_be_watched),
     path("set_favourite/", set_favourite),
 ]
+
+#the following
