@@ -1,5 +1,7 @@
 from django.db import models
 
+from DouBanChan_Backend import settings
+
 
 class Media(models.Model):
     # public
@@ -47,9 +49,9 @@ class Media(models.Model):
             'm_characters': self.m_characters,
         }
         if self.m_profile_photo is not None:
-            re['m_profile_photo'] = self.m_profile_photo.p_content.url
+            re['m_profile_photo'] = settings.ROOT_URL + self.m_profile_photo.p_content.url
         else:
-            re['m_profile_photo'] = ''
+            re['m_profile_photo'] = settings.ROOT_URL
         return re
 
 
@@ -58,8 +60,8 @@ class Chat(models.Model):
     c_name = models.CharField(max_length=255)
     c_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='m_profile_photo', default=None, null=True)
     c_description = models.CharField(max_length=255, default='')
-    c_create_time = models.DateTimeField(auto_now=True)
-    c_last_modify_time = models.DateTimeField(auto_now=True)
+    c_create_time = models.DateTimeField(auto_now_add=True)
+    c_last_modify_time = models.DateTimeField(auto_now_add=True)
     c_father_group = models.ForeignKey('Group', models.DO_NOTHING, default=None)
     c_users_num = models.IntegerField(default=0)
 
@@ -91,8 +93,8 @@ class Group(models.Model):
     g_name = models.CharField(max_length=255)
     g_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='g_profile_photo', default=None, null=True)
     g_description = models.CharField(max_length=255, default='')
-    g_create_time = models.DateTimeField(auto_now=True)
-    g_last_modify_time = models.DateTimeField(auto_now=True)
+    g_create_time = models.DateTimeField(auto_now_add=True)
+    g_last_modify_time = models.DateTimeField(auto_now_add=True)
     g_users_num = models.IntegerField(default=0)
     g_tag = models.CharField(max_length=255, default='')
 
@@ -132,7 +134,7 @@ class Picture(models.Model):
     def to_dict(self):
         return {
             'p_id': self.p_id,
-            'p_content': self.p_content.url,
+            'p_content': settings.ROOT_URL + self.p_content.url,
         }
 
 
@@ -164,7 +166,7 @@ class Text(models.Model):
     t_dislike = models.IntegerField(default=0)
     t_description = models.TextField(default='')
     t_topic = models.CharField(max_length=255, default='')
-    t_create_time = models.DateTimeField(auto_now=True)
+    t_create_time = models.DateTimeField(auto_now_add=True)
     # text -> media                     1
     t_media = models.ForeignKey('Media', models.DO_NOTHING, default=None, blank=True, null=True)
     # text -> post -> chat -> group     2
@@ -181,8 +183,8 @@ class Text(models.Model):
         return {
             't_id': self.t_id,
             't_type': self.t_type,
-            't_user': self.t_user.u_id,
-            't_media': self.t_media.m_id,
+            't_user': self.t_user.to_dict(),
+            't_media': self.t_media.to_dict(),  # 不仅要返回id（可以构成新的url请求），还要返回全部信息以便展示
             't_rate': self.t_rate,
             't_like': self.t_like,
             't_dislike': self.t_dislike,
@@ -214,7 +216,7 @@ class User(models.Model):
             'u_email': self.u_email.__str__()
         }
         if self.u_profile_photo is not None:
-            re['u_profile_photo'] = self.u_profile_photo.p_content.url
+            re['u_profile_photo'] = settings.ROOT_URL + self.u_profile_photo.p_content.url
         else:
             re['u_profile_photo'] = ''
         return re
@@ -222,10 +224,11 @@ class User(models.Model):
 
 class Post(models.Model):
     p_id = models.AutoField(primary_key=True)
+    p_user = models.ForeignKey('User', models.DO_NOTHING, default=None)
     p_title = models.CharField(max_length=255, default='')
     p_like = models.IntegerField(default=0)
     p_dislike = models.IntegerField(default=0)
-    p_create_time = models.DateTimeField(auto_now=True)
+    p_create_time = models.DateTimeField(auto_now_add=True)
     p_chat = models.ForeignKey('Chat', models.DO_NOTHING)
     p_first_floor_text = models.ForeignKey('Text', models.DO_NOTHING)
 
@@ -236,6 +239,7 @@ class Post(models.Model):
     def to_dict(self):
         return {
             'p_id': self.p_id,
+            'p_user': self.p_user.to_dict(),
             'p_title': self.p_title,
             'p_like': self.p_like,
             'p_dislike': self.p_dislike,
@@ -271,7 +275,7 @@ class UserGroup(models.Model):
     user = models.ForeignKey(User, models.DO_NOTHING)
     group = models.ForeignKey(Group, models.DO_NOTHING)
     is_admin = models.IntegerField(default=0)
-    join_time = models.DateTimeField(auto_now=True)
+    join_time = models.DateTimeField(auto_now_add=True)
     user_heat = models.IntegerField(default=0)
 
     class Meta:
@@ -283,7 +287,7 @@ class UserChat(models.Model):
     user = models.ForeignKey(User, models.DO_NOTHING)
     chat = models.ForeignKey(Chat, models.DO_NOTHING)
     is_admin = models.IntegerField(default=0)
-    join_time = models.DateTimeField(auto_now=True)
+    join_time = models.DateTimeField(auto_now_add=True)
     user_heat = models.IntegerField(default=0)
 
     class Meta:
