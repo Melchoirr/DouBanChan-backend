@@ -1,10 +1,12 @@
+import json
+
 from django.http import HttpResponse
 
 from models.models import Picture
 from tools.imports import *
 
 
-def upload(request):
+def upload(request):  # ERR?
     re = {}
     if request.method == 'POST':
         p_content = request.FILES['p_content']

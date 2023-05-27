@@ -23,7 +23,7 @@ def register(request):
             user = User(u_name=username, u_password=password, u_profile_photo=default_profile_photo, u_email='')
             user.save()
             re['msg'] = 0
-            re['user'] = user.to_dict()  # 不必要
+            re['user'] = user.to_dict()
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
@@ -55,7 +55,7 @@ def login(request):
     return HttpResponse(json.dumps(re))
 
 
-def logout(request):
+def logout(request):  # 弃用，前端自己把u_id改成0
     """
     /user/logout POST
     user register
@@ -77,11 +77,19 @@ def logout(request):
 def query_single_user(request):
     re = {}
     if request.method == 'POST':
-        u_id = request.session['u_id']
+        u_id = request.POST['u_id']
         if User.objects.filter(u_id=u_id):
             user = User.objects.get(u_id=u_id)
             re['msg'] = 0
             re['user'] = user.to_dict()
+            collection = []
+            for media in user.u_medias.all():
+                user_media = UserMedia.objects.get(media=media, user=user)
+                if user_media.is_in_collection == 1:
+                    collection.append(media.to_dict())
+            re['collection'] = collection
+            re['groups'] = [group.to_dict() for group in user.u_groups.all()]
+            re['chat'] = [chat.to_dict() for chat in user.u_chats.all()]
         else:
             re['msg'] = ERR_USER_NOT_EXISTS
     else:
@@ -89,11 +97,31 @@ def query_single_user(request):
     return HttpResponse(json.dumps(re))
 
 
-def change_password(request):
-    pass
+def update_password(request):
+    re = {}
+    if request.method == 'POST':
+        user = User.objects.get(u_id=request.POST['u_id'])
+        user.u_password = request.POST['new_password']
+        user.save()
+        re['msg'] = 0
+    else:
+        re['msg'] = ERR_REQUEST_METHOD_WRONG
+    return HttpResponse(json.dumps(re))
 
 
-def upload_profile(request):
+def update_email(request):
+    re = {}
+    if request.method == 'POST':
+        user = User.objects.get(u_id=request.POST['u_id'])
+        user.u_email = request.POST['new_email']
+        user.save()
+        re['msg'] = 0
+    else:
+        re['msg'] = ERR_REQUEST_METHOD_WRONG
+    return HttpResponse(json.dumps(re))
+
+
+def update_profile(request):
     """
 
     :param request:
@@ -105,23 +133,7 @@ def upload_profile(request):
         p_content = request.FILES['p_content']
         picture = Picture(p_content=p_content)
         picture.save()
-        # with open(picture.p_content.path, 'rb') as f:
-        #     image_data = f.read()
-        # image = Image.open(BytesIO(image_data))
-        #
-        # # 定义目标尺寸
-        # target_width = 800
-        # target_height = 600
-        #
-        # # 调整尺寸
-        # resized_image = image.resize((target_width, target_height), Image.ANTIALIAS)
-        # image_content = resized_image.tobytes()
-        #
-        # # 创建ContentFile并保存到ImageField
-        # picture.p_content.save(picture.p_content.url, ContentFile(image_content))
-        # find user
-        # update this user's profile
-        user = User.objects.get(u_id=request.session[CUR_USER_ID])
+        user = User.objects.get(u_id=request.POST['u_id'])
         user.u_profile_photo = picture
         user.save()
         re['msg'] = 0

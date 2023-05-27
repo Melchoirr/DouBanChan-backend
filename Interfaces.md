@@ -55,15 +55,33 @@ url:    /user/logout
 param:  
 return: msg
 ```
+### update user
+
+```
+```
+
 ### change profile photo
 
-### _query single user_
+```
+url:    /user/upload_profile
+param:  u_id p_content
+return: msg
+```
+
+### query single user
 ```
 url:    /user/query_single
 param:  u_id
 return: msg user
 ```
+### user home
+
+```
+
+```
+
 ## media
+
 ### create media
 ```
 url:    /media/create
@@ -80,9 +98,15 @@ return: msg
 ```
 url:    /media/query_single
 param:  m_id
-return: msg media text_by_time text_by_like
+return: msg media text_by_time text_by_like m_chats
 ```
+### media home
+
+```
+```
+
 ### set to be watched
+
 ```
 url:    /media/set_to_be_watched
 param:  m_id op
@@ -106,11 +130,32 @@ url:    /media/set_favourite
 param:  m_id op
 return: msg
 ```
+### comment_media
+
+```
+```
+
+### rate_media
+
+```
+```
+
+### like_comment
+
+```
+```
+
+### dislike_comment
+
+```
+```
+
 ## chat
+
 ### create chat
 ```
 url:    /chat/create
-param:  c_name c_description
+param:  c_name c_description u_id [c_profile_photo group]
 return: msg chat
 ```
 ### delete chat
@@ -119,7 +164,13 @@ url:    /chat/create
 param:  c_id
 return: msg
 ```
+### chat home
+
+```
+```
+
 ### query single chat
+
 ```
 url:    /chat/query_single
 param:  c_id
@@ -139,9 +190,28 @@ return: msg
 ```
 ### add post (发帖)
 
+```
+```
+
 ### reply post (回帖)
 
+```
+```
+
+### like post
+
+```
+```
+
+### dislike post
+
+```
+```
+
 ### delete post
+
+```
+```
 
 ## group
 ### create group
@@ -150,32 +220,75 @@ url:    /group/create
 param:  g_name g_description
 return: msg group
 ```
+### update group
+
+```
+没有改变的键也要按原样发送过来
+```
+
 ### delete group
+
 ```
 url:    /group/delete
 param:  g_id
 return: msg
 ```
+### group home
+
+```
+```
+
 ### query single group
+
 ```
 url:    /media/query_single
 param:  g_id
 return: msg group
 ```
+### add post (发帖)
+
+```
+```
+
 ### add chat
 
-### delete chat
+```
+```
 
 ### join group
 
+```
+```
+
 ### quit group
 
-### apply to be admin of group
+```
+```
 
-### change group profile photo
+### set essence
+
+```
+```
+
+### set top
+
+```
+```
+
+### apply admin
+
+```
+```
+
+### grant admin
+
+```
+```
+
+### 
 
 ## picture
-### upload single picture
+### upload single picture 
 ```
 url:    /picture/upload
 param:  p_content

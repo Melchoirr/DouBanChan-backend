@@ -5,7 +5,8 @@ urlpatterns = [
     path("register/", register),
     path("login/", login),
     path("logout/", logout),
-    path("upload_profile/", upload_profile),
-    path("chage_password", change_password),
+    path("update_profile/", update_profile),
+    path("update_password", update_password),
+    path("update_email", update_email),
     path("query_single/", query_single_user)
 ]

@@ -10,14 +10,86 @@ def create_group(request):
     """
     re = {}
     if request.method == 'POST':
-        g_name = request.POST['g_name']
-        g_description = request.POST['g_description']
-        default_profile_photo = get_picture_by_id(DEFAULT_PROFILE_PHOTO_ID)
-        new_group = Group(g_name=g_name, g_description=g_description, g_profile_photo=default_profile_photo,
-                          g_create_time=timezone.now(), g_last_modify_time=timezone.now())
-        new_group.save()
+        group = Group(g_name=request.POST['g_name'],
+                      g_description=request.POST['g_description'],
+                      g_profile_photo=get_picture_by_id(DEFAULT_PROFILE_PHOTO_ID),
+                      g_nickname='人'
+                      )
+        group.save()
         re['msg'] = 0
-        re['group'] = new_group.to_dict()
+        re['group'] = group.to_dict()
+    else:
+        re['msg'] = ERR_REQUEST_METHOD_WRONG
+    return HttpResponse(json.dumps(re))
+
+
+def update_group_profile(request):
+    re = {}
+    if request.method == 'POST':
+        user = get_cur_user(request)
+        group = get_group_by_id(request.POST['g_id'])
+        user_group = UserGroup.objects.get(user=user, group=group)
+        if user_group is not None and user_group.is_admin == 1:  # 这个检查方式ok吗？
+            group.g_profile_photo = request.FILES('g_profile_photo')
+            group.save()
+            re['msg'] = 0
+            # 前端进行假修改，无需返回
+        else:
+            re['msg'] = ERR_NOT_GROUP_ADMIN
+    else:
+        re['msg'] = ERR_REQUEST_METHOD_WRONG
+    return HttpResponse(json.dumps(re))
+
+
+def update_group_description(request):
+    re = {}
+    if request.method == 'POST':
+        user = get_cur_user(request)
+        group = get_group_by_id(request.POST['g_id'])
+        user_group = UserGroup.objects.get(user=user, group=group)
+        if user_group is not None and user_group.is_admin == 1:  # 这个检查方式ok吗？
+            group.g_description = request.POST('g_description')
+            group.save()
+            re['msg'] = 0
+            # 前端进行假修改，无需返回
+        else:
+            re['msg'] = ERR_NOT_GROUP_ADMIN
+    else:
+        re['msg'] = ERR_REQUEST_METHOD_WRONG
+    return HttpResponse(json.dumps(re))
+
+
+def update_group_tag(request):
+    re = {}
+    if request.method == 'POST':
+        user = get_cur_user(request)
+        group = get_group_by_id(request.POST['g_id'])
+        user_group = UserGroup.objects.get(user=user, group=group)
+        if user_group is not None and user_group.is_admin == 1:  # 这个检查方式ok吗？
+            group.g_profile_photo = request.FILES('g_tag')
+            group.save()
+            re['msg'] = 0
+            # 前端进行假修改，无需返回
+        else:
+            re['msg'] = ERR_NOT_GROUP_ADMIN
+    else:
+        re['msg'] = ERR_REQUEST_METHOD_WRONG
+    return HttpResponse(json.dumps(re))
+
+
+def update_group_nickname(request):
+    re = {}
+    if request.method == 'POST':
+        user = get_cur_user(request)
+        group = get_group_by_id(request.POST['g_id'])
+        user_group = UserGroup.objects.get(user=user, group=group)
+        if user_group is not None and user_group.is_admin == 1:  # 这个检查方式ok吗？
+            group.g_profile_photo = request.FILES('g_nickname')
+            group.save()
+            re['msg'] = 0
+            # 前端进行假修改，无需返回
+        else:
+            re['msg'] = ERR_NOT_GROUP_ADMIN
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
@@ -44,7 +116,7 @@ def delete_group(request):
     return HttpResponse(json.dumps(re))
 
 
-def query_single_group(request):
+def query_single_group(request):  # 给管理员单独页面：处理请求
     """
     /media/query_single POST
     query single group
@@ -63,3 +135,48 @@ def query_single_group(request):
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
+
+
+def group_home(request):
+    # 按照tag返回
+    return
+
+
+def add_chat(request):  # 同
+    return
+
+
+def join_group(request):  # 审核
+    return
+
+
+def quit_group(request):  # 直接退出
+    return
+
+
+def set_essence(request):
+    return
+
+
+def set_top(request):
+    return
+
+
+def apply_admin(request):
+    return
+
+
+def grant_member(request):
+    # if agree grant
+    # if not delete
+    #     send notification?
+    return
+
+
+def grant_admin(request):
+    # if agree grant
+    # if not delete
+    #     send notification?
+    return
+
+

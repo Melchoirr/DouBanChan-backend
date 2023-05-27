@@ -13,6 +13,8 @@ ERR_NOT_LOGGED_IN = 'ERR_NOT_LOGGED_IN'
 ERR_OTHER = 'ERR_OTHER'
 ERR_ALREADY_JOINED = 'ERR_ALREADY_JOINED'
 ERR_NOT_JOINED = 'ERR_NOT_JOINED'
+ERR_NOT_POSSESSION = 'ERR_NOT_POSSESSION'
+ERR_NOT_GROUP_ADMIN = 'ERR_NOT_GROUP_ADMIN'
 
 CUR_USER_ID = 'cur_user_id'
 DEFAULT_PROFILE_PHOTO_ID = 4  # make this right before running !!!
@@ -49,6 +51,10 @@ def get_text_by_id(i):
 
 def get_report_by_id(i):
     return Report.objects.get(r_id=i)
+
+
+def get_post_by_id(i):
+    return Post.objects.get(p_id=i)
 
 
 def basic_check(request):
