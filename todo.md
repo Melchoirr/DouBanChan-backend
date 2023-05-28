@@ -81,6 +81,7 @@
   * 一楼和post的双向引用
 * 检查post是否点赞，只能在post详情页操作或者显示
 * user-user键？
+* query single 不完备
 
 
 

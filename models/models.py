@@ -62,7 +62,7 @@ class Chat(models.Model):
     c_description = models.CharField(max_length=255, default='')
     c_create_time = models.DateTimeField(auto_now_add=True)
     c_last_modify_time = models.DateTimeField(auto_now_add=True)
-    c_father_group = models.ForeignKey('Group', models.DO_NOTHING, default=None)
+    c_father_group = models.ForeignKey('Group', models.CASCADE, default=None)
     c_heat = models.IntegerField(default=0)
     c_tag = models.CharField(max_length=255, default='')
 
@@ -176,9 +176,9 @@ class Text(models.Model):
     t_media = models.ForeignKey('Media', models.CASCADE, default=None, blank=True, null=True)
     # text -> post -> chat -> group     2
     t_text = models.ForeignKey('self', models.CASCADE, default=None, blank=True, null=True)
-    t_floor = models.IntegerField(default=0, blank=True, null=True)
     # text -> text                      3
     t_post = models.ForeignKey('Post', on_delete=models.CASCADE, default=None, blank=True, null=True)
+    t_floor = models.IntegerField(default=0, blank=True, null=True)
 
     class Meta:
         managed = True
@@ -194,11 +194,14 @@ class Text(models.Model):
             't_like': self.t_like,
             't_dislike': self.t_dislike,
             't_description': self.t_description,
-
-            't_create_time': self.t_create_time.__str__()
+            't_create_time': self.t_create_time.__str__(),
         }
         if self.t_media is not None:
-            re['t_media'] = self.t_media.to_dict()
+            re['t_media'] = self.t_media.to_dict()  # Bu
+        if self.t_floor != 0:
+            re['t_floor'] = self.t_floor
+            re['t_post'] = self.t_post.to_dict()
+
         return re
 
 
@@ -234,15 +237,15 @@ class User(models.Model):
 
 class Post(models.Model):
     p_id = models.AutoField(primary_key=True)
-    p_user = models.ForeignKey('User', models.DO_NOTHING, default=None)
+    p_user = models.ForeignKey('User', models.CASCADE, default=None)
     p_title = models.CharField(max_length=255, default='')
     p_like = models.IntegerField(default=0)
     p_dislike = models.IntegerField(default=0)
     p_create_time = models.DateTimeField(auto_now_add=True)
-    p_chat = models.ForeignKey('Chat', models.DO_NOTHING, default=None, null=True)
-    p_group = models.ForeignKey('Group', models.DO_NOTHING, default=None, null=True)
-    p_is_essence = models.IntegerField(default=0)
-    p_is_top = models.IntegerField(default=0)
+    p_chat = models.ForeignKey('Chat', models.CASCADE, default=None, null=True)
+    p_group = models.ForeignKey('Group', models.CASCADE, default=None, null=True)
+    p_is_essence = models.IntegerField(default=0)  # key
+    p_is_top = models.IntegerField(default=0)  # key
     p_floor_num = models.IntegerField(default=0)
 
     class Meta:
@@ -259,7 +262,9 @@ class Post(models.Model):
             'p_chat': self.p_chat.to_dict(),
             'p_first_floor_text': Text.objects.get(t_post=self, t_floor=1).to_dict(),
             'p_create_time': self.p_create_time.__str__(),
-            'p_floor_num': self.p_floor_num
+            'p_floor_num': self.p_floor_num,
+            'p_is_essence': self.p_is_essence,
+            'p_is_top': self.p_is_top,
         }
         if self.p_group is not None:
             re['p_group'] = self.p_group

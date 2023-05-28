@@ -80,7 +80,7 @@ def chat_home(request):
     re = {}
     if request.method != 'POST':
         heat_list = []
-        heat_set = list(Chat.objects.all().order_by('-c_heat'))
+        heat_set = list(Chat.objects.all().order_by('-c_heat'))[: 10]
         for each in heat_set:
             heat_list.append(each.to_dict())
         re['chat_heat_list'] = heat_list

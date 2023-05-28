@@ -116,7 +116,7 @@ def delete_group(request):
     return HttpResponse(json.dumps(re))
 
 
-def query_single_group(request):  # 给管理员单独页面：处理请求
+def query_single_group(request):  # post热榜，时间榜，精华帖，给管理员单独页面：处理请求
     """
     /media/query_single POST
     query single group
@@ -142,10 +142,6 @@ def group_home(request):
     return
 
 
-def add_chat(request):  # 同
-    return
-
-
 def join_group(request):  # 审核
     return
 
@@ -155,14 +151,42 @@ def quit_group(request):  # 直接退出
 
 
 def set_essence(request):
-    return
+    re = {}
+    if request.method == 'POST':
+        user = get_cur_user(request)
+        group = get_group_by_id(request.POST['g_id'])
+        user_group = UserGroup.objects.get(user=user, group=group)
+        if user_group is not None and user_group.is_admin == 1:  # 这个检查方式ok吗？
+            post = get_post_by_id(request.POST['p_id'])
+            post.p_is_essence = 1
+            post.save()
+            re['msg'] = 0
+        else:
+            re['msg'] = ERR_NOT_GROUP_ADMIN
+    else:
+        re['msg'] = ERR_REQUEST_METHOD_WRONG
+    return HttpResponse(json.dumps(re))
 
 
-def set_top(request):
-    return
+def floor_set_top(request):  # 只修改post详情页返回顺序
+    re = {}
+    if request.method == 'POST':
+        user = get_cur_user(request)
+        group = get_group_by_id(request.POST['g_id'])
+        user_group = UserGroup.objects.get(user=user, group=group)
+        if user_group is not None and user_group.is_admin == 1:  # 这个检查方式ok吗？
+            post = get_post_by_id(request.POST['p_id'])
+            post.p_is_top = 1
+            post.save()
+            re['msg'] = 0
+        else:
+            re['msg'] = ERR_NOT_GROUP_ADMIN
+    else:
+        re['msg'] = ERR_REQUEST_METHOD_WRONG
+    return HttpResponse(json.dumps(re))
 
 
-def apply_admin(request):
+def apply_admin(request):  # 和加入小组类似
     return
 
 
@@ -178,5 +202,3 @@ def grant_admin(request):
     # if not delete
     #     send notification?
     return
-
-
