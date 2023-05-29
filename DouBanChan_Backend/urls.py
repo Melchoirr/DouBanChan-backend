@@ -27,4 +27,6 @@ urlpatterns = [
     path('chat/', include('chat.urls')),
     path("base/", include('base.urls')),
     path("picture/", include('picture.urls')),
+    path("text/", include('text.urls')),
+    path("post/", include('post.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

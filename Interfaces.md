@@ -295,24 +295,50 @@ param:  p_content
 return: msg picture
 ```
 ## text
-
 ### query single text
-
+```
+url:    /text/query_single
+param:  t_id
+return: msg replies_sorted_by_time replies_sorted_by_like
+```
 ### reply text (回复)
-
+```
+url:    /text/reply
+param:  t_description t_father_text_id
+return: msg text
+```
 ### delete text
-
+```
+url:    /text/delete
+param:  t_id
+return: msg
+```
 ### like text
-
+```
+url:    /text/like
+param:  t_id
+return: msg
+```
 ### dislike text
-
+```
+url:    /text/dislike
+param:  t_id
+return: msg
+```
 ## post
 ### query single post
-
+```
+url:    /post/query_single
+param:  p_id
+return: msg post text_by_floor
+```
 ### like post
 
 ### dislike post
 
 ### add text
-
-### delete text
+```
+url:    /post/add_text
+param:  t_description t_topic t_post_id t_floor
+return: msg text
+```

@@ -206,7 +206,6 @@ def set_to_be_watched(request):
     return HttpResponse(json.dumps(re))
 
 
-
 def set_favourite(request):
     re = {}
     if basic_check(request):

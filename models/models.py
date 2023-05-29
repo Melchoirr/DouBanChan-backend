@@ -166,7 +166,7 @@ class Text(models.Model):
     t_id = models.AutoField(primary_key=True)
     t_type = models.IntegerField()  # 1 -> 长评  2 -> 帖子  3 -> 回复
     t_user = models.ForeignKey('User', models.DO_NOTHING, default=None)
-    t_rate = models.FloatField(default=None)
+    t_rate = models.FloatField(default=0)
     t_like = models.IntegerField(default=0)
     t_dislike = models.IntegerField(default=0)
     t_description = models.TextField(default='')
@@ -175,10 +175,10 @@ class Text(models.Model):
     # text -> media                     1
     t_media = models.ForeignKey('Media', models.CASCADE, default=None, blank=True, null=True)
     # text -> post -> chat -> group     2
-    t_text = models.ForeignKey('self', models.CASCADE, default=None, blank=True, null=True)
-    # text -> text                      3
     t_post = models.ForeignKey('Post', on_delete=models.CASCADE, default=None, blank=True, null=True)
     t_floor = models.IntegerField(default=0, blank=True, null=True)
+    # text -> text                      3
+    t_text = models.ForeignKey('self', models.CASCADE, default=None, blank=True, null=True)
 
     class Meta:
         managed = True
@@ -203,6 +203,14 @@ class Text(models.Model):
             re['t_post'] = self.t_post.to_dict()
 
         return re
+
+    def like(self):
+        self.t_like += 1
+        self.save()
+
+    def dislike(self):
+        self.t_dislike += 1
+        self.save()
 
 
 class User(models.Model):
