@@ -3,6 +3,7 @@ import json
 from models.models import User, Picture
 from tools.tools import *
 from tools.imports import *
+from sender.views import *
 
 
 def register(request):
@@ -16,12 +17,16 @@ def register(request):
     if request.method == 'POST':
         username = request.POST['username']
         password = request.POST['password']
+        email = request.POST['email']
         if User.objects.filter(u_name=username):
             re['msg'] = ERR_USERNAME_EXISTS
         else:
             default_profile_photo = get_picture_by_id(DEFAULT_PROFILE_PHOTO_ID)
             user = User(u_name=username, u_password=password, u_profile_photo=default_profile_photo, u_email='')
             user.save()
+            ###############################################
+            send_email(email, user.u_id)
+            ###############################################
             re['msg'] = 0
             re['user'] = user.to_dict()
     else:
@@ -140,4 +145,3 @@ def update_profile(request):
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
-

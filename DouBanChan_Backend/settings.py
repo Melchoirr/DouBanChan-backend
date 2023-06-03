@@ -32,6 +32,7 @@ ALLOWED_HOSTS = ['*']
 # Application definition
 
 INSTALLED_APPS = [
+    'sender',
     'post',
     'text',
     'picture',
@@ -103,7 +104,7 @@ CORS_ALLOW_HEADERS = (
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": [],
+        "DIRS": [os.path.join(BASE_DIR, 'templates')],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [
@@ -173,3 +174,11 @@ MEDIA_ROOT = os.path.join(STATIC_URL, 'images')
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+
+EMAIL_USE_SSL = True  # SSL加密方式
+EMAIL_HOST = 'smtp.126.com'  # 发送邮件的邮箱的SMTP服务器，
+EMAIL_PORT = 465  # SMTP服务器端口
+EMAIL_HOST_USER = 'mjorah7@126.com'  # 发件人
+EMAIL_HOST_PASSWORD = 'SDTVARLOKPKNEWZQ'  # 密码(这里使用的是授权码)
+EMAIL_FROM = 'mjorah7<mjorah7@126.com>'  # 邮件显示的发件人
