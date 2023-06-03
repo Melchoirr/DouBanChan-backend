@@ -147,7 +147,7 @@ class Picture(models.Model):
 class Report(models.Model):
     r_id = models.AutoField(primary_key=True)
     r_user = models.ForeignKey('User', models.DO_NOTHING, default=None)
-    r_text = models.ForeignKey('Text', models.DO_NOTHING, default='')
+    r_text = models.ForeignKey('Text', models.DO_NOTHING, default=None)
     r_details = models.TextField()
 
     class Meta:

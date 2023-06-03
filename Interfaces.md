@@ -1,4 +1,5 @@
 # Interfaces
+[toc]
 ## base
 ### query base
 ```
@@ -341,4 +342,23 @@ return: msg post text_by_floor
 url:    /post/add_text
 param:  t_description t_topic t_post_id t_floor
 return: msg text
+```
+## report
+### add report
+```
+url:    /report/add_report
+param:  t_id r_details
+return: msg report
+```
+### delete report
+```
+url:    /report/delete_report
+param:  r_id
+return: msg
+```
+### query single report
+```
+url:    /report/query_single
+param:  r_id
+return: msg report
 ```

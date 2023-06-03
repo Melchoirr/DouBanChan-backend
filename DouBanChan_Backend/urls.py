@@ -29,4 +29,5 @@ urlpatterns = [
     path("picture/", include('picture.urls')),
     path("text/", include('text.urls')),
     path("post/", include('post.urls')),
+    path("report/", include('report.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
