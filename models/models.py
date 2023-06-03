@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.db import models
 
 from DouBanChan_Backend import settings
@@ -220,7 +221,7 @@ class User(models.Model):
     u_profile_photo = models.ForeignKey(Picture, models.DO_NOTHING, db_column='u_profile_photo', default=None,
                                         null=True)
     u_email = models.EmailField(max_length=255, default='')
-
+    u_authority = models.IntegerField(default=1)  # 1 : normal 2 : admin
     u_medias = models.ManyToManyField(Media, related_name='m_users', through='UserMedia')
     u_texts = models.ManyToManyField(Text, related_name='t_users', through='UserText')
     u_posts = models.ManyToManyField('Post', related_name='p_users', through='UserPost')
@@ -276,6 +277,56 @@ class Post(models.Model):
         }
         if self.p_group is not None:
             re['p_group'] = self.p_group
+        return re
+
+
+class Apply(models.Model):  # 合并？
+    a_id = models.AutoField(primary_key=True, default=None)
+    a_user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='user')  # 可选键
+    a_admin = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='admin')
+    a_type = models.IntegerField()  # 1 : 申请加入 2 : 申请成为管理员
+    a_info = models.CharField(max_length=255)
+    # text = models.ForeignKey(Text)  # 被举报的text
+
+    class Meta:
+        managed = True
+        db_table = 'Apply'
+
+    def to_dict(self):
+        re = {
+            'a_id': self.a_id,
+            'a_user': self.a_user.to_dict(),
+            'a_type': self.a_type,
+            'a_info': self.a_info
+        }
+        return re
+
+
+class Message(models.Model):
+    m_id = models.AutoField(primary_key=True, default=None)
+    m_user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='user', default=None)
+    m_applier = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='applier', default=None)
+    m_text = models.CharField(Text, on_delete=models.DO_NOTHING, default=None)
+    m_title = models.CharField(max_length=255)
+    m_content = models.CharField(max_length=255)
+    m_type = models.IntegerField()
+
+    class Meta:
+        managed = True
+        db_table = 'Apply'
+
+    def to_dict(self):
+        re = {
+            'm_id': self.m_id,
+            'm_user': self.m_user.to_dict(),
+            'm_title': self.m_title,
+            'm_type': self.m_type,
+            'm_content':self.m_content,
+        }
+        if self.m_applier is not None:
+            re['m_applier'] = self.m_applier.to_dict()
+        if self.m_text is not None:
+            re['m_text'] = self.m_text.to_dict()
         return re
 
 

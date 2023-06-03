@@ -73,17 +73,32 @@
 * 想看，在看，看过要不要在页面标记出来？
 
 * 检查todict：有外键todict的，none的，需要特殊处理，初值尽量不要none
+
 * 单独更新信息
+
 * 只有chat需要heat，其他的都有自己的热度键
+
 * media delete comment
+
 * 所有delete还需要检查是否是系统管理员
   * 级联删除？
   * 一楼和post的双向引用
+  
 * 检查post是否点赞，只能在post详情页操作或者显示
+
 * user-user键？
+
 * query single 不完备
 
+* 不能重复的问题
 
+  * 点赞
+  * 评分
+  * 加入小组（发申请可以很多次）
+
+* is_self字段
+
+* 修改char的max_length
 
 
 
