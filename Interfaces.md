@@ -1,6 +1,133 @@
 # Interfaces
 [toc]
+Return value
+
+* media
+
+  ```
+  media = {
+              'm_id'
+              'm_name'
+              'm_type'
+              'm_rate'
+              'm_rate_num'
+              'm_genre'
+              'm_description'
+              'm_year'
+              'm_region'
+              'm_director'
+              'm_actor'
+              'm_episode_num'
+              'm_duration'
+              'm_author'
+              'm_characters'
+          }
+  ```
+
+* chat
+
+  ```
+  chat = {
+              'c_id'
+              'c_name'
+              'c_description'
+              'c_create_time'
+              'c_last_modify_time'
+              'c_heat'
+              'c_profile_photo'
+              'c_father_group'
+          }
+  ```
+
+* group
+
+  ```
+  group = {
+              'g_id'
+              'g_name'
+              'g_description'
+              'g_create_time'
+              'g_last_modify_time'
+              'g_users_num'
+              'g_tag'
+              'g_profile_photo'
+              
+          }
+  ```
+
+* picture
+
+  ```
+  picture {
+              'p_id'
+              'p_content'
+          }
+  ```
+
+* report
+
+  ```
+  report {
+              'r_id'
+              'r_user'
+              'r_text'
+              'r_details'
+          }
+  ```
+
+* text
+
+  ```
+  text = {
+              't_id'
+              't_type'
+              't_topic'
+              't_user'
+              't_rate'
+              't_like'
+              't_dislike'
+              't_description'
+              't_create_time'
+              't_media'
+              't_floor'
+              't_post'
+          }
+  ```
+
+* user
+
+  ```
+  user = {
+              'u_id'
+              'u_name'
+              'u_email'
+              'u_profile_photo'
+          }
+  ```
+
+* post
+
+  ```
+  post = {
+              'p_id'
+              'p_user'
+              'p_title'
+              'p_like'
+              'p_dislike'
+              'p_chat'
+              'p_first_floor_text'
+              'p_create_time'
+              'p_floor_num'
+              'p_is_essence'
+              'p_is_top'
+              'p_group'
+          }
+  ```
+
+  
+
 ## base
+
 ### query base
 ```
 url:    /base/query_base
