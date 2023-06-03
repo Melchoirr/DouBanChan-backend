@@ -17,5 +17,4 @@ urlpatterns = [
     path("set_essence/", set_essence),
     path("apply_admin/", apply_admin),
     path("grant_admin/", grant_admin),
-    path("grant_member/", grant_member),
 ]
