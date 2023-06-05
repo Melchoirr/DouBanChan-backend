@@ -133,7 +133,8 @@ class Group(models.Model):
 class Picture(models.Model):
     p_id = models.AutoField(primary_key=True)
     p_content = models.ImageField(upload_to='')
-    p_father_text = models.ForeignKey('Text', models.DO_NOTHING, db_column='p_father_text', default=None, null=True)
+    p_father_text = models.ForeignKey('Text', models.DO_NOTHING, db_column='p_father_text', default=None, blank=True, null=True)
+    p_media = models.ForeignKey('Media', models.DO_NOTHING, db_column='p_media', default=None, blank=True, null=True)
 
     class Meta:
         managed = True

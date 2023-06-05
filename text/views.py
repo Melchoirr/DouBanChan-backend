@@ -2,23 +2,20 @@ from tools.imports import *
 
 
 def query_single_text(request):
-    return HttpResponse(json.dumps(_query_single_text(request)))
+    t_id = request.POST['t_id']
+    return HttpResponse(json.dumps(_query_single_text(t_id)))
 
 
-def _query_single_text(request):
+def _query_single_text(t_id):
     re = {}
-    if basic_check(request):
-        t_id = request.POST['t_id']
-        text = get_text_by_id(t_id)
-        replies = list(Text.objects.filter(t_type=3).filter(t_text=text))
-        replies_sorted_by_time = sorted(replies, key=lambda x: x['t_create_time'].__str__())
-        replies_sorted_by_like = sorted(replies, key=lambda x: x['t_like'])
-        re['msg'] = 0
-        re['text'] = text.to_dict()
-        re['replies_sorted_by_time'] = replies_sorted_by_time
-        re['replies_sorted_by_like'] = replies_sorted_by_like
-    else:
-        re['msg'] = ERR_OTHER
+    text = get_text_by_id(t_id)
+    replies = list(Text.objects.filter(t_type=3).filter(t_text=text))
+    replies_sorted_by_time = sorted(replies, key=lambda x: x['t_create_time'].__str__())
+    replies_sorted_by_like = sorted(replies, key=lambda x: x['t_like'])
+    re['msg'] = 0
+    re['text'] = text.to_dict()
+    re['replies_sorted_by_time'] = replies_sorted_by_time
+    re['replies_sorted_by_like'] = replies_sorted_by_like
     return re
 
 

@@ -234,6 +234,12 @@ url:    /media/filter
 param:  m_type m_genre m_region m_year m_order
 return: msg media
 ```
+### media add preview
+```
+url:    /media/add_preview
+param:  m_id p_id
+return: msg
+```
 ### media home
 
 ```

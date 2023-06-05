@@ -25,7 +25,6 @@ def create_media(request):
         m_author = request.POST['m_author']
         m_characters = request.POST['m_characters']
         m_profile_photo = request.FILES['m_profile_photo']
-        default_profile_photo = get_picture_by_id(DEFAULT_PROFILE_PHOTO_ID)
         media = Media(m_name=m_name, m_type=m_type, m_profile_photo=m_profile_photo, m_genre=m_genre,
                       m_description=m_description, m_year=m_year, m_director=m_director, m_actor=m_actor, m_region=m_region,
                       m_episode_num=m_episode_num, m_duration=m_duration, m_author=m_author, m_characters=m_characters)
@@ -105,9 +104,16 @@ def query_single_media(request):
             re['text_by_time'].reverse()
             re['text_by_like'].reverse()
             re['m_chats'] = [x.to_dict() for x in list(media.m_chats)]
+            re['m_preview'] = get_media_preview(m_id)
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
+
+
+def get_media_preview(m_id):
+    media = get_media_by_id(m_id)
+    previews = list(Picture.objects.filter(p_media=media))
+    return [x.to_dict() for x in previews]
 
 
 def media_filter(request):
@@ -139,6 +145,20 @@ def media_filter(request):
             sorted(media, key=lambda x: x['m_rate'])
         re['msg'] = 0
         re['media'] = media
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def add_preview(request):
+    re = {}
+    if basic_check(request):
+        m_id = request.POST['m_id']
+        p_id = request.POST['p_id']
+        media = get_media_by_id(m_id)
+        picture = get_picture_by_id(p_id)
+        picture.p_media = media
+        re['msg'] = 0
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
