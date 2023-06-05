@@ -18,13 +18,13 @@ class Media(models.Model):
     m_year = models.IntegerField(default=0)
     m_region = models.CharField(max_length=255, default='')
     # movie & series
-    m_director = models.CharField(max_length=255, default='')
-    m_actor = models.CharField(max_length=255, default='')
-    m_episode_num = models.IntegerField(default=0)
-    m_duration = models.IntegerField(default=0)
+    m_director = models.CharField(max_length=255, default='', blank=True, null=True)
+    m_actor = models.CharField(max_length=255, default='', blank=True, null=True)
+    m_episode_num = models.IntegerField(default=0, blank=True, null=True)
+    m_duration = models.IntegerField(default=0, blank=True, null=True)
     # book
-    m_author = models.CharField(max_length=255, default='')
-    m_characters = models.IntegerField(default=0)
+    m_author = models.CharField(max_length=255, default='', blank=True, null=True)
+    m_characters = models.IntegerField(default=0, blank=True, null=True)
 
     class Meta:
         managed = True

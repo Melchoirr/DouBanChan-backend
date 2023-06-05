@@ -14,6 +14,7 @@ def _query_single_text(request):
         replies_sorted_by_time = sorted(replies, key=lambda x: x['t_create_time'].__str__())
         replies_sorted_by_like = sorted(replies, key=lambda x: x['t_like'])
         re['msg'] = 0
+        re['text'] = text.to_dict()
         re['replies_sorted_by_time'] = replies_sorted_by_time
         re['replies_sorted_by_like'] = replies_sorted_by_like
     else:

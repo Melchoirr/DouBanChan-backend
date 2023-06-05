@@ -228,13 +228,18 @@ url:    /media/query_single
 param:  m_id
 return: msg media text_by_time text_by_like m_chats
 ```
+### media filter
+```
+url:    /media/filter
+param:  m_type m_genre m_region m_year m_order
+return: msg media
+```
 ### media home
 
 ```
 ```
 
 ### set to be watched
-
 ```
 url:    /media/set_to_be_watched
 param:  m_id op
@@ -427,7 +432,7 @@ return: msg picture
 ```
 url:    /text/query_single
 param:  t_id
-return: msg replies_sorted_by_time replies_sorted_by_like
+return: msg text replies_sorted_by_time replies_sorted_by_like
 ```
 ### reply text (回复)
 ```

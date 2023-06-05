@@ -110,6 +110,40 @@ def query_single_media(request):
     return HttpResponse(json.dumps(re))
 
 
+def media_filter(request):
+    re = {}
+    if basic_check(request):
+        m_type = request.POST['m_type']
+        m_genre = request.POST['m_genre']
+        m_region = request.POST['m_region']
+        m_year = request.POST['m_year']
+        m_order = request.POST['m_order']
+        media = list(Media.objects.filter(
+            m_type=m_type
+        ).filter(
+            m_genre__icontains=m_genre
+        ).filter(
+            m_region__icontains=m_region
+        ).filter(
+            m_year=m_year
+        ))
+        if m_order == 1:  # 时间递减
+            sorted(media, key=lambda x: x['m_year'].__str__())
+            media.reverse()
+        if m_order == 2:  # 时间递增
+            sorted(media, key=lambda x: x['m_year'].__str__())
+        if m_order == 3:  # 评分递减
+            sorted(media, key=lambda x: x['m_rate'])
+            media.reverse()
+        if m_order == 4:  # 评分递增
+            sorted(media, key=lambda x: x['m_rate'])
+        re['msg'] = 0
+        re['media'] = media
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
 def media_home(request):
     re = {}
     if request.method == 'POST':

@@ -15,4 +15,5 @@ urlpatterns = [
     path("rate_media/", rate_media),
     path("like_comment/", like_comment),
     path("dislike_comment/", dislike_comment),
+    path("filter/", media_filter),
 ]
