@@ -119,13 +119,13 @@ def media_filter(request):
         m_year = request.POST['m_year']
         m_order = request.POST['m_order']
         media = list(Media.objects.filter(
-            m_type=m_type
+            m_type__icontains=m_type
         ).filter(
             m_genre__icontains=m_genre
         ).filter(
             m_region__icontains=m_region
         ).filter(
-            m_year=m_year
+            m_year__icontains=m_year
         ))
         if m_order == 1:  # 时间递减
             sorted(media, key=lambda x: x['m_year'].__str__())
