@@ -1,7 +1,7 @@
 from tools.imports import *
 
 
-def add_report(request):
+def add_report(request):  # 或者发布到一个特定区域，直邮管理员有权限访问
     re = {}
     if basic_check(request):
         report = Report(

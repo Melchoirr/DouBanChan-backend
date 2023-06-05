@@ -141,3 +141,16 @@ def update_profile(request):
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
 
+
+def show_like_message(request):
+    pass
+
+
+def show_report_message(request):
+    pass
+
+
+def show_text_message(request):
+    pass
+
+#  处理请求单独一栏

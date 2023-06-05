@@ -15,6 +15,7 @@ urlpatterns = [
     path("join_group/", join_group),
     path("quit_group/", quit_group),
     path("set_essence/", set_essence),
+    path("set_top/", set_top),
     path("apply_admin/", apply_admin),
     path("grant_admin/", grant_admin),
 ]
