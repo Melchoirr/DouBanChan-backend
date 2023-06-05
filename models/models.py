@@ -17,6 +17,8 @@ class Media(models.Model):
     m_description = models.TextField(max_length=65535, default='')
     m_year = models.IntegerField(default=0)
     m_region = models.CharField(max_length=255, default='')
+    m_language = models.CharField(max_length=255, default='')
+    m_heat = models.IntegerField(default=0)
     # movie & series
     m_director = models.CharField(max_length=255, default='')
     m_actor = models.CharField(max_length=255, default='')
@@ -144,25 +146,6 @@ class Picture(models.Model):
         }
 
 
-class Report(models.Model):
-    r_id = models.AutoField(primary_key=True)
-    r_user = models.ForeignKey('User', models.DO_NOTHING, default=None)
-    r_text = models.ForeignKey('Text', models.DO_NOTHING, default=None)
-    r_details = models.TextField()
-
-    class Meta:
-        managed = True
-        db_table = 'Report'
-
-    def to_dict(self):
-        return {
-            'r_id': self.r_id,
-            'r_user': self.r_user.u_id,
-            'r_text': self.r_text.t_id,
-            'r_details': self.r_details
-        }
-
-
 class Text(models.Model):
     t_id = models.AutoField(primary_key=True)
     t_type = models.IntegerField()  # 1 -> 长评  2 -> 帖子  3 -> 回复
@@ -198,7 +181,7 @@ class Text(models.Model):
             't_create_time': self.t_create_time.__str__(),
         }
         if self.t_media is not None:
-            re['t_media'] = self.t_media.to_dict()  # Bu
+            re['t_media'] = self.t_media.to_dict()  #
         if self.t_floor != 0:
             re['t_floor'] = self.t_floor
             re['t_post'] = self.t_post.to_dict()
@@ -276,20 +259,23 @@ class Post(models.Model):
             'p_is_top': self.p_is_top,
         }
         if self.p_group is not None:
-            re['p_group'] = self.p_group
+            re['p_group'] = self.p_group.to_dict()
         return re
-
-
 
 
 class Message(models.Model):
     m_id = models.AutoField(primary_key=True, default=None)
-    m_user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='user', default=None)
-    m_applier = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='applier', default=None)
-    m_text = models.ForeignKey(Text, on_delete=models.DO_NOTHING, default=None)
+    m_user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='user', default=None, blank=True, null=True)
+    m_applier = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='applier', default=None, blank=True, null=True)
+    m_text = models.ForeignKey(Text, on_delete=models.DO_NOTHING, default=None, blank=True, null=True)
+    m_post = models.ForeignKey(Post, on_delete=models.DO_NOTHING, default=None, blank=True, null=True)
     m_title = models.CharField(max_length=255)
     m_content = models.CharField(max_length=255)
-    m_type = models.IntegerField()
+    m_type = models.IntegerField()  # 1：申请成为管理员 2：举报帖子 3：举报文本 4：消息（申请管理员成功或者失败，举报成功或者失败）发过来的时候怎么处理（if not null）
+    # 返回时分类依据：消息内部分类
+    # 怎么做到给文章点赞返回信息？ 在点赞的时候
+    # 评论
+    # 删除message？
 
     class Meta:
         managed = True
@@ -307,6 +293,8 @@ class Message(models.Model):
             re['m_applier'] = self.m_applier.to_dict()
         if self.m_text is not None:
             re['m_text'] = self.m_text.to_dict()
+        if self.m_post is not None:
+            re['m_post'] = self.m_post.to_dict()
         return re
 
 
@@ -349,8 +337,10 @@ class UserGroup(models.Model):
     user = models.ForeignKey(User, models.DO_NOTHING)
     group = models.ForeignKey(Group, models.DO_NOTHING)
     is_admin = models.IntegerField(default=0)
+    is_applying = models.IntegerField(default=0)
+    is_member = models.IntegerField(default=0)
     join_time = models.DateTimeField(auto_now_add=True)
-    user_heat = models.IntegerField(default=0)
+    user_heat = models.IntegerField(default=0)  # ?
 
     class Meta:
         managed = True
