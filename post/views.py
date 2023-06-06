@@ -4,6 +4,7 @@ from tools.imports import *
 def query_single_post(request):
     re = {}
     if basic_check(request):
+        user = get_cur_user(request)
         p_id = request.POST['p_id']
         post = get_post_by_id(p_id)
         text_by_floor = list(Text.objects.filter(t_post=post))
@@ -11,6 +12,17 @@ def query_single_post(request):
         re['msg'] = 0
         re['post'] = post.to_dict()
         re['text_by_floor'] = text_by_floor
+        if user is post.p_user:
+            re['is_own'] = 1
+        else:
+            re['is_own'] = 0
+        if post.p_group:
+            if UserGroup.objects.filter(user=user, group=post.p_group, is_admin=1):
+                re['is_group_admin'] = 1
+            else:
+                re['is_group_admin'] = 0
+        else:
+            re['is_group_admin'] = 0
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))

@@ -3,11 +3,13 @@ from tools.imports import *
 
 def query_single_text(request):
     t_id = request.POST['t_id']
-    return HttpResponse(json.dumps(_query_single_text(t_id)))
+    return HttpResponse(json.dumps(_query_single_text(request)))
 
 
-def _query_single_text(t_id):
+def _query_single_text(request):
     re = {}
+    t_id = request.POST['t_id']
+    user = get_cur_user(request)
     text = get_text_by_id(t_id)
     replies = list(Text.objects.filter(t_type=3).filter(t_text=text))
     replies_sorted_by_time = sorted(replies, key=lambda x: x['t_create_time'].__str__())
@@ -16,6 +18,17 @@ def _query_single_text(t_id):
     re['text'] = text.to_dict()
     re['replies_sorted_by_time'] = replies_sorted_by_time
     re['replies_sorted_by_like'] = replies_sorted_by_like
+    if user is text.t_user:
+        re['is_own'] = 1
+    else:
+        re['is_own'] = 0
+    if text.t_post and text.t_post.p_group:
+        if UserGroup.objects.filter(user=user, group=text.t_post.p_group, is_admin=1):
+            re['is_group_admin'] = 1
+        else:
+            re['is_group_admin'] = 0
+    else:
+        re['is_group_admin'] = 0
     return re
 
 
