@@ -22,6 +22,7 @@ class Media(models.Model):
     # movie & series
     m_director = models.CharField(max_length=255, default='', blank=True, null=True)
     m_actor = models.CharField(max_length=255, default='', blank=True, null=True)
+    m_writer = models.CharField(max_length=255, default='', blank=True, null=True)
     m_episode_num = models.IntegerField(default=0, blank=True, null=True)
     m_duration = models.IntegerField(default=0, blank=True, null=True)
     # book
@@ -54,7 +55,17 @@ class Media(models.Model):
             re['m_profile_photo'] = settings.ROOT_URL + self.m_profile_photo.p_content.url
         else:
             re['m_profile_photo'] = settings.ROOT_URL
+        if self.m_type < 3:
+            re['m_first_preview'] = settings.ROOT_URL + self.get_first_preview().p_content.url
+        else:
+            re['m_first_preview'] = settings.ROOT_URL
         return re
+
+    def get_first_preview(self):
+        #####################################
+        print(list(Picture.objects.filter(p_media=self))[0])
+        #####################################
+        return list(Picture.objects.filter(p_media=self))[0]
 
 
 class Chat(models.Model):
@@ -329,6 +340,7 @@ class UserMedia(models.Model):
     is_to_be_watched = models.IntegerField(default=0)
     is_watching = models.IntegerField(default=0)
     is_watched = models.IntegerField(default=0)
+    rate = models.IntegerField(default=0)
 
     class Meta:
         managed = True

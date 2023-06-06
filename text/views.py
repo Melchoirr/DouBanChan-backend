@@ -93,3 +93,14 @@ def is_liked(user, text):
 
 def is_disliked(user, text):
     return UserText.objects.filter(user=user, text=text, is_disliked=1)
+
+
+def get_text_replies(text):
+    replies = list(Text.objects.filter(t_text=text))
+    replies = [x.to_dict() for x in replies]
+    replies_by_time = sorted(replies, key=lambda x: x['t_create_time'].__str__(), reverse=True)
+    replies_by_like = sorted(replies, key=lambda x: x['t_like'], reverse=True)
+    return {
+        'replies_by_time': replies_by_time,
+        'replies_by_like': replies_by_like
+    }
