@@ -19,4 +19,5 @@ urlpatterns = [
     path("apply_admin/", apply_admin),
     path("grant_admin/", grant_apply),
     path("deny_apply/", deny_apply),
+    path("get_posts/", get_posts),
 ]

@@ -292,3 +292,15 @@ def deny_apply(request):
     message = Message(m_user=user, m_description=group.g_name + '小组：申请管理员未通过', m_group=group, m_type=3)
     delete_message(request)
     return
+
+
+def get_posts(request):
+    re = {}
+    if basic_check(request):
+        group = get_group_by_id(request.POST['g_id'])
+        posts = [x.to_dict() for x in list(Post.objects.filter(p_group=group))]
+        re['msg'] = 0
+        re['posts'] = posts
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
