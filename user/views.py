@@ -1,8 +1,3 @@
-from django.shortcuts import HttpResponse
-import json
-from models.models import User, Picture
-from tools.tools import *
-from tools.imports import *
 from sender.views import *
 
 
@@ -62,23 +57,23 @@ def login(request):
     return HttpResponse(json.dumps(re))
 
 
-def logout(request):  # 弃用，前端自己把u_id改成0
-    """
-    /user/logout POST
-    user register
-    :param request:
-    :return: json, msg = 0 on success
-    """
-    re = {}
-    if request.method == 'POST':
-        if CUR_USER_ID not in request.session:
-            re['msg'] = ERR_NO_CURRENT_USER
-        else:
-            request.session[CUR_USER_ID] = -1
-            re['msg'] = 0
-    else:
-        re['msg'] = ERR_REQUEST_METHOD_WRONG
-    return HttpResponse(json.dumps(re))
+# def logout(request):  # 弃用，前端自己把u_id改成0
+#     """
+#     /user/logout POST
+#     user register
+#     :param request:
+#     :return: json, msg = 0 on success
+#     """
+#     re = {}
+#     if request.method == 'POST':
+#         if CUR_USER_ID not in request.session:
+#             re['msg'] = ERR_NO_CURRENT_USER
+#         else:
+#             request.session[CUR_USER_ID] = -1
+#             re['msg'] = 0
+#     else:
+#         re['msg'] = ERR_REQUEST_METHOD_WRONG
+#     return HttpResponse(json.dumps(re))
 
 
 def query_single_user(request):

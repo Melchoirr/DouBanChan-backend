@@ -1,8 +1,3 @@
-import json
-
-from django.http import HttpResponse
-
-from models.models import Picture
 from tools.imports import *
 
 
