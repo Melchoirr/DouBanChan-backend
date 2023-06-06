@@ -51,6 +51,8 @@ class Media(models.Model):
             'm_duration': str(self.m_duration) + '分钟',
             'm_author': self.m_author,
             'm_characters': self.m_characters,
+            'm_language': self.m_language,
+            'm_writer': self.m_writer
         }
         if self.m_profile_photo is not None:
             re['m_profile_photo'] = settings.ROOT_URL + self.m_profile_photo.p_content.url
@@ -207,6 +209,7 @@ class Text(models.Model):
     t_description = models.TextField(default='')
     t_topic = models.CharField(max_length=255, default='')
     t_create_time = models.DateTimeField(auto_now_add=True)
+    t_favorite = models.IntegerField(default=0)
     # text -> media                     1
     t_media = models.ForeignKey('Media', models.CASCADE, default=None, blank=True, null=True)
     # text -> post -> chat -> group     2
@@ -306,6 +309,7 @@ class Post(models.Model):
     p_title = models.CharField(max_length=255, default='')
     p_like = models.IntegerField(default=0)
     p_dislike = models.IntegerField(default=0)
+    p_favorite = models.IntegerField(default=0)
     p_create_time = models.DateTimeField(auto_now_add=True)
     p_chat = models.ForeignKey('Chat', models.CASCADE, default=None, null=True)
     p_group = models.ForeignKey('Group', models.CASCADE, default=None, null=True)
@@ -343,11 +347,21 @@ class Post(models.Model):
             'postImageUrlList': self.get_first_floor_image_list(),
             'topic': self.p_title,
             'topicId': self.p_chat.c_id,
-            'visits': self
+            'visits': self.p_heat,
+            'fav': self.p_favorite,
+            'comments': self.get_text_num(),
+            'like': self.p_like,
+            'dislike': self.p_dislike,
+            'isTopped': self.p_is_top,
+            'isGoodPost': self.p_is_essence,
+
         }
         if self.p_group is not None:
             re['p_group'] = self.p_group.to_dict()
         return re
+
+    def get_text_num(self):
+        return len(Text.objects.filter(t_post=self))
 
     def get_first_floor(self):
         return Text.objects.get(t_post=self, t_floor=1)
