@@ -5,7 +5,6 @@ urlpatterns = [
     path("create/", create_media),
     path("delete/", delete_media),
     path("query_single/", query_single_media),
-    path("media_home/", media_home),
     path("set_watched/", set_watched),
     path("set_watching/", set_watching),
     path("set_to_be_watched/", set_to_be_watched),
@@ -19,4 +18,6 @@ urlpatterns = [
     path("add_preview/", add_preview),
     path("get_preview/", get_media_preview),
     path("get_heat_comment/", get_heat_comment),
+    path("get_heat_movie/", heated_movie),
+    path("get_heat_series/", heated_series),
 ]
