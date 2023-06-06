@@ -1,6 +1,4 @@
-from django.contrib.auth.models import User
 from django.db import models
-
 from DouBanChan_Backend import settings
 
 
@@ -66,7 +64,7 @@ class Media(models.Model):
 
     def get_first_preview(self):
         #####################################
-        print(list(Picture.objects.filter(p_media=self))[0])
+        # print(list(Picture.objects.filter(p_media=self))[0])
         #####################################
         return list(Picture.objects.filter(p_media=self))[0]
 
@@ -232,13 +230,14 @@ class Text(models.Model):
             't_like': self.t_like,
             't_dislike': self.t_dislike,
             't_description': self.t_description,
-            't_create_time': self.t_create_time.__str__(),
+            't_create_time': self.t_create_time.__str__()[:10],
+            't_favorite': self.t_favorite,
             'textId': self.t_id,
             'floor': self.t_floor,
             'userId': self.t_user.u_id,
             'userName': self.t_user.u_name,
             'userImageUrl': settings.ROOT_URL + self.t_user.u_profile_photo.p_content.url,
-            'date': self.t_create_time.__str__(),
+            'date': self.t_create_time.__str__()[:10],
             'text': self.t_description,
             'imageUrlList': '',
             'comments': Text.objects.filter(t_text=self).count(),
@@ -354,6 +353,8 @@ class Post(models.Model):
             'dislike': self.p_dislike,
             'isTopped': self.p_is_top,
             'isGoodPost': self.p_is_essence,
+            'groupName': self.p_group.g_name,
+            'groupId': self.p_group.g_id
         }
         if self.p_group is not None:
             re['p_group'] = self.p_group.to_dict()
