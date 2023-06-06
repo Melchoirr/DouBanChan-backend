@@ -71,7 +71,9 @@ class Media(models.Model):
 class Chat(models.Model):
     c_id = models.AutoField(primary_key=True)
     c_name = models.CharField(max_length=255, default='')
-    c_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='m_profile_photo', default=None,
+    c_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, related_name='c_profile_photo', default=None,
+                                        null=True)
+    c_head_photo = models.ForeignKey('Picture', models.DO_NOTHING, related_name='c_head_photo', default=None,
                                         null=True)
     c_description = models.CharField(max_length=255, default='')
     c_create_time = models.DateTimeField(auto_now_add=True)
@@ -108,7 +110,7 @@ class Chat(models.Model):
         re = {
             'topicId': self.c_id,
             'topicName': self.c_name,
-            'topicAvatarUrl'
+            'topicAvatarUrl': '',
             'c_description': self.c_description.__str__(),
             'c_create_time': self.c_create_time.__str__(),
             'c_last_modify_time': self.c_last_modify_time.__str__(),
