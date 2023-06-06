@@ -8,8 +8,8 @@ urlpatterns = [
     path("update_group_profile/", update_group_profile),
     path("update_group_description/", update_group_description),
     path("update_group_nickname/", update_group_nickname),
-    path("query_single/", query_single_group),
-    path("group_home/", group_brief),
+    # path("query_single/", query_single_group),
+    # path("group_home/", group_brief),
     # path("add_chat/", add_chat), 同create chat
     # path("delete_chat/", delete_chat),
     path("join_group/", join_group),

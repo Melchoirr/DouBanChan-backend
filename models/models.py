@@ -97,9 +97,9 @@ class Chat(models.Model):
 class Group(models.Model):
     g_id = models.AutoField(primary_key=True)
     g_name = models.CharField(max_length=255)
-    g_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='g_profile_photo', default=None,
+    g_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, related_name='g_profile_photo', default=None,
                                         null=True)
-    g_head_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='g_head_photo', default=None, null=True)
+    g_head_photo = models.ForeignKey('Picture', models.DO_NOTHING, related_name='g_head_photo', default=None, null=True)
     g_description = models.CharField(max_length=255, default='')
     g_create_time = models.DateTimeField(auto_now_add=True)
     g_last_modify_time = models.DateTimeField(auto_now_add=True)
@@ -114,7 +114,7 @@ class Group(models.Model):
         managed = True
         db_table = 'Group'
 
-    def to_dict(self):
+    def to_dict_old(self):
         re = {
             'g_id': self.g_id,
             'g_name': self.g_name,
@@ -130,7 +130,7 @@ class Group(models.Model):
             re['g_profile_photo'] = ''
         return re
 
-    def to_dict_a(self):
+    def to_dict(self):
         re = {
             'groupId': self.g_id,
             'groupAvatarImgUrl': self.g_profile_photo.p_content.url,
@@ -187,7 +187,7 @@ class Text(models.Model):
         managed = True
         db_table = 'Text'
 
-    def to_dict(self):
+    def to_dict_old(self):
         re = {
             't_id': self.t_id,
             't_type': self.t_type,
@@ -206,14 +206,14 @@ class Text(models.Model):
             re['t_post'] = self.t_post.to_dict()
         return re
 
-    def to_dict_post(self):
+    def to_dict(self):
         re = {
             'textId': self.t_id,
             't_type': self.t_type,
             'floor': self.t_floor,
             'userId': self.t_user.u_id,
             'userName': self.t_user.u_name,
-            'userImageUrl': self.t_user.u_profile_photo,
+            'userImageUrl': self.t_user.u_profile_photo.p_content.url,
             'date': self.t_create_time.__str__(),
             'text': self.t_description,
             'imageUrlList': '',

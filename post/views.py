@@ -68,20 +68,52 @@ def dislike_post(request):
     return HttpResponse(json.dumps(re))
 
 
-def add_text(request):
+# def add_text(request):
+#     re = {}
+#     if basic_check(request):
+#         text = Text(
+#             t_type=2,
+#             t_user=get_cur_user(request),
+#             t_description=request.POST['t_description'],
+#             t_topic=request.POST['t_topic'],
+#             t_post=get_post_by_id(request.POST['t_post_id']),
+#             t_floor=request.POST['t_floor']  # 自增
+#         )
+#         text.save()
+#         re['msg'] = 0
+#         re['text'] = text.to_dict()
+#     else:
+#         re['msg'] = ERR_OTHER
+#     return HttpResponse(json.dumps(re))
+
+
+def reply_post(request):
     re = {}
     if basic_check(request):
-        text = Text(
-            t_type=2,
-            t_user=get_cur_user(request),
-            t_description=request.POST['t_description'],
-            t_topic=request.POST['t_topic'],
-            t_post=get_post_by_id(request.POST['t_post_id']),
-            t_floor=request.POST['t_floor']  # 自增
-        )
+        c_id = request.POST['c_id']
+        user = get_cur_user(request)
+        chat = get_chat_by_id(c_id)
+        chat.c_users.add(user)
+        chat.c_heat += 1
+        chat.save()
+        p_id = request.POST['p_id']
+        post = get_post_by_id(p_id)
+        text = Text(t_type=2,
+                    t_user=user,
+                    t_description=request.POST['text'],
+                    t_floor=post.p_floor_num + 1,
+                    t_post=post)
+        if 'group' in request.POST:
+            group = get_group_by_id(request.POST['group'])
+            if UserGroup.objects.filter(user=user, group=group):
+                post.p_group = group
+            else:
+                re['msg'] = ERR_NOT_JOINED
+                return HttpResponse(json.dumps(re))
+        post.p_floor_num += 1
+        post.save()
         text.save()
         re['msg'] = 0
-        re['text'] = text.to_dict()
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
