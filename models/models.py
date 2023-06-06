@@ -99,10 +99,11 @@ class Group(models.Model):
     g_name = models.CharField(max_length=255)
     g_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='g_profile_photo', default=None,
                                         null=True)
+    g_head_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='g_head_photo', default=None, null=True)
     g_description = models.CharField(max_length=255, default='')
     g_create_time = models.DateTimeField(auto_now_add=True)
     g_last_modify_time = models.DateTimeField(auto_now_add=True)
-    g_users_num = models.IntegerField(default=0)
+    # g_users_num = models.IntegerField(default=0)
     g_tag = models.CharField(max_length=255, default='')
     g_nickname = models.CharField(max_length=255, default='人')
 
@@ -129,11 +130,28 @@ class Group(models.Model):
             re['g_profile_photo'] = ''
         return re
 
+    def to_dict_a(self):
+        re = {
+            'groupId': self.g_id,
+            'groupAvatarImgUrl': self.g_profile_photo.p_content.url,
+            'groupHeadBgUrl': self.g_head_photo.p_content.url,
+            'groupName': self.g_name,
+            'groupIntro': self.g_description,
+            'tagList': self.g_tag,
+            'groupPostNumber': Post.objects.filter(p_group=self).count(),
+            # 'g_create_time': self.g_create_time.__str__(),
+            # 'g_last_modify_time': self.g_last_modify_time.__str__(),
+            'groupFollowNumber': self.g_users.count(),
+            'aboutTopic': Chat.objects.filter(c_father_group=self).c_name,
+        }
+        return re
+
 
 class Picture(models.Model):
     p_id = models.AutoField(primary_key=True)
     p_content = models.ImageField(upload_to='')
-    p_father_text = models.ForeignKey('Text', models.DO_NOTHING, db_column='p_father_text', default=None, blank=True, null=True)
+    p_father_text = models.ForeignKey('Text', models.DO_NOTHING, db_column='p_father_text', default=None, blank=True,
+                                      null=True)
     p_media = models.ForeignKey('Media', models.DO_NOTHING, db_column='p_media', default=None, blank=True, null=True)
 
     class Meta:
@@ -186,7 +204,25 @@ class Text(models.Model):
         if self.t_floor != 0:
             re['t_floor'] = self.t_floor
             re['t_post'] = self.t_post.to_dict()
+        return re
 
+    def to_dict_post(self):
+        re = {
+            'textId': self.t_id,
+            't_type': self.t_type,
+            'floor': self.t_floor,
+            'userId': self.t_user.u_id,
+            'userName': self.t_user.u_name,
+            'userImageUrl': self.t_user.u_profile_photo,
+            'date': self.t_create_time.__str__(),
+            'text': self.t_description,
+            'imageUrlList': '',
+            'comments': Text.objects.filter(t_text=self).count(),
+            'like': self.t_like,
+            'dislike': self.t_dislike,
+            # 'userLike':
+            # 'userDislike':
+        }
         return re
 
     def like(self):
@@ -267,13 +303,21 @@ class Post(models.Model):
 
 class Message(models.Model):
     m_id = models.AutoField(primary_key=True, default=None)
-    m_user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='user', default=None, blank=True, null=True)
-    m_applier = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='applier', default=None, blank=True, null=True)
+    m_user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='user', default=None, blank=True,
+                               null=True)  # a
+    m_applier = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='applier', default=None, blank=True,
+                                  null=True)  # b
+    m_group = models.ForeignKey(Group, on_delete=models.DO_NOTHING, related_name='applier', default=None, blank=True,
+                                null=True)
     m_text = models.ForeignKey(Text, on_delete=models.DO_NOTHING, default=None, blank=True, null=True)
+    # 举报和申请的时候需要标记组
+    m_time = models.DateTimeField(auto_now_add=True)
     m_post = models.ForeignKey(Post, on_delete=models.DO_NOTHING, default=None, blank=True, null=True)
     m_title = models.CharField(max_length=255)
-    m_content = models.CharField(max_length=255)
-    m_type = models.IntegerField()  # 1：申请成为管理员 2：举报帖子 3：举报文本 4：消息（申请管理员成功或者失败，举报成功或者失败）发过来的时候怎么处理（if not null）
+    m_description = models.CharField(max_length=255)
+    m_type = models.IntegerField()  # 1.点赞 2.评论 3.系统消息 4.申请管理员 5.举报消息
+
+    # 文本内容 1.给b发 2.给b发 3.管理员判定申请成功or失败，举报批准，都同时发消息
     # 返回时分类依据：消息内部分类
     # 怎么做到给文章点赞返回信息？ 在点赞的时候
     # 评论
@@ -289,7 +333,8 @@ class Message(models.Model):
             'm_user': self.m_user.to_dict(),
             'm_title': self.m_title,
             'm_type': self.m_type,
-            'm_content': self.m_content,
+            'm_time': self.m_time,
+            'm_description': self.m_description,
         }
         if self.m_applier is not None:
             re['m_applier'] = self.m_applier.to_dict()
@@ -316,6 +361,7 @@ class UserPost(models.Model):
     post = models.ForeignKey(Post, models.DO_NOTHING)
     is_liked = models.IntegerField(default=0)
     is_disliked = models.IntegerField(default=0)
+    is_favorite = models.IntegerField(default=0)
 
     class Meta:
         managed = True
@@ -339,7 +385,7 @@ class UserGroup(models.Model):
     user = models.ForeignKey(User, models.DO_NOTHING)
     group = models.ForeignKey(Group, models.DO_NOTHING)
     is_admin = models.IntegerField(default=0)
-    is_applying = models.IntegerField(default=0)
+    # is_applying = models.IntegerField(default=0)  # ?
     is_member = models.IntegerField(default=0)
     join_time = models.DateTimeField(auto_now_add=True)
     user_heat = models.IntegerField(default=0)  # ?

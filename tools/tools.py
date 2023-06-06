@@ -49,8 +49,8 @@ def get_text_by_id(i):
     return Text.objects.get(t_id=i)
 
 
-def get_report_by_id(i):
-    return Report.objects.get(r_id=i)
+def get_message_by_id(i):
+    return Message.objects.get(m_id=i)
 
 
 def get_post_by_id(i):
