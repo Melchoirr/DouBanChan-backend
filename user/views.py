@@ -51,6 +51,8 @@ def login(request):
             user = User.objects.get(u_name=u_name)
             if u_password != user.u_password:
                 re['msg'] = ERR_PASSWORD_WRONG
+            elif not user.is_active:
+                re['msg'] = ERR_USER_NOT_ACTIVE
             else:
                 re['msg'] = 0
                 request.session[CUR_USER_ID] = user.u_id
