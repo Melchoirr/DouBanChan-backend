@@ -74,7 +74,9 @@ def _query_group(request):
     re = {}
     if request.method == 'POST':
         qstr = request.POST['qstr']
-        data = Group.objects.filter(Q(g_name__icontains=qstr) or Q(g_description__icontains=qstr))
+        data = Group.objects.filter(Q(g_name__icontains=qstr) or
+                                    Q(g_description__icontains=qstr) or
+                                    Q(g_tag__icontains=qstr))
         data = sorted(data, key=lambda x: weight(qstr, x.g_name + x.g_description))
         re['msg'] = 0
         result = []

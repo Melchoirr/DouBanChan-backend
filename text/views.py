@@ -30,6 +30,22 @@ def _query_single_text(request):
             re['is_group_admin'] = 0
     else:
         re['is_group_admin'] = 0
+    re.update(get_text_status(user, text))
+    return re
+
+
+def get_text_status(user, text):
+    re = {
+        'is_liked': 0,
+        'is_disliked': 0,
+        'is_favorite': 0
+    }
+    if UserText.objects.filter(user=user, text=text, is_liked=1):
+        re['is_liked'] = 1
+    if UserText.objects.filter(user=user, text=text, is_disliked=1):
+        re['is_disliked'] = 1
+    if UserText.objects.filter(user=user, text=text, is_favorite=1):
+        re['is_favorite'] = 1
     return re
 
 
@@ -88,7 +104,6 @@ def like_text(request):
     if basic_check(request):
         t_id = request.POST['t_id']
         text = get_text_by_id(t_id)
-        text.like()
         applier = get_cur_user(request)
         if not is_liked(applier, text):
             text.like()
@@ -137,6 +152,7 @@ def text_set_favorite(request):
     text.save()
     user_text = UserText(text=text, user=user, is_favorite=1)
     user_text.save()
+    return HttpResponse(json.dumps({}))
 
 
 def text_cancel_favorite(request):
@@ -146,6 +162,7 @@ def text_cancel_favorite(request):
     text.save()
     user_text = UserText(text=text, user=user, is_favorite=0)
     user_text.save()
+    return HttpResponse(json.dumps({}))
 
 
 def is_liked(user, text):

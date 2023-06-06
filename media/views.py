@@ -1,7 +1,8 @@
 import copy
 from tools.imports import *
 from tools.tools import *
-from text.views import get_text_replies
+from text.views import get_text_replies, get_text_status
+from base.views import weight
 
 
 def create_media(request):
@@ -87,6 +88,7 @@ def query_single_media(request):
                         'is_disliked': 0,
                         'replies': get_text_replies(item)
                     }
+                    tt.update(get_text_status(user, item))
                     cur_user = User.objects.get(u_id=request.POST['u_id'])
                     if UserText.objects.filter(user=cur_user, text=item, is_liked=1):
                         tt['is_liked'] = 1
@@ -103,8 +105,8 @@ def query_single_media(request):
                     })
             re['text_by_time'] = copy.deepcopy(tmp)
             re['text_by_like'] = copy.deepcopy(tmp)
-            sorted(re['text_by_time'], key=lambda x: x['text']['t_create_time'], reverse=True)
-            sorted(re['text_by_like'], key=lambda x: x['text']['t_like'], reverse=True)
+            re['text_by_time'] = sorted(re['text_by_time'], key=lambda x: x['text']['t_create_time'], reverse=True)
+            re['text_by_like'] = sorted(re['text_by_like'], key=lambda x: x['text']['t_like'], reverse=True)
             re['m_chats'] = [x.to_dict() for x in list(media.m_chats.all())]
             re['m_preview'] = get_media_preview(m_id)
             re['rate'] = get_user_rate(user, media)
@@ -218,7 +220,7 @@ def heated_movie(request):
         _heated_movie = [x.to_dict() for x in _heated_movie]
         _heated_movie = sorted(_heated_movie, key=lambda x: x['m_heat'], reverse=True)
         ##############################################
-        print(_heated_movie)
+        # print(_heated_movie)
         ##############################################
         re['msg'] = 0
         re['heat_movie'] = _heated_movie
@@ -241,11 +243,49 @@ def heated_series(request):
 
 
 def related_group(request):
-    pass
+    re = {}
+    if basic_check(request):
+        media = get_media_by_id(request.POST['m_id'])
+        groups = list(Group.objects.filter(
+            Q(g_name__icontains=media.m_name) or
+            Q(g_description__icontains=media.m_name) or
+            Q(g_tag__icontains=media.m_name)
+        ))[:4]
+        groups = sorted(groups, key=lambda x: weight(x.g_name + x.g_description + x.g_tag, media.m_name))
+        re['groups'] = groups
+        re['msg'] = 0
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
 
 
 def related_chat(request):
-    pass
+    re = {}
+    if basic_check(request):
+        media = get_media_by_id(request.POST['m_id'])
+        chats = list(Chat.objects.filter(
+            Q(c_name__icontains=media.m_name) or
+            Q(c_description__icontains=media.m_name) or
+            Q(c_tag__icontains=media.m_name)
+        ))[:4]
+        groups = sorted(chats, key=lambda x: weight(x.c_name + x.c_description + x.c_tag, media.m_name))
+        re['chats'] = groups
+        re['msg'] = 0
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def get_status(request):
+    re = {}
+    if basic_check(request):
+        user = get_cur_user(request)
+        text = get_text_by_id(request.POST['t_id'])
+        re['msg'] = 0
+        re.update(get_text_status(user, text))
+    else:
+        re['msg'] = 0
+    return HttpResponse(json.dumps(re))
 
 
 def set_watched(request):

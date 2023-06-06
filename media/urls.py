@@ -22,4 +22,5 @@ urlpatterns = [
     path("get_heat_series/", heated_series),
     path("related_group/", related_group),
     path("related_chat/", related_chat),
+    path("get_status/", get_status),
 ]
