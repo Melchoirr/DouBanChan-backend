@@ -18,4 +18,5 @@ urlpatterns = [
     path("filter/", media_filter),
     path("add_preview/", add_preview),
     path("get_preview/", get_media_preview),
+    path("get_heat_comment/", get_heat_comment),
 ]

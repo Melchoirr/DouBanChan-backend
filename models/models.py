@@ -110,7 +110,7 @@ class Group(models.Model):
     g_name = models.CharField(max_length=255)
     g_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='g_profile_photo', default=None,
                                         null=True)
-    g_head_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='g_head_photo', default=None, null=True)
+    # g_head_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='g_head_photo', default=None, null=True)
     g_description = models.CharField(max_length=255, default='')
     g_create_time = models.DateTimeField(auto_now_add=True)
     g_last_modify_time = models.DateTimeField(auto_now_add=True)

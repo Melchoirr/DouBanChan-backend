@@ -199,6 +199,18 @@ def add_preview(request):
     return HttpResponse(json.dumps(re))
 
 
+def get_heat_comment(request):
+    re = {}
+    if basic_check(request):
+        comments = list(Text.objects.filter(t_type=1))[:10]
+        comments = [x.to_dict() for x in comments]
+        re['msg'] = 0
+        re['heat_comment'] = comments
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
 def media_home(request):
     re = {}
     if request.method == 'POST':
