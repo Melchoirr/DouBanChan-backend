@@ -85,7 +85,7 @@ def cancel_like_text(request):
         text = get_text_by_id(t_id)
         text.cancel_like()
         applier = get_cur_user(request)
-        user_text = UserText.get(user=applier, text=text)
+        user_text = UserText.objects.get(user=applier, text=text)
         user_text.is_liked = 0
         user_text.save()
         # 发信息，
@@ -107,12 +107,12 @@ def like_text(request):
         text = get_text_by_id(t_id)
         applier = get_cur_user(request)
         text.like()
-        user_text = UserText.get(user=applier, text=text)
-        if user_text is not None:
+        if UserText.objects.filter(user=applier, text=text):
+            user_text = UserText.objects.get(user=applier, text=text)
             user_text.is_liked = 1
             user_text.save()
         else:
-            user_text = UserText.get(user=applier, text=text, is_liked=1)
+            user_text = UserText(user=applier, text=text, is_liked=1)
             user_text.save()
         # 发信息，
         message = Message(m_applier=applier,
@@ -133,12 +133,12 @@ def dislike_text(request):
         text = get_text_by_id(t_id)
         text.dislike()
         applier = get_cur_user(request)
-        user_text = UserText.get(user=applier, text=text)
-        if user_text is not None:
+        if UserText.objects.filter(user=applier, text=text):
+            user_text = UserText.objects.get(user=applier, text=text)
             user_text.is_disliked = 1
             user_text.save()
         else:
-            user_text = UserText.get(user=applier, text=text, is_disliked=1)
+            user_text = UserText(user=applier, text=text, is_disliked=1)
             user_text.save()
         re['msg'] = 0
     else:
@@ -153,7 +153,7 @@ def cancel_dislike_text(request):
         text = get_text_by_id(t_id)
         applier = get_cur_user(request)
         text.cancel_dislike()
-        user_text = UserText.get(user=applier, text=text)
+        user_text = UserText.objects.get(user=applier, text=text)
         user_text.is_disliked = 0
         user_text.save()
         re['msg'] = 0
@@ -167,12 +167,12 @@ def text_set_favorite(request):
     text = get_text_by_id(request.POST['t_id'])
     text.t_favorite += 1
     text.save()
-    user_text = UserText.get(user=user, text=text)
-    if user_text is not None:
+    if UserText.objects.filter(user=user, text=text):
+        user_text = UserText.objects.get(user=user, text=text)
         user_text.is_favorite = 1
         user_text.save()
     else:
-        user_text = UserText.get(user=user, text=text, is_favorite=1)
+        user_text = UserText(user=user, text=text, is_favorite=1)
         user_text.save()
     return HttpResponse(json.dumps({}))
 
@@ -182,7 +182,7 @@ def text_cancel_favorite(request):
     text = get_text_by_id(request.POST['t_id'])
     text.t_favorite -= 1
     text.save()
-    user_text = UserText.get(user=user, text=text)
+    user_text = UserText.objects.get(user=user, text=text)
     user_text.is_favorite = 0
     user_text.save()
     return HttpResponse(json.dumps({}))
