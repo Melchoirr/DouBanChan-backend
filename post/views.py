@@ -48,7 +48,7 @@ def like_post(request):
 
 def post_set_favorite(request):
     user = get_cur_user(request)
-    post = request.POST['p_id']
+    post = get_post_by_id(request.POST['p_id'])
     user_post = UserPost(post=post, user=user, is_favorite=1)
     user_post.save()
 

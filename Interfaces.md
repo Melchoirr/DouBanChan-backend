@@ -356,13 +356,15 @@ return: msg
 ### create group
 ```
 url:    /group/create
-param:  g_name g_description
-return: msg group
+param:  u_id g_name g_description
+return: msg
 ```
-### update group
+### update group profile
 
 ```
-没有改变的键也要按原样发送过来
+url:    /group/update_group_profile
+param:  g_id
+return: msg
 ```
 
 ### delete group
