@@ -133,7 +133,18 @@ def cancel_dislike_text(request):
 def text_set_favorite(request):
     user = get_cur_user(request)
     text = get_text_by_id(request.POST['t_id'])
+    text.t_favorite += 1
+    text.save()
     user_text = UserText(text=text, user=user, is_favorite=1)
+    user_text.save()
+
+
+def text_cancel_favorite(request):
+    user = get_cur_user(request)
+    text = get_text_by_id(request.POST['t_id'])
+    text.t_favorite -= 1
+    text.save()
+    user_text = UserText(text=text, user=user, is_favorite=0)
     user_text.save()
 
 
