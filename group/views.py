@@ -129,25 +129,25 @@ def delete_group(request):  # 不需要
     return HttpResponse(json.dumps(re))
 
 
-def query_single_group(request):  # post热榜，时间榜，精华帖，给管理员单独页面：处理请求
-    """
-    /media/query_single POST
-    query single group
-    :param request: g_id
-    :return: json, msg = 0, group on success
-    """
-    re = {}
-    if request.method == 'POST':
-        g_id = request.POST['g_id']
-        if not Group.objects.filter(g_id=g_id):
-            re['msg'] = ERR_GROUP_NOT_EXISTS
-        else:
-            group = Group.objects.get(g_id=g_id)
-            re['msg'] = 0
-            re['group'] = group.to_dict()
-    else:
-        re['msg'] = ERR_REQUEST_METHOD_WRONG
-    return HttpResponse(json.dumps(re))
+# def query_single_group(request):  # post热榜，时间榜，精华帖，给管理员单独页面：处理请求
+#     """
+#     /media/query_single POST
+#     query single group
+#     :param request: g_id
+#     :return: json, msg = 0, group on success
+#     """
+#     re = {}
+#     if request.method == 'POST':
+#         g_id = request.POST['g_id']
+#         if not Group.objects.filter(g_id=g_id):
+#             re['msg'] = ERR_GROUP_NOT_EXISTS
+#         else:
+#             group = Group.objects.get(g_id=g_id)
+#             re['msg'] = 0
+#             re['group'] = group.to_dict()
+#     else:
+#         re['msg'] = ERR_REQUEST_METHOD_WRONG
+#     return HttpResponse(json.dumps(re))
 
 
 # def group_brief(request):
@@ -160,7 +160,6 @@ def query_single_group(request):  # post热榜，时间榜，精华帖，给管�
 #     re['userInGroup'] = 1
 #     re['userIsAdmin'] = UserGroup.
 #     return HttpResponse(json.dumps(re))
-
 
 
 def join_group(request):  # 这个不需要申请，管理员需要申请
@@ -266,7 +265,7 @@ def grant_apply(request):
     user_group = UserGroup(user=user, group=group, is_admin=True)
     user_group.save()
     # 后端组合字符串：您的发言“xxx”被举报了：取前几个字？ 最好有标题
-    message = Message(m_user=user, m_description=group.g_name+'小组：恭喜你成为管理员', m_group=group, m_type=3)
+    message = Message(m_user=user, m_description=group.g_name + '小组：恭喜你成为管理员', m_group=group, m_type=3)
     delete_message(request)
     return
 
