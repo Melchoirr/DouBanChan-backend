@@ -95,7 +95,7 @@ def query_single_user(request):
                 if user_media.is_in_collection == 1:
                     collection.append(media.to_dict())
             re['collection'] = collection
-            re['groups'] = [group.to_dict() for group in user.u_groups.all()]
+            re['groupList'] = [group.to_dict() for group in user.u_groups.all()]
             re['chat'] = [chat.to_dict() for chat in user.u_chats.all()]
         else:
             re['msg'] = ERR_USER_NOT_EXISTS

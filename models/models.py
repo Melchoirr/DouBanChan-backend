@@ -174,8 +174,9 @@ class Group(models.Model):
             # 'g_create_time': self.g_create_time.__str__(),
             # 'g_last_modify_time': self.g_last_modify_time.__str__(),
             'groupFollowNumber': self.g_users.count(),
-            'aboutTopic': list(Chat.objects.filter(c_father_group=self))[0].to_dict(),
         }
+        if Chat.objects.filter(c_father_group=self):
+            re['aboutTopic'] = list(Chat.objects.filter(c_father_group=self))[0].to_dict()
         return re
 
 

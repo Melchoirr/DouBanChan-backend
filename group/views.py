@@ -20,7 +20,7 @@ def create_group(request):
         group = Group(g_name=request.POST['g_name'],
                       g_description=request.POST['g_description'],
                       g_tag=request.POST['g_tag'],
-                      g_profile_photo=get_picture_by_id(request.POST['profile']),
+                      g_profile_photo=get_picture_by_id(request.POST['avatar']),
                       g_head_photo=get_picture_by_id(request.POST['head']),
                       g_nickname='人'
                       )
@@ -165,9 +165,9 @@ def group_brief(request):
     group = get_group_by_id(request.POST['g_id'])
     user = get_cur_user(request)
     re = group.to_dict()
-    if UserGroup.objects.filter(user=user, group=group) is not None:
+    if UserGroup.objects.filter(user=user, group=group):
         re['userInGroup'] = 1
-        if UserGroup.objects.filter(user=user, group=group).is_admin == 1:
+        if UserGroup.objects.get(user=user, group=group).is_admin == 1:
             re['userIsAdmin'] = 1
         else:
             re['userIsAdmin'] = 0
@@ -175,7 +175,6 @@ def group_brief(request):
         re['userIsAdmin'] = 0
     return HttpResponse(json.dumps(re))
 
-# 根据group查询post
 # 根据group tag查询group，post
 # 根据group tag查询group
 # 根据
@@ -300,7 +299,7 @@ def deny_apply(request):
     return
 
 
-def get_posts(request):
+def query_group_posts(request):
     re = {}
     if basic_check(request):
         group = get_group_by_id(request.POST['g_id'])
@@ -309,4 +308,49 @@ def get_posts(request):
         re['posts'] = posts
     else:
         re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def query_tagged_posts(request):
+    re = {}
+    if basic_check(request):
+        group = get_group_by_id(request.POST['g_id'])
+        posts = [x.to_dict() for x in list(Post.objects.filter(p_group=group))]
+        re['msg'] = 0
+        re['posts'] = posts
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def query_group_by_tag(request):
+    re = {}
+    user = get_cur_user(request)
+    groupList = []
+    print(request.POST)
+    if request.POST['g_tag'] != '':
+        for group in list(Group.objects.filter(g_tag=request.POST['g_tag'])):
+            each = group.to_dict()
+            if UserGroup.objects.filter(user=user, group=group):
+                each['userInGroup'] = 1
+                if UserGroup.objects.get(user=user, group=group).is_admin == 1:
+                    each['userIsAdmin'] = 1
+                else:
+                    each['userIsAdmin'] = 0
+            else:
+                each['userIsAdmin'] = 0
+            groupList.append(each)
+    else:
+        for group in list(Group.objects.all()):
+            each = group.to_dict()
+            if UserGroup.objects.filter(user=user, group=group):
+                each['userInGroup'] = 1
+                if UserGroup.objects.get(user=user, group=group).is_admin == 1:
+                    each['userIsAdmin'] = 1
+                else:
+                    each['userIsAdmin'] = 0
+            else:
+                each['userIsAdmin'] = 0
+            groupList.append(each)
+    re['groupList'] = groupList
     return HttpResponse(json.dumps(re))

@@ -312,30 +312,21 @@ return: msg
 
 ```
 url:    /chat/query_single
-param:  c_id
+param:  u_id c_id
 return: msg chat
 ```
-### join chat
-```
-url:    /chat/join_chat
-param:  c_id
-return: msg
-```
-### quit chat
-```
-url:    /chat/quit_chat
-param:  c_id
-return: msg
-```
-### add post (发帖)
+### reply post 
 
 ```
 ```
 
-### reply post (回帖)
+### reply text
 
 ```
+
 ```
+
+
 
 ### like post
 
@@ -356,7 +347,7 @@ return: msg
 ### create group
 ```
 url:    /group/create
-param:  u_id g_name g_description 
+param:  u_id g_name g_description g_tag
 return: msg
 ```
 ### update group profile
@@ -401,7 +392,7 @@ return: msg
 ### group brief
 
 ```
-url:    /group/update_group_tag
+url:    /group/group_brief
 param:  u_id g_id g_tag
 return: msg
 ```
@@ -409,14 +400,14 @@ return: msg
 ### join group
 
 ```
-url:    /media/join_group
+url:    /group/join_group
 param:  u_id g_id
 return: msg group的全部信息
 ```
 ### quit group
 
 ```
-url:    /media/quit_group
+url:    /group/quit_group
 param:  u_id g_id
 return: msg
 ```
@@ -424,7 +415,7 @@ return: msg
 ### set_essence
 
 ```
-url:    /media/set_essence
+url:    /group/set_essence
 param:  u_id g_id p_id
 return: msg
 ```
@@ -476,9 +467,12 @@ return:
 ```
 ```
 
-### add chat
+### create chat
 
 ```
+url:    /media/create
+param:  m_id u_id g_id
+return: 
 ```
 
 ### join group
