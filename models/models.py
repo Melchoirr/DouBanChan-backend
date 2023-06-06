@@ -100,7 +100,7 @@ class Chat(models.Model):
             'c_heat': self.c_heat,
         }
         if self.c_profile_photo is not None:
-            re['c_profile_photo'] = self.c_profile_photo.p_content.url
+            re['c_profile_photo'] = settings.ROOT_URL + self.c_profile_photo.p_content.url
         else:
             re['c_profile_photo'] = ''
         if self.c_father_group is not None:
@@ -111,18 +111,24 @@ class Chat(models.Model):
         re = {
             'topicId': self.c_id,
             'topicName': self.c_name,
-            'topicAvatarUrl': '',
+            'topicHeadBgUrl': settings.ROOT_URL + self.c_profile_photo.p_content.url,
+            'topicAvatarUrl': settings.ROOT_URL + self.c_head_photo.p_content.url,
+            'topicIntro': self.c_description.__str__(),
+            'date': self.c_last_modify_time.__str__(),
+
+            'c_id': self.c_id,
+            'c_name': self.c_name,
             'c_description': self.c_description.__str__(),
             'c_create_time': self.c_create_time.__str__(),
             'c_last_modify_time': self.c_last_modify_time.__str__(),
             'c_heat': self.c_heat,
         }
-
+        return re
 
 
 class Group(models.Model):
     g_id = models.AutoField(primary_key=True)
-    g_name = models.CharField(max_length=255)
+    g_name = models.CharField(max_length=255, default='')
     g_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, related_name='g_profile_photo', default=None,
                                         null=True)
     g_head_photo = models.ForeignKey('Picture', models.DO_NOTHING, related_name='g_head_photo', default=None, null=True)
@@ -151,7 +157,7 @@ class Group(models.Model):
             'g_tag': self.g_tag
         }
         if self.g_profile_photo is not None:
-            re['g_profile_photo'] = self.g_profile_photo.p_content.url
+            re['g_profile_photo'] = settings.ROOT_URL + self.g_profile_photo.p_content.url
         else:
             re['g_profile_photo'] = ''
         return re
@@ -159,8 +165,8 @@ class Group(models.Model):
     def to_dict(self):
         re = {
             'groupId': self.g_id,
-            'groupAvatarImgUrl': self.g_profile_photo.p_content.url,
-            'groupHeadBgUrl': self.g_head_photo.p_content.url,
+            'groupAvatarImgUrl': settings.ROOT_URL + self.g_profile_photo.p_content.url,
+            'groupHeadBgUrl': settings.ROOT_URL + self.g_head_photo.p_content.url,
             'groupName': self.g_name,
             'groupIntro': self.g_description,
             'tag': self.g_tag,
@@ -250,6 +256,14 @@ class Text(models.Model):
         self.t_like += 1
         self.save()
 
+    def cancel_like(self):
+        self.t_like -= 1
+        self.save()
+
+    def cancel_dislike(self):
+        self.t_dislike -= 1
+        self.save()
+
     def dislike(self):
         self.t_dislike += 1
         self.save()
@@ -257,7 +271,7 @@ class Text(models.Model):
 
 class User(models.Model):
     u_id = models.AutoField(primary_key=True)
-    u_name = models.CharField(max_length=255)
+    u_name = models.CharField(max_length=255, default='')
     u_password = models.CharField(max_length=255)
     u_profile_photo = models.ForeignKey(Picture, models.DO_NOTHING, db_column='u_profile_photo', default=None,
                                         null=True)
@@ -393,6 +407,7 @@ class UserText(models.Model):
     user = models.ForeignKey(User, models.DO_NOTHING)
     is_liked = models.IntegerField(default=0)
     is_disliked = models.IntegerField(default=0)
+    is_favorite = models.IntegerField(default=0)
 
     class Meta:
         managed = True

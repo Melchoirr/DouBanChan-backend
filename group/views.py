@@ -22,7 +22,7 @@ def create_group(request):
         user_group = UserGroup(user=user, group=group, is_admin=1, is_member=1)
         user_group.save()
         re['msg'] = 0
-        re['group'] = group.to_dict()
+        # re['group'] = group.to_dict()
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))

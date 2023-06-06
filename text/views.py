@@ -62,11 +62,33 @@ def delete_text(request):
     return HttpResponse(json.dumps(re))
 
 
+def cancel_like_text(request):
+    re = {}
+    if basic_check(request):
+        t_id = request.POST['t_id']
+        text = get_text_by_id(t_id)
+        text.cancel_like()
+        applier = get_cur_user(request)
+        if not is_liked(applier, text):
+            text.like()
+            # 发信息，
+            message = Message(m_applier=applier,
+                              m_description='您的评论\'' + text.t_topic + '\'被' + applier.u_name + '点赞了',
+                              m_user=text.t_user, m_type=1)
+            # 就直接用topic了，空的也不管了
+            message.save()
+        re['msg'] = 0
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
 def like_text(request):
     re = {}
     if basic_check(request):
         t_id = request.POST['t_id']
         text = get_text_by_id(t_id)
+        text.like()
         applier = get_cur_user(request)
         if not is_liked(applier, text):
             text.like()
@@ -93,6 +115,26 @@ def dislike_text(request):
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
+
+
+def cancel_dislike_text(request):
+    re = {}
+    if basic_check(request):
+        t_id = request.POST['t_id']
+        text = get_text_by_id(t_id)
+        if not is_disliked(get_cur_user(request), text):
+            text.cancel_dislike()
+        re['msg'] = 0
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def text_set_favorite(request):
+    user = get_cur_user(request)
+    text = get_text_by_id(request.POST['t_id'])
+    user_text = UserText(text=text, user=user, is_favorite=1)
+    user_text.save()
 
 
 def is_liked(user, text):
