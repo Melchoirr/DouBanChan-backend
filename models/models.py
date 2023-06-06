@@ -87,7 +87,7 @@ class Chat(models.Model):
         managed = True
         db_table = 'Chat'
 
-    def to_dict(self):
+    def to_dict_old(self):
         re = {
             'c_id': self.c_id,
             'c_name': self.c_name,
@@ -103,6 +103,18 @@ class Chat(models.Model):
         if self.c_father_group is not None:
             re['c_father_group'] = self.c_father_group.to_dict(),
         return re
+
+    def to_dict(self):
+        re = {
+            'topicId': self.c_id,
+            'topicName': self.c_name,
+            'topicAvatarUrl'
+            'c_description': self.c_description.__str__(),
+            'c_create_time': self.c_create_time.__str__(),
+            'c_last_modify_time': self.c_last_modify_time.__str__(),
+            'c_heat': self.c_heat,
+        }
+
 
 
 class Group(models.Model):
@@ -148,12 +160,12 @@ class Group(models.Model):
             'groupHeadBgUrl': self.g_head_photo.p_content.url,
             'groupName': self.g_name,
             'groupIntro': self.g_description,
-            'tagList': self.g_tag,
+            'tag': self.g_tag,
             'groupPostNumber': Post.objects.filter(p_group=self).count(),
             # 'g_create_time': self.g_create_time.__str__(),
             # 'g_last_modify_time': self.g_last_modify_time.__str__(),
             'groupFollowNumber': self.g_users.count(),
-            'aboutTopic': Chat.objects.filter(c_father_group=self).c_name,
+            'aboutTopic': list(Chat.objects.filter(c_father_group=self))[0].to_dict(),
         }
         return re
 
@@ -226,6 +238,7 @@ class Text(models.Model):
             'userName': self.t_user.u_name,
             'userImageUrl': self.t_user.u_profile_photo.p_content.url,
             'date': self.t_create_time.__str__(),
+            't_create_time': self.t_create_time.__str__(),
             'text': self.t_description,
             'imageUrlList': '',
             'comments': Text.objects.filter(t_text=self).count(),

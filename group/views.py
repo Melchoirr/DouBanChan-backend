@@ -150,16 +150,24 @@ def delete_group(request):  # 不需要
 #     return HttpResponse(json.dumps(re))
 
 
-# def group_brief(request):
-#     # 按照tag返回
-#     # 在这里就需要返回有没有加入小组以及是不是管理员，，前端存储下来（仅作为显示之用，其他地方还是要照常判断，比如访问了其他小组的帖子）
-#     # 返回基础信息
-#     # 其他的 post之类的另写函数
-#     re = {}
-#     re = get_group_by_id(request.POST['g_id']).to_dict_a()
-#     re['userInGroup'] = 1
-#     re['userIsAdmin'] = UserGroup.
-#     return HttpResponse(json.dumps(re))
+def group_brief(request):
+    # 按照tag返回
+    # 在这里就需要返回有没有加入小组以及是不是管理员，，前端存储下来（仅作为显示之用，其他地方还是要照常判断，比如访问了其他小组的帖子）
+    # 返回基础信息
+    # 其他的 post之类的另写函数
+    re = {}
+    group = get_group_by_id(request.POST['g_id'])
+    user = get_cur_user(request)
+    re = group.to_dict()
+    if UserGroup.objects.get(user=user, group=group) is not None:
+        re['userInGroup'] = 1
+        if UserGroup.objects.get(user=user, group=group).is_admin == 1:
+            re['userIsAdmin'] = 1
+        else:
+            re['userIsAdmin'] = 0
+    else:
+        re['userIsAdmin'] = 0
+    return HttpResponse(json.dumps(re))
 
 
 def join_group(request):  # 这个不需要申请，管理员需要申请
