@@ -17,7 +17,7 @@ def register(request):
             re['msg'] = ERR_USERNAME_EXISTS
         else:
             default_profile_photo = get_picture_by_id(DEFAULT_PROFILE_PHOTO_ID)
-            user = User(u_name=username, u_password=password, u_profile_photo=default_profile_photo, u_email='')
+            user = User(u_name=username, u_password=password, u_profile_photo=default_profile_photo, u_email=email)
             user.save()
             ###############################################
             send_email(email, user.u_id)

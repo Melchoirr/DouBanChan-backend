@@ -204,10 +204,30 @@ def add_preview(request):
 def get_heat_comment(request):
     re = {}
     if basic_check(request):
-        comments = list(Text.objects.filter(t_type=1))[:10]
-        comments = [x.to_dict() for x in comments]
+        comments = list(Text.objects.filter(t_type=1))
+        _comments = []
+        for text in comments:
+            if text.t_media.m_type == 1 or text.t_media.m_type == 2:
+                _comments.append(text)
+        _comments = [x.to_dict() for x in _comments]
         re['msg'] = 0
-        re['heat_comment'] = comments
+        re['heat_comment'] = _comments[:10]
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def get_heat_comment_for_book(request):
+    re = {}
+    if basic_check(request):
+        comments = list(Text.objects.filter(t_type=1))
+        _comments = []
+        for text in comments:
+            if text.t_media.m_type == 3:
+                _comments.append(text)
+        _comments = [x.to_dict() for x in _comments]
+        re['msg'] = 0
+        re['heat_comment'] = _comments[:10]
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
@@ -233,6 +253,19 @@ def heated_series(request):
     re = {}
     if basic_check(request):
         _heated_series = list(Media.objects.filter(m_type=2))[:10]
+        _heated_series = [x.to_dict() for x in _heated_series]
+        _heated_series = sorted(_heated_series, key=lambda x: x['m_heat'], reverse=True)
+        re['msg'] = 0
+        re['heat_series'] = _heated_series
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def heated_book(request):
+    re = {}
+    if basic_check(request):
+        _heated_series = list(Media.objects.filter(m_type=3))[:10]
         _heated_series = [x.to_dict() for x in _heated_series]
         _heated_series = sorted(_heated_series, key=lambda x: x['m_heat'], reverse=True)
         re['msg'] = 0
