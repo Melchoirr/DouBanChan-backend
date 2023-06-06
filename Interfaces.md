@@ -363,7 +363,31 @@ return: msg
 
 ```
 url:    /group/update_group_profile
-param:  g_id
+param:  u_id g_id g_profile_photo
+return: msg
+```
+
+### update group head
+
+```
+url:    /group/update_group_head
+param:  u_id g_id g_head_photo
+return: msg
+```
+
+### update group description
+
+```
+url:    /group/update_group_description
+param:  u_id g_id g_description
+return: msg
+```
+
+### update group tag
+
+```
+url:    /group/update_group_tag
+param:  u_id g_id g_tag
 return: msg
 ```
 
@@ -374,18 +398,79 @@ url:    /group/delete
 param:  g_id
 return: msg
 ```
-### group home
+### group brief
 
 ```
+url:    /group/update_group_tag
+param:  u_id g_id g_tag
+return: msg
 ```
 
-### query single group
+### join group
 
 ```
-url:    /media/query_single
-param:  g_id
-return: msg group
+url:    /media/join_group
+param:  u_id g_id
+return: msg group的全部信息
 ```
+### quit group
+
+```
+url:    /media/quit_group
+param:  u_id g_id
+return: msg
+```
+
+### set_essence
+
+```
+url:    /media/set_essence
+param:  u_id g_id p_id
+return: msg
+```
+
+### set_top
+
+```
+url:    /media/set_top
+param:  u_id g_id p_id
+return: msg
+```
+
+### apply_admin
+
+```
+url:    /media/apply_admin
+param:  u_id g_id
+return: msg
+```
+
+### query_apply
+
+```
+url:    /media/query_apply
+param:  u_id g_id
+return: apply_list
+```
+
+### grant_apply
+
+```
+url:    /media/grant_apply
+param:  m_id u_id g_id
+return: 
+```
+
+### deny_apply
+
+```
+url:    /media/deny_apply
+param:  m_id u_id g_id
+return: 
+```
+
+### 
+
 ### add post (发帖)
 
 ```

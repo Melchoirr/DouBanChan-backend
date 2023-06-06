@@ -169,6 +169,13 @@ def group_brief(request):
         re['userIsAdmin'] = 0
     return HttpResponse(json.dumps(re))
 
+# 根据group查询post
+# 根据group tag查询group，post
+# 根据group tag查询group
+# 根据
+# post详情页
+#
+
 
 def join_group(request):  # 这个不需要申请，管理员需要申请
     re = {}

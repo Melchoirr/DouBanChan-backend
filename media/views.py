@@ -365,7 +365,7 @@ def rate_media(request):
     if basic_check(request):
         m_id = request.POST['m_id']
         media = Media.objects.get(m_id=m_id)
-        media.m_rate = (media.m_rate * media.m_rate_num + float(request.POST['t_rate'])) / (media.m_rate_num + 1)
+        media.m_rate = (media.m_rate * media.m_rate_num + float(request.POST['rate'])) / (media.m_rate_num + 1)
         media.m_rate_num += 1
         media.save()
         re['msg'] = 0

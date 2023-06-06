@@ -69,14 +69,15 @@ def cancel_like_text(request):
         text = get_text_by_id(t_id)
         text.cancel_like()
         applier = get_cur_user(request)
-        if not is_liked(applier, text):
-            text.like()
-            # 发信息，
-            message = Message(m_applier=applier,
-                              m_description='您的评论\'' + text.t_topic + '\'被' + applier.u_name + '点赞了',
-                              m_user=text.t_user, m_type=1)
-            # 就直接用topic了，空的也不管了
-            message.save()
+        user_text = UserText.get(user=applier, text=text)
+        user_text.is_liked = 0
+        user_text.save()
+        # 发信息，
+        message = Message(m_applier=applier,
+                          m_description='您的评论\'' + text.t_topic + '\'被' + applier.u_name + '点赞了',
+                          m_user=text.t_user, m_type=1)
+        # 就直接用topic了，空的也不管了
+        message.save()
         re['msg'] = 0
     else:
         re['msg'] = ERR_OTHER
@@ -88,16 +89,21 @@ def like_text(request):
     if basic_check(request):
         t_id = request.POST['t_id']
         text = get_text_by_id(t_id)
-        text.like()
         applier = get_cur_user(request)
-        if not is_liked(applier, text):
-            text.like()
-            # 发信息，
-            message = Message(m_applier=applier,
-                              m_description='您的评论\'' + text.t_topic + '\'被' + applier.u_name + '点赞了',
-                              m_user=text.t_user, m_type=1)
-            # 就直接用topic了，空的也不管了
-            message.save()
+        text.like()
+        user_text = UserText.get(user=applier, text=text)
+        if user_text is not None:
+            user_text.is_liked = 1
+            user_text.save()
+        else:
+            user_text = UserText.get(user=applier, text=text, is_liked=1)
+            user_text.save()
+        # 发信息，
+        message = Message(m_applier=applier,
+                          m_description='您的评论\'' + text.t_topic + '\'被' + applier.u_name + '点赞了',
+                          m_user=text.t_user, m_type=1)
+        # 就直接用topic了，空的也不管了
+        message.save()
         re['msg'] = 0
     else:
         re['msg'] = ERR_OTHER
@@ -109,8 +115,15 @@ def dislike_text(request):
     if basic_check(request):
         t_id = request.POST['t_id']
         text = get_text_by_id(t_id)
-        if not is_disliked(get_cur_user(request), text):
-            text.dislike()
+        text.dislike()
+        applier = get_cur_user(request)
+        user_text = UserText.get(user=applier, text=text)
+        if user_text is not None:
+            user_text.is_disliked = 1
+            user_text.save()
+        else:
+            user_text = UserText.get(user=applier, text=text, is_disliked=1)
+            user_text.save()
         re['msg'] = 0
     else:
         re['msg'] = ERR_OTHER
@@ -122,8 +135,11 @@ def cancel_dislike_text(request):
     if basic_check(request):
         t_id = request.POST['t_id']
         text = get_text_by_id(t_id)
-        if not is_disliked(get_cur_user(request), text):
-            text.cancel_dislike()
+        applier = get_cur_user(request)
+        text.cancel_dislike()
+        user_text = UserText.get(user=applier, text=text)
+        user_text.is_disliked = 0
+        user_text.save()
         re['msg'] = 0
     else:
         re['msg'] = ERR_OTHER
@@ -135,8 +151,13 @@ def text_set_favorite(request):
     text = get_text_by_id(request.POST['t_id'])
     text.t_favorite += 1
     text.save()
-    user_text = UserText(text=text, user=user, is_favorite=1)
-    user_text.save()
+    user_text = UserText.get(user=user, text=text)
+    if user_text is not None:
+        user_text.is_favorite = 1
+        user_text.save()
+    else:
+        user_text = UserText.get(user=user, text=text, is_favorite=1)
+        user_text.save()
 
 
 def text_cancel_favorite(request):
@@ -144,7 +165,8 @@ def text_cancel_favorite(request):
     text = get_text_by_id(request.POST['t_id'])
     text.t_favorite -= 1
     text.save()
-    user_text = UserText(text=text, user=user, is_favorite=0)
+    user_text = UserText.get(user=user, text=text)
+    user_text.is_favorite = 0
     user_text.save()
 
 
