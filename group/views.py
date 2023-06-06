@@ -1,3 +1,4 @@
+from report.views import *
 from tools.imports import *
 
 
@@ -45,6 +46,14 @@ def update_group_profile(request):
     return HttpResponse(json.dumps(re))
 
 
+def update_group_head(request):
+    re = {}
+    group = get_group_by_id(request.POST['g_id'])
+    group.g_profile_photo = request.FILES('g_head_photo')
+    group.save()
+    return
+
+
 def update_group_description(request):
     re = {}
     if request.method == 'POST':
@@ -70,7 +79,7 @@ def update_group_tag(request):
         group = get_group_by_id(request.POST['g_id'])
         user_group = UserGroup.objects.get(user=user, group=group)
         if user_group is not None and user_group.is_admin == 1:  # 这个检查方式ok吗？
-            group.g_profile_photo = request.FILES('g_tag')
+            group.g_profile_photo = request.POST('g_tag')
             group.save()
             re['msg'] = 0
             # 前端进行假修改，无需返回
@@ -88,7 +97,7 @@ def update_group_nickname(request):
         group = get_group_by_id(request.POST['g_id'])
         user_group = UserGroup.objects.get(user=user, group=group)
         if user_group is not None and user_group.is_admin == 1:  # 这个检查方式ok吗？
-            group.g_profile_photo = request.FILES('g_nickname')
+            group.g_profile_photo = request.POST('g_nickname')
             group.save()
             re['msg'] = 0
             # 前端进行假修改，无需返回
@@ -141,12 +150,17 @@ def query_single_group(request):  # post热榜，时间榜，精华帖，给管�
     return HttpResponse(json.dumps(re))
 
 
-def group_home(request):
-    # 按照tag返回
-    # 在这里就需要返回有没有加入小组以及是不是管理员，，前端存储下来（仅作为显示之用，其他地方还是要照常判断，比如访问了其他小组的帖子）
-    # 返回基础信息
-    # 其他的 post之类的另写函数
-    return
+# def group_brief(request):
+#     # 按照tag返回
+#     # 在这里就需要返回有没有加入小组以及是不是管理员，，前端存储下来（仅作为显示之用，其他地方还是要照常判断，比如访问了其他小组的帖子）
+#     # 返回基础信息
+#     # 其他的 post之类的另写函数
+#     re = {}
+#     re = get_group_by_id(request.POST['g_id']).to_dict_a()
+#     re['userInGroup'] = 1
+#     re['userIsAdmin'] = UserGroup.
+#     return HttpResponse(json.dumps(re))
+
 
 
 def join_group(request):  # 这个不需要申请，管理员需要申请
@@ -156,7 +170,7 @@ def join_group(request):  # 这个不需要申请，管理员需要申请
         group = get_group_by_id(request.POST['g_id'])
         user_group = UserGroup.objects.get(user=user, group=group)
         if user_group is None:
-            new_user_group = UserGroup(user=user, group=group, is_member=1)
+            new_user_group = UserGroup(user=user, group=group)
             new_user_group.save()
             # 前端把“在小组里”置为1
         else:
@@ -220,30 +234,47 @@ def apply_admin(request):  # 和加入小组类似 不需要检查是否加入�
     if request.method == 'POST':
         user = get_cur_user(request)
         group = get_group_by_id(request.POST['g_id'])
-        admin = list(UserGroup.objects.filter(group=group, is_admin=1))
-        user_group = UserGroup(user=user, group=group, is_applying=1)
-        user_group.save()
-        # for each in admin:
-        #     message = Message(user=user, admin=admin, a_type=1, a_info=request.POST['a_info'])
-        #     message.save()
+        apply = Message(m_applier=user, m_group=group, m_type=4)
+        apply.save()
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
 
 
-def view_apply(request):  #
+def query_apply(request):
     # 单独的页面去显示申请
     # 去掉限制之后
-    return
+    # 找到所有的message
+    re = {}
+    apply_list = []
+    for each in list(Message.objects.filter(m_type=4, m_group=get_group_by_id(request.POST['g_id']))):
+        apply_list.append(each.to_dict())
+    re['apply_list'] = apply_list
+    return HttpResponse(json.dumps(re))
 
 
 def remove_member(request):
-    # if agree grant
-    # if not delete
-    #     send notification?
+    # 目前不需要
     return
 
 
-def grant_admin(request):
+def grant_apply(request):
     # if agree，加入，均删掉
+    apply = get_message_by_id(request.POST['m_id'])
+    user = apply.m_applier
+    group = apply.m_group
+    user_group = UserGroup(user=user, group=group, is_admin=True)
+    user_group.save()
+    # 后端组合字符串：您的发言“xxx”被举报了：取前几个字？ 最好有标题
+    message = Message(m_user=user, m_description=group.g_name+'小组：恭喜你成为管理员', m_group=group, m_type=3)
+    delete_message(request)
+    return
+
+
+def deny_apply(request):
+    apply = get_message_by_id(request.POST['m_id'])
+    user = apply.m_applier
+    group = apply.m_group
+    message = Message(m_user=user, m_description=group.g_name + '小组：申请管理员未通过', m_group=group, m_type=3)
+    delete_message(request)
     return

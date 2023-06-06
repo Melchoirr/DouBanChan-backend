@@ -9,7 +9,7 @@ urlpatterns = [
     path("update_group_description/", update_group_description),
     path("update_group_nickname/", update_group_nickname),
     path("query_single/", query_single_group),
-    path("group_home/", group_home),
+    path("group_home/", group_brief),
     # path("add_chat/", add_chat), 同create chat
     # path("delete_chat/", delete_chat),
     path("join_group/", join_group),
@@ -17,5 +17,6 @@ urlpatterns = [
     path("set_essence/", set_essence),
     path("set_top/", set_top),
     path("apply_admin/", apply_admin),
-    path("grant_admin/", grant_admin),
+    path("grant_admin/", grant_apply),
+    path("deny_apply/", deny_apply),
 ]
