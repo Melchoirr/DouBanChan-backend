@@ -17,4 +17,5 @@ urlpatterns = [
     path("dislike_comment/", dislike_comment),
     path("filter/", media_filter),
     path("add_preview/", add_preview),
+    path("get_preview/", get_media_preview),
 ]

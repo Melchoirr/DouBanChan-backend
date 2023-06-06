@@ -1,6 +1,7 @@
 import copy
 from tools.imports import *
 from tools.tools import *
+from text.views import get_text_replies
 
 
 def create_media(request):
@@ -67,6 +68,7 @@ def query_single_media(request):
     re = {}
     if request.method == 'POST':
         m_id = request.POST.get('m_id')
+        user = get_cur_user(request)
         if not Media.objects.filter(m_id=m_id):
             re['msg'] = ERR_MEDIA_NOT_EXISTS
         else:
@@ -82,7 +84,8 @@ def query_single_media(request):
                     tt = {
                         'text': item.to_dict(),
                         'is_liked': 0,
-                        'is_disliked': 0
+                        'is_disliked': 0,
+                        'replies': get_text_replies(item)
                     }
                     cur_user = User.objects.get(u_id=request.POST['u_id'])
                     if UserText.objects.filter(user=cur_user, text=item, is_liked=1):
@@ -95,19 +98,26 @@ def query_single_media(request):
                     tmp.append({
                         'text': item.to_dict(),
                         'is_liked': 0,
-                        'is_disliked': 0
+                        'is_disliked': 0,
+                        'replies': get_text_replies(item)
                     })
             re['text_by_time'] = copy.deepcopy(tmp)
             re['text_by_like'] = copy.deepcopy(tmp)
-            sorted(re['text_by_time'], key=lambda x: x['text']['t_create_time'])
-            sorted(re['text_by_like'], key=lambda x: x['text']['t_like'])
-            re['text_by_time'].reverse()
-            re['text_by_like'].reverse()
-            re['m_chats'] = [x.to_dict() for x in list(media.m_chats)]
+            sorted(re['text_by_time'], key=lambda x: x['text']['t_create_time'], reverse=True)
+            sorted(re['text_by_like'], key=lambda x: x['text']['t_like'], reverse=True)
+            re['m_chats'] = [x.to_dict() for x in list(media.m_chats.all())]
             re['m_preview'] = get_media_preview(m_id)
+            re['rate'] = get_user_rate(user, media)
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
+
+
+def get_user_rate(user, media):
+    if UserMedia.objects.filter(user=user, media=media):
+        um = UserMedia.objects.get(user=user, media=media)
+        return um.rate
+    return 0
 
 
 def get_media_preview(m_id):
@@ -124,6 +134,25 @@ def media_filter(request):
         m_region = request.POST['m_region']
         m_year = request.POST['m_year']
         m_order = request.POST['m_order']
+        ##############################################
+        print(m_type, m_genre, m_region, m_year, m_order)
+        ##############################################
+        if m_type == '电影':
+            m_type = 1
+        if m_type == '电视剧':
+            m_type = 2
+        if m_type == '图书':
+            m_type = 3
+        if m_genre == '全部':
+            m_genre = ''
+        if m_region == '全部':
+            m_region = ''
+        if m_year == '全部':
+            start = 0
+            end = 3000
+        else:
+            start = int(m_year) - 1
+            end = int(m_year) + 10
         media = list(Media.objects.filter(
             m_type__icontains=m_type
         ).filter(
@@ -131,17 +160,23 @@ def media_filter(request):
         ).filter(
             m_region__icontains=m_region
         ).filter(
-            m_year__icontains=m_year
+            m_year__gt=start
+        ).filter(
+            m_year__lt=end
         ))
-        if m_order == 1:  # 时间递减
+        ##############################################
+        print(media)
+        ##############################################
+        media = [x.to_dict() for x in media]
+        if m_order == 'timedown':  # 时间递减
             sorted(media, key=lambda x: x['m_year'].__str__())
             media.reverse()
-        if m_order == 2:  # 时间递增
+        if m_order == 'timeup':  # 时间递增
             sorted(media, key=lambda x: x['m_year'].__str__())
-        if m_order == 3:  # 评分递减
+        if m_order == 'ratedown':  # 评分递减
             sorted(media, key=lambda x: x['m_rate'])
             media.reverse()
-        if m_order == 4:  # 评分递增
+        if m_order == 'rateup':  # 评分递增
             sorted(media, key=lambda x: x['m_rate'])
         re['msg'] = 0
         re['media'] = media
