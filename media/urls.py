@@ -23,4 +23,6 @@ urlpatterns = [
     path("related_group/", related_group),
     path("related_chat/", related_chat),
     path("get_status/", get_status),
+    path("get_heat_comment_for_book/", get_heat_comment_for_book),
+    path("get_heat_book/", heated_book),
 ]

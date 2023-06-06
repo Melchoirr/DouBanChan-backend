@@ -18,7 +18,7 @@ ERR_NOT_GROUP_ADMIN = 'ERR_NOT_GROUP_ADMIN'
 ERR_USER_NOT_ACTIVE = 'ERR_USER_NOT_ACTIVE'
 
 CUR_USER_ID = 'cur_user_id'
-DEFAULT_PROFILE_PHOTO_ID = 4  # make this right before running !!!
+DEFAULT_PROFILE_PHOTO_ID = 31  # make this right before running !!!
 
 
 def is_logged_in(request):

@@ -168,7 +168,7 @@ return: msg data
 ### register
 ```
 url:    /user/register
-param:  username password
+param:  username password email
 return: msg user
 ```
 ### login

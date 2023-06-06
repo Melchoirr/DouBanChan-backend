@@ -2,7 +2,6 @@ from tools.imports import *
 
 
 def query_single_text(request):
-    t_id = request.POST['t_id']
     return HttpResponse(json.dumps(_query_single_text(request)))
 
 
@@ -83,8 +82,9 @@ def cancel_like_text(request):
     if basic_check(request):
         t_id = request.POST['t_id']
         text = get_text_by_id(t_id)
-        text.cancel_like()
         applier = get_cur_user(request)
+        if UserText.objects.filter(user=applier, text=text, is_liked=1):
+            text.cancel_like()
         user_text = UserText.objects.get(user=applier, text=text)
         user_text.is_liked = 0
         user_text.save()
@@ -115,6 +115,7 @@ def like_text(request):
         # 就直接用topic了，空的也不管了
         message.save()
         re['msg'] = 0
+        cancel_dislike_text(request)
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
@@ -135,6 +136,7 @@ def dislike_text(request):
             user_text = UserText(user=applier, text=text, is_disliked=1)
             user_text.save()
         re['msg'] = 0
+        cancel_like_text(request)
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
@@ -146,7 +148,8 @@ def cancel_dislike_text(request):
         t_id = request.POST['t_id']
         text = get_text_by_id(t_id)
         applier = get_cur_user(request)
-        text.cancel_dislike()
+        if UserText.objects.filter(user=applier, text=text, is_disliked=1):
+            text.cancel_dislike()
         user_text = UserText.objects.get(user=applier, text=text)
         user_text.is_disliked = 0
         user_text.save()
