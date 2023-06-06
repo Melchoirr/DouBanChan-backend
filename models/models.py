@@ -321,6 +321,22 @@ class Post(models.Model):
         managed = True
         db_table = 'Post'
 
+    def like(self):
+        self.p_like += 1
+        self.save()
+
+    def cancel_like(self):
+        self.p_like -= 1
+        self.save()
+
+    def cancel_dislike(self):
+        self.p_dislike -= 1
+        self.save()
+
+    def dislike(self):
+        self.p_dislike += 1
+        self.save()
+
     def to_dict(self):
         re = {
             'p_id': self.p_id,

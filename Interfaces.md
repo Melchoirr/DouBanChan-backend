@@ -356,7 +356,7 @@ return: msg
 ### create group
 ```
 url:    /group/create
-param:  u_id g_name g_description
+param:  u_id g_name g_description 
 return: msg
 ```
 ### update group profile

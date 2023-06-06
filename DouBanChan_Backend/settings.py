@@ -71,7 +71,7 @@ CORS_ALLOW_HEADERS = ('*')
 
 ROOT_URLCONF = "DouBanChan_Backend.urls"
 
-ROOT_URL = 'http://10.193.206.15:8000'
+ROOT_URL = 'http://10.193.202.49:8000'
 
 CORS_ALLOWED_ORIGINS = [
     'http://127.0.0.1:8000',

@@ -13,9 +13,15 @@ def create_group(request):
     re = {}
     if request.method == 'POST':
         user = get_cur_user(request)
+        # g_profile_photo = Picture(p_content=request.FILES['profile'])
+        # g_profile_photo.save()
+        # g_head_photo = Picture(p_content=request.FILES['head'])
+        # g_head_photo.save()
         group = Group(g_name=request.POST['g_name'],
                       g_description=request.POST['g_description'],
-                      g_profile_photo=get_picture_by_id(DEFAULT_PROFILE_PHOTO_ID),
+                      g_tag=request.POST['g_tag'],
+                      g_profile_photo=get_picture_by_id(request.POST['profile']),
+                      g_head_photo=get_picture_by_id(request.POST['head']),
                       g_nickname='人'
                       )
         group.save()
@@ -159,9 +165,9 @@ def group_brief(request):
     group = get_group_by_id(request.POST['g_id'])
     user = get_cur_user(request)
     re = group.to_dict()
-    if UserGroup.objects.get(user=user, group=group) is not None:
+    if UserGroup.objects.filter(user=user, group=group) is not None:
         re['userInGroup'] = 1
-        if UserGroup.objects.get(user=user, group=group).is_admin == 1:
+        if UserGroup.objects.filter(user=user, group=group).is_admin == 1:
             re['userIsAdmin'] = 1
         else:
             re['userIsAdmin'] = 0
