@@ -123,7 +123,7 @@ def get_user_rate(user, media):
 def get_media_preview(m_id):
     media = get_media_by_id(m_id)
     previews = list(Picture.objects.filter(p_media=media))
-    return [x.to_dict() for x in previews]
+    return [x.to_dict()['p_content'] for x in previews]
 
 
 def media_filter(request):
@@ -238,6 +238,14 @@ def heated_series(request):
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
+
+
+def related_group(request):
+    pass
+
+
+def related_chat(request):
+    pass
 
 
 def set_watched(request):

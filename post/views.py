@@ -13,16 +13,28 @@ def query_single_post(request):
         re['post'] = post.to_dict()
         re['text_by_floor'] = text_by_floor
         if user is post.p_user:
-            re['is_own'] = 1
+            re['userIsLz'] = 1
         else:
-            re['is_own'] = 0
+            re['userIsLz'] = 0
         if post.p_group:
             if UserGroup.objects.filter(user=user, group=post.p_group, is_admin=1):
-                re['is_group_admin'] = 1
+                re['userIsAdmin'] = 1
             else:
-                re['is_group_admin'] = 0
+                re['userIsAdmin'] = 0
         else:
-            re['is_group_admin'] = 0
+            re['userIsAdmin'] = 0
+        if UserPost.objects.filter(user=user, post=post, is_liked=1):
+            re['userLike'] = 1
+        else:
+            re['userLike'] = 0
+        if UserPost.objects.filter(user=user, post=post, is_disliked=1):
+            re['userDislike'] = 1
+        else:
+            re['userDislike'] = 0
+        if UserPost.objects.filter(user=user, post=post, is_favorite=1):
+            re['userFav'] = 1
+        else:
+            re['userFav'] = 0
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))

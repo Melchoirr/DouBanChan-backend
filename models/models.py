@@ -354,7 +354,8 @@ class Post(models.Model):
             'dislike': self.p_dislike,
             'isTopped': self.p_is_top,
             'isGoodPost': self.p_is_essence,
-
+            'groupName': self.p_group.g_name,
+            'groupId': self.p_group.g_id
         }
         if self.p_group is not None:
             re['p_group'] = self.p_group.to_dict()
