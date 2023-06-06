@@ -135,7 +135,7 @@ def media_filter(request):
         m_year = request.POST['m_year']
         m_order = request.POST['m_order']
         ##############################################
-        print(m_type, m_genre, m_region, m_year, m_order)
+        # print(m_type, m_genre, m_region, m_year, m_order)
         ##############################################
         if m_type == '电影':
             m_type = 1
@@ -165,7 +165,7 @@ def media_filter(request):
             m_year__lt=end
         ))
         ##############################################
-        print(media)
+        # print(media)
         ##############################################
         media = [x.to_dict() for x in media]
         if m_order == 'timedown':  # 时间递减
@@ -211,39 +211,32 @@ def get_heat_comment(request):
     return HttpResponse(json.dumps(re))
 
 
-def media_home(request):
+def heated_movie(request):
     re = {}
-    if request.method == 'POST':
-        heat_set = list(Media.objects.all().order_by('-m_rate_num')[:10])
-        heat_list = []
-        for each in heat_set:
-            heat_list.append(each.to_dict())
-        score_set = list(Media.objects.all().order_by('-m_rate')[:10])
-        score_list = []
-        for each in score_set:
-            score_list.append(each.to_dict())
-        re['heat_list'] = heat_list
-        re['score_list'] = score_list
-        u_id = request.POST['u_id']
-        to_be_watched = []
-        watching = []
-        watched = []
-        if User.objects.filter(u_id=u_id):
-            user = User.objects.get(u_id=u_id)
-            for media in user.u_medias.all():
-                user_media = UserMedia.objects.get(media=media, user=user)
-                if user_media.is_to_be_watched == 1:
-                    to_be_watched.append(media.to_dict())
-                if user_media.is_watching == 1:
-                    watching.append(media.to_dict())
-                if user_media.is_watched == 1:
-                    watched.append(media.to_dict())
-        re['is_to_be_watched'] = to_be_watched
-        re['is_watching'] = watching
-        re['is_watched'] = watched
+    if basic_check(request):
+        _heated_movie = list(Media.objects.filter(m_type=1))[:10]
+        _heated_movie = [x.to_dict() for x in _heated_movie]
+        _heated_movie = sorted(_heated_movie, key=lambda x: x['m_heat'], reverse=True)
+        ##############################################
+        print(_heated_movie)
+        ##############################################
         re['msg'] = 0
+        re['heat_movie'] = _heated_movie
     else:
-        re['msg'] = ERR_REQUEST_METHOD_WRONG
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def heated_series(request):
+    re = {}
+    if basic_check(request):
+        _heated_series = list(Media.objects.filter(m_type=2))[:10]
+        _heated_series = [x.to_dict() for x in _heated_series]
+        _heated_series = sorted(_heated_series, key=lambda x: x['m_heat'], reverse=True)
+        re['msg'] = 0
+        re['heat_series'] = _heated_series
+    else:
+        re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
 
 

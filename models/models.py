@@ -41,13 +41,14 @@ class Media(models.Model):
             'm_rate': self.m_rate,
             'm_rate_num': self.m_rate_num,
             'm_genre': self.m_genre,
+            'm_heat': self.m_heat,
             'm_description': self.m_description,
             'm_year': self.m_year,
             'm_region': self.m_region,
             'm_director': self.m_director,
             'm_actor': self.m_actor,
             'm_episode_num': self.m_episode_num,
-            'm_duration': self.m_duration,
+            'm_duration': str(self.m_duration) + '分钟',
             'm_author': self.m_author,
             'm_characters': self.m_characters,
         }
@@ -212,7 +213,7 @@ class Text(models.Model):
         managed = True
         db_table = 'Text'
 
-    def to_dict_old(self):
+    def to_dict(self):
         re = {
             't_id': self.t_id,
             't_type': self.t_type,
@@ -223,32 +224,26 @@ class Text(models.Model):
             't_dislike': self.t_dislike,
             't_description': self.t_description,
             't_create_time': self.t_create_time.__str__(),
-        }
-        if self.t_media is not None:
-            re['t_media'] = self.t_media.to_dict()  #
-        if self.t_floor != 0:
-            re['t_floor'] = self.t_floor
-            re['t_post'] = self.t_post.to_dict()
-        return re
-
-    def to_dict(self):
-        re = {
             'textId': self.t_id,
-            't_type': self.t_type,
             'floor': self.t_floor,
             'userId': self.t_user.u_id,
             'userName': self.t_user.u_name,
-            'userImageUrl': self.t_user.u_profile_photo.p_content.url,
+            'userImageUrl': settings.ROOT_URL + self.t_user.u_profile_photo.p_content.url,
             'date': self.t_create_time.__str__(),
-            't_create_time': self.t_create_time.__str__(),
             'text': self.t_description,
             'imageUrlList': '',
             'comments': Text.objects.filter(t_text=self).count(),
             'like': self.t_like,
             'dislike': self.t_dislike,
-            # 'userLike':
-            # 'userDislike':
         }
+        if self.t_media is not None:
+            re['t_media'] = self.t_media.to_dict()  #
+        if self.t_floor != 0:
+            re['t_floor'] = self.t_floor
+        if self.t_post:
+            re['t_post'] = self.t_post.to_dict()
+        if self.t_type == 1:
+            re['t_media_id'] = self.t_media.m_id
         return re
 
     def like(self):
@@ -303,6 +298,7 @@ class Post(models.Model):
     p_is_essence = models.IntegerField(default=0)  # key
     p_is_top = models.IntegerField(default=0)  # key
     p_floor_num = models.IntegerField(default=0)
+    p_heat = models.IntegerField(default=0)
 
     class Meta:
         managed = True
@@ -321,10 +317,31 @@ class Post(models.Model):
             'p_floor_num': self.p_floor_num,
             'p_is_essence': self.p_is_essence,
             'p_is_top': self.p_is_top,
+            'p_heat': self.p_heat,
+            ##########################################################
+            'postId': self.p_id,
+            'lzId': self.p_user.u_id,
+            'lzName': self.p_user.u_name,
+            'lzImageUrl': settings.ROOT_URL + self.p_user.u_profile_photo.p_content.url,
+            'date': self.p_create_time,
+            'title': self.p_title,
+            'text': self.get_first_floor().t_description,
+            'postImageUrlList': self.get_first_floor_image_list(),
+            'topic': self.p_title,
+            'topicId': self.p_chat.c_id,
+            'visits': self
         }
         if self.p_group is not None:
             re['p_group'] = self.p_group.to_dict()
         return re
+
+    def get_first_floor(self):
+        return Text.objects.get(t_post=self, t_floor=1)
+
+    def get_first_floor_image_list(self):
+        text = self.get_first_floor()
+        re = list(Picture.objects.filter(p_father_text=text))
+        return [settings.ROOT_URL + x.p_content.url for x in re]
 
 
 class Message(models.Model):
