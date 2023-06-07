@@ -17,7 +17,7 @@ def register(request):
             re['msg'] = ERR_USERNAME_EXISTS
         else:
             default_profile_photo = get_picture_by_id(DEFAULT_PROFILE_PHOTO_ID)
-            user = User(u_name=username, u_password=password, u_profile_photo=default_profile_photo, u_email=email)
+            user = User(u_name=username, u_password=password, u_profile_photo=default_profile_photo, u_email=email, u_nickname=username)
             user.save()
             ###############################################
             send_email(email, user.u_id)
@@ -57,7 +57,7 @@ def login(request):
     return HttpResponse(json.dumps(re))
 
 
-# def logout(request):  # 弃用，前端自己把u_id改成0
+# def logout(request):  # 弃用，前端自己把u_id改成1
 #     """
 #     /user/logout POST
 #     user register
@@ -259,6 +259,19 @@ def change_profile(request):
         user.save()
         re['msg'] = 0
         re['user'] = user.to_dict()
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def change_password(request):
+    re = {}
+    if basic_check(request):
+        user = get_cur_user(request)
+        new_password = request.POST['new_password']
+        user.u_password = new_password
+        user.save()
+        re['msg'] = 0
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))

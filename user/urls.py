@@ -16,4 +16,6 @@ urlpatterns = [
     path("get_user_fav_text1/", get_user_fav_text1),
     path("get_self_post/", get_self_post),
     path("get_self_group/", get_self_group),
+    path("change_profile/", change_profile),
+    path("change_password/", change_password),
 ]
