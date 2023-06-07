@@ -36,7 +36,7 @@ class Media(models.Model):
             'm_id': self.m_id,
             'm_name': self.m_name,
             'm_type': self.m_type,
-            'm_rate': self.m_rate,
+            'm_rate': round(float(self.m_rate.__str__()), 1),
             'm_rate_num': self.m_rate_num,
             'm_genre': self.m_genre,
             'm_heat': self.m_heat,

@@ -115,6 +115,24 @@ def query_single_media(request):
     return HttpResponse(json.dumps(re))
 
 
+def get_media_status(request):
+    re = {}
+    if basic_check(request):
+        user = get_cur_user(request)
+        media = get_media_by_id(request.POST['m_id'])
+        re['msg'] = 0
+        if UserMedia.objects.filter(user=user, media=media):
+            um = UserMedia.objects.get(user=user, media=media)
+            re['is_in_collection'] = um.is_in_collection
+            re['rate'] = um.rate
+        else:
+            re['is_in_collection'] = 0
+            re['rate'] = 0
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
 def get_user_rate(user, media):
     if UserMedia.objects.filter(user=user, media=media):
         um = UserMedia.objects.get(user=user, media=media)
