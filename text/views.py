@@ -60,6 +60,11 @@ def reply_text(request):
         text.save()
         re['msg'] = 0
         re['text'] = text.to_dict()
+        applier = get_cur_user(request)
+        message = Message(m_applier=applier,
+                          m_description='您的评论\'' + text.t_topic + '\'被' + applier.u_name + '评论了',
+                          m_user=text.t_user, m_type=2)
+        message.save()
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
@@ -67,13 +72,10 @@ def reply_text(request):
 
 def delete_text(request):
     re = {}
-    if basic_check(request):
-        t_id = request.POST['t_id']
-        text = get_text_by_id(t_id)
-        text.delete()
-        re['msg'] = 0
-    else:
-        re['msg'] = ERR_OTHER
+    t_id = request.POST['t_id']
+    text = get_text_by_id(t_id)
+    text.delete()
+    re['msg'] = 0
     return HttpResponse(json.dumps(re))
 
 

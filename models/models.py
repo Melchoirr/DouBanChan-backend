@@ -290,7 +290,7 @@ class User(models.Model):
     u_profile_photo = models.ForeignKey(Picture, models.DO_NOTHING, db_column='u_profile_photo', default=None,
                                         null=True)
     u_email = models.EmailField(max_length=255, default='')
-    u_authority = models.IntegerField(default=1)  # 1 : normal 2 : admin
+    u_authority = models.IntegerField(default=0)  # 0 : normal 1 : admin
     u_medias = models.ManyToManyField(Media, related_name='m_users', through='UserMedia')
     u_texts = models.ManyToManyField(Text, related_name='t_users', through='UserText')
     u_posts = models.ManyToManyField('Post', related_name='p_users', through='UserPost')

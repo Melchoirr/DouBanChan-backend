@@ -12,7 +12,7 @@ urlpatterns = [
     path("get_user_series/", get_user_series),
     path("get_user_book/", get_user_book),
     path("get_user_fav_post/", get_user_fav_post),
-    path("get_user_fav_text1/", get_user_fav_text1),
+    path("get_user_fav_text/", get_user_fav_text),
     path("get_self_post/", get_self_post),
     path("get_self_group/", get_self_group),
     path("change_profile/", change_profile),
