@@ -34,18 +34,28 @@ def report_text(request):  # 或者发布到一个特定区域，直邮管理员
 
 def query_report(request):
     re = {}
-    re['report_list'] = [x.to_dict_report() for x in list(Message.objects.filter(m_type=5))]
+    user = get_cur_user(request)
+    print(request.POST)
+    if user.u_authority == 1:
+        re['report_list'] = [x.to_dict_report_post() for x in list(Message.objects.filter(m_type=5))]
     return HttpResponse(json.dumps(re))
 
 
-def grant_report_post(request):
+def handle_report_post(request):
     re = {}
-    report = Message.objects.get(m_id=request.POST['m_id'])
-    report.m_is_handled = 1
+    handle = request.POST['handle']
+
+    report = Message.objects.get(m_id=request.POST['id'])
+    print(request.POST)
+    if handle == '1':
+        report.m_is_handled = 1
+        if Post.objects.filter(p_id=request.POST['p_id']):
+            post = get_post_by_id(request.POST['p_id'])
+            report.delete()
+            post.delete()
+    if handle == '2':
+        report.m_is_handled = 2
     report.save()
-    p_id = request.POST['p_id']
-    post = get_post_by_id(p_id)
-    post.delete()
     return HttpResponse(json.dumps(re))
 
 
@@ -74,20 +84,20 @@ def delete_message(request):
     return
 
 
-def query_report(request):
-    # 判断是什么管理员
-    # 是小组管理员就发g_id
-    re = {}
-    report_list = []
-    if 'g_id' in request.POST:
-        group = get_group_by_id(request.POST['g_id'])
-        for each in list(Message.objects.filter(m_type=5, m_group=group)):
-            report_list.append(each.to_dict())
-    else:
-        for each in list(Message.objects.filter(m_type=5)):
-            report_list.append(each.to_dict())
-    re['report_list'] = report_list
-    return HttpResponse(json.dumps(re))
+# def query_report(request):
+#     # 判断是什么管理员
+#     # 是小组管理员就发g_id
+#     re = {}
+#     report_list = []
+#     if 'g_id' in request.POST:
+#         group = get_group_by_id(request.POST['g_id'])
+#         for each in list(Message.objects.filter(m_type=5, m_group=group)):
+#             report_list.append(each.to_dict())
+#     else:
+#         for each in list(Message.objects.filter(m_type=5)):
+#             report_list.append(each.to_dict())
+#     re['report_list'] = report_list
+#     return HttpResponse(json.dumps(re))
 
 
 def query_single_report(request):  # 好像不一定有详情页

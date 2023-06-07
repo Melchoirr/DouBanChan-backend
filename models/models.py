@@ -423,9 +423,9 @@ class Message(models.Model):
     m_text = models.ForeignKey(Text, on_delete=models.DO_NOTHING, default=None, blank=True, null=True)
     # 举报和申请的时候需要标记组
     m_time = models.DateTimeField(auto_now_add=True)
-    m_post = models.ForeignKey(Post, on_delete=models.DO_NOTHING, default=None, blank=True, null=True)
+    m_post = models.ForeignKey(Post, on_delete=models.CASCADE, default=None, blank=True, null=True)
     m_title = models.CharField(max_length=255)
-    m_description = models.CharField(max_length=255)
+    m_description = models.TextField(default='')
     m_is_handled = models.IntegerField(default=0)
     m_type = models.IntegerField()  # 1.点赞 2.评论 3.系统消息 4.申请管理员 5.举报消息
     # 文本内容 1.给b发 2.给b发 3.管理员判定申请成功or失败，举报批准，都同时发消息
@@ -465,18 +465,19 @@ class Message(models.Model):
         }
         return re
 
-    def to_dict_report(self):
+    def to_dict_report_post(self):
         re = {
             'id': self.m_id,
-            'userImgUrl': settings.ROOT_URL + self.m_applier.u_profile_photo.p_content.url,
-            'name': self.m_applier.u_name,
-            'msg': self.m_description,
+            'p_id': self.m_post.p_id,
+            'title': self.m_title,
+            'text': self.m_description,
             'time': self.m_time.__str__()[:19],
+            'handled': self.m_is_handled
         }
         return re
 
 class UserText(models.Model):
-    text = models.ForeignKey(Text, models.DO_NOTHING)
+    text = models.ForeignKey(Text, models.CASCADE)
     user = models.ForeignKey(User, models.DO_NOTHING)
     is_liked = models.IntegerField(default=0)
     is_disliked = models.IntegerField(default=0)
@@ -489,7 +490,7 @@ class UserText(models.Model):
 
 class UserPost(models.Model):
     user = models.ForeignKey(User, models.DO_NOTHING)
-    post = models.ForeignKey(Post, models.DO_NOTHING)
+    post = models.ForeignKey(Post, models.CASCADE)
     is_liked = models.IntegerField(default=0)
     is_disliked = models.IntegerField(default=0)
     is_favorite = models.IntegerField(default=0)
