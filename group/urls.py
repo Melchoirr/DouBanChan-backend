@@ -17,6 +17,7 @@ urlpatterns = [
     path("set_essence/", set_essence),
     path("set_top/", set_top),
     path("apply_admin/", apply_admin),
+    path("cancel_admin/", cancel_admin),
     path("query_apply/", query_apply),
     path("grant_apply/", grant_apply),
     path("deny_apply/", deny_apply),

@@ -275,6 +275,7 @@ def query_apply(request):
     # 找到所有的message
     re = {}
     apply_list = []
+    print(request.POST)
     for each in list(Message.objects.filter(m_type=4, m_group=get_group_by_id(request.POST['g_id']))):
         apply_list.append(each.to_dict_apply())
     re['li'] = apply_list
@@ -289,10 +290,11 @@ def remove_member(request):
 def grant_apply(request):
     # if agree，加入，均删掉
     re = {}
+    print(request.POST)
     apply = get_message_by_id(request.POST['m_id'])
     user = apply.m_applier
     group = apply.m_group
-    user_group = UserGroup(user=user, group=group)
+    user_group = UserGroup.objects.get(user=user, group=group)
     user_group.is_admin = 1
     user_group.save()
     # 后端组合字符串：您的发言“xxx”被举报了：取前几个字？ 最好有标题

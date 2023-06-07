@@ -431,7 +431,7 @@ class Message(models.Model):
 
     class Meta:
         managed = True
-        db_table = 'Apply'
+        db_table = 'Message'
 
     def to_dict(self):
         re = {

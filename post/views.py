@@ -60,8 +60,8 @@ def query_single_post(request):
 
 
 def query_only_post(user, post):
-    post = post.to_dict()
-    post.update({
+    re = post.to_dict()
+    re.update({
         'userIsAdmin': 0,
         'userIsLz': 0,
         'userLike': 0,
@@ -69,20 +69,20 @@ def query_only_post(user, post):
         'userFav': 0,
     })
     if UserGroup.objects.filter(user=user, group=post.p_group, is_admin=1):
-        post['userIsAdmin'] = 1
+        re['userIsAdmin'] = 1
     if user is post.p_user:
-        post['userIsLz'] = 1
+        re['userIsLz'] = 1
     if UserPost.objects.filter(user=user, post=post, is_liked=1):
-        post['userLike'] = 1
+        re['userLike'] = 1
     if UserPost.objects.filter(user=user, post=post, is_disliked=1):
-        post['userDislike'] = 1
+        re['userDislike'] = 1
     if UserPost.objects.filter(user=user, post=post, is_favorite=1):
-        post['userFav'] = 1
+        re['userFav'] = 1
     floor_list = get_post_floor_list(user, post)
-    post.update({
+    re.update({
         'floorList': floor_list
     })
-    return post
+    return re
 
 
 def get_post_floor_list(user, post):
@@ -90,7 +90,7 @@ def get_post_floor_list(user, post):
     floors = [x.to_dict() for x in floors]
     for floor in floors:
         floor.update({
-            'childFloorList': get_replies(get_text_by_id(floor.t_id), user),
+            'childFloorList': get_replies(get_text_by_id(floor['postId']), user),
             'userLike': 0,
             'userDislike': 0
         })
@@ -328,7 +328,7 @@ def query_group_posts(request):
     return HttpResponse(json.dumps(re))
 
 
-def query_chat_posts(request):
+def query_posts_by_chat(request):
     re = {}
     if basic_check(request):
         chat = get_chat_by_id(request.POST['c_id'])
@@ -343,7 +343,13 @@ def query_chat_posts(request):
 def query_posts_by_tag(request):
     re = {}
     if basic_check(request):
-        postList = [x.to_dict() for x in list(Post.objects.filter(p_tag=request.POST['p_tag']))]
+        user = get_cur_user(request)
+        postList = []
+        for x in list(Post.objects.filter(p_tag=request.POST['c_tag'])):
+            post = x.to_dict()
+            #group =
+            post.update(get_post_status(user, x, group))
+            postList.append(post)
         re['msg'] = 0
         re['postList'] = postList
     else:

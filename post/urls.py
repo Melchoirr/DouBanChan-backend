@@ -10,5 +10,7 @@ urlpatterns = [
     path("query_single/", query_single_post),
     path("reply_post/", reply_post),
     path("query_group_posts/", query_group_posts),
+    path("query_posts_by_tag/", query_posts_by_tag),
+    path("query_posts_by_chat/", query_posts_by_chat)
 ]
 
