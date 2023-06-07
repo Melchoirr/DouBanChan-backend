@@ -321,6 +321,7 @@ def related_group(request):
         groups = sorted(groups, key=lambda x: weight(x.g_name + x.g_description + x.g_tag, media.m_name))
         re['groups'] = groups
         re['msg'] = 0
+        print(re)
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
@@ -552,9 +553,9 @@ def get_ratio(request):
         if um.rate == 9 or um.rate == 10:
             cnt90 += 1
     return HttpResponse(json.dumps({
-        '12': round(100.0 * cnt12 / cnt, 1),
-        '34': round(100.0 * cnt34 / cnt, 1),
-        '56': round(100.0 * cnt56 / cnt, 1),
-        '78': round(100.0 * cnt78 / cnt, 1),
-        '90': round(100.0 * cnt90 / cnt, 1),
+        '12': str(round(100.0 * cnt12 / cnt, 1)) + '%',
+        '34': str(round(100.0 * cnt34 / cnt, 1)) + '%',
+        '56': str(round(100.0 * cnt56 / cnt, 1)) + '%',
+        '78': str(round(100.0 * cnt78 / cnt, 1)) + '%',
+        '90': str(round(100.0 * cnt90 / cnt, 1)) + '%',
     }))
