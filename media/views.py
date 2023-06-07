@@ -480,10 +480,23 @@ def rate_media(request):
     re = {}
     if basic_check(request):
         m_id = request.POST['m_id']
+        user = get_cur_user(request)
         media = Media.objects.get(m_id=m_id)
-        media.m_rate = (media.m_rate * media.m_rate_num + float(request.POST['rate'])) / (media.m_rate_num + 1)
-        media.m_rate_num += 1
+        if UserMedia.objects.filter(user=user, media=media, rate__gt=0):
+            uumm = UserMedia.objects.get(user=user, media=media, rate__gt=0)
+            old_rate = uumm.rate
+            media.m_rate = (media.m_rate * media.m_rate_num - float(old_rate) + float(request.POST['rate'])) / (media.m_rate_num)
+        else:
+            media.m_rate = (media.m_rate * media.m_rate_num + float(request.POST['rate'])) / (media.m_rate_num + 1)
+            media.m_rate_num += 1
         media.save()
+        if UserMedia.objects.filter(user=user, media=media):
+            um = UserMedia.objects.get(user=user, media=media)
+            um.rate = request.POST['rate']
+            um.save()
+        else:
+            um = UserMedia(user=user, media=media, rate=request.POST['rate'])
+            um.save()
         re['msg'] = 0
     else:
         re['msg'] = ERR_OTHER
