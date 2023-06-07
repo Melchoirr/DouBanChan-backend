@@ -1,24 +1,22 @@
 import difflib
+import random
 
 from tools.imports import *
 
 
 def query_base(request):
-    re = {}
     if request.method == 'POST':
         re_user = _query_user(request)
         re_chat = _query_chat(request)
         re_group = _query_group(request)
         re_media = _query_media(request)
-        re_report = _query_report(request)
         re = {
             'msg': 0,
             'data': {
                 'user': re_user,
                 'chat': re_chat,
                 'group': re_group,
-                'media': re_media,
-                'report': re_report
+                'media': re_media
             }
         }
     else:
@@ -112,26 +110,107 @@ def _query_media(request):
     return re
 
 
-def query_report(request):
-    return HttpResponse(json.dumps(_query_report(request)))
-
-
-def _query_report(request):
-    re = {}
-    if request.method == 'POST':
-        qstr = request.POST['qstr']
-        data = Report.objects.filter(r_details__icontains=qstr)
-        data = sorted(data, key=lambda x: weight(qstr, x.r_details))
-        re['msg'] = 0
-        result = []
-        for item in data:
-            result.append(item.to_dict())
-        re['data'] = result
-    else:
-        re['msg'] = ERR_REQUEST_METHOD_WRONG
-    return re
-
-
 def weight(str1, str2):
     seq_matcher = difflib.SequenceMatcher(None, str1, str2)
     return round(seq_matcher.ratio() * max(len(str1), len(str2)))
+
+
+def base_movie_series_list(request):
+    re = {}
+    if basic_check(request):
+        my_list = list(Media.objects.filter(Q(m_type=1) or Q(m_type=2)))[:6]
+        my_list = sorted(my_list, key=lambda x: x.m_rate)
+        my_list = [
+            {
+                'id': x.m_id,
+                'cardImage': settings.ROOT_URL + get_one_preview_url(x),
+                'miniImage': settings.ROOT_URL + x.m_profile_photo.p_content.url,
+                'name': x.m_name,
+                'text': x.m_description[:15]
+            } for x in my_list
+        ]
+        re['msg'] = 0
+        re['list'] = my_list
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def base_book_list(request):
+    re = {}
+    if basic_check(request):
+        my_list = list(Media.objects.filter(m_type=3))[:12]
+        my_list = sorted(my_list, key=lambda x: x.m_rate)
+        my_list = [
+            {
+                'id': x.m_id,
+                'image': settings.ROOT_URL + x.m_profile_photo.p_content.url,
+                'rate': get_media_ratio(x),
+                'name': x.m_name,
+                'text': x.m_description[:15],
+                'star': x.m_author
+            } for x in my_list
+        ]
+        re['msg'] = 0
+        re['list'] = my_list
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def get_one_preview_url(media):
+    return list(Picture.objects.filter(p_media=media))[0].p_content.url
+
+
+def get_media_ratio(media):
+    _list = list(UserMedia.objects.filter(media=media))
+    ###################################################
+    # print(media.m_id, _list)
+    ###################################################
+    if len(_list) == 0:
+        return '0.0%'
+    cnt = 0
+    for item in _list:
+        if item.rate >= 8:
+            cnt += 1
+    return str(round(100.0 * cnt / len(_list), 1)) + '%'
+
+
+def col_media_series(request):
+    re = {}
+    if basic_check(request):
+        user = get_cur_user(request)
+        _list = list(Media.objects.filter(m_type__lt=3))
+        _list = [x.to_dict() for x in _list]
+        for item in _list:
+            item.update({
+                'is_fav': 0
+            })
+            if UserMedia.objects.filter(user=user, media=get_media_by_id(item['m_id']), is_in_collection=1):
+                item['is_fav'] = 1
+        random.shuffle(_list)
+        re['msg'] = 0
+        re['list'] = _list[:6]
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def col_book(request):
+    re = {}
+    if basic_check(request):
+        user = get_cur_user(request)
+        _list = list(Media.objects.filter(m_type=3))
+        _list = [x.to_dict() for x in _list]
+        for item in _list:
+            item.update({
+                'is_fav': 0
+            })
+            if UserMedia.objects.filter(user=user, media=get_media_by_id(item['m_id']), is_in_collection=1):
+                item['is_fav'] = 1
+        random.shuffle(_list)
+        re['msg'] = 0
+        re['list'] = _list[:6]
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
