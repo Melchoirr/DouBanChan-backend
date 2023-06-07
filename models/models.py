@@ -244,7 +244,7 @@ class Text(models.Model):
             'userImageUrl': settings.ROOT_URL + self.t_user.u_profile_photo.p_content.url,
             'date': self.t_create_time.__str__()[:10],
             'text': self.t_description,
-            'imageUrlList': '',
+            'imageUrlList': self.get_image_list(),
             'comments': Text.objects.filter(t_text=self).count(),
             'like': self.t_like,
             'dislike': self.t_dislike,
@@ -258,6 +258,11 @@ class Text(models.Model):
         # if self.t_type == 1:
         #     re['t_media_id'] = self.t_media.m_id
         return re
+
+    def get_image_list(self):
+        images = list(Picture.objects.filter(p_father_text=self))
+        images = [x.p_content for x in images]
+        return images
 
     def like(self):
         self.t_like += 1

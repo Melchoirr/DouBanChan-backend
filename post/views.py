@@ -51,39 +51,69 @@ def query_single_post(request):
     re = {}
     if basic_check(request):
         user = get_cur_user(request)
-        p_id = request.POST['p_id']
-        post = get_post_by_id(p_id)
-        text_by_floor = list(Text.objects.filter(t_post=post))
-        text_by_floor = sorted(text_by_floor, key=lambda x: x['floor'])
+        post = get_post_by_id(request.POST['p_id'])
         re['msg'] = 0
-        re['post'] = post.to_dict()
-        re['text_by_floor'] = text_by_floor
-        if user is post.p_user:
-            re['userIsLz'] = 1
-        else:
-            re['userIsLz'] = 0
-        if post.p_group:
-            if UserGroup.objects.filter(user=user, group=post.p_group, is_admin=1):
-                re['userIsAdmin'] = 1
-            else:
-                re['userIsAdmin'] = 0
-        else:
-            re['userIsAdmin'] = 0
-        if UserPost.objects.filter(user=user, post=post, is_liked=1):
-            re['userLike'] = 1
-        else:
-            re['userLike'] = 0
-        if UserPost.objects.filter(user=user, post=post, is_disliked=1):
-            re['userDislike'] = 1
-        else:
-            re['userDislike'] = 0
-        if UserPost.objects.filter(user=user, post=post, is_favorite=1):
-            re['userFav'] = 1
-        else:
-            re['userFav'] = 0
+        re['post'] = query_only_post(user, post)
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
+
+
+def query_only_post(user, post):
+    post = post.to_dict()
+    post.update({
+        'userIsAdmin': 0,
+        'userIsLz': 0,
+        'userLike': 0,
+        'userDislike': 0,
+        'userFav': 0,
+    })
+    if UserGroup.objects.filter(user=user, group=post.p_group, is_admin=1):
+        post['userIsAdmin'] = 1
+    if user is post.p_user:
+        post['userIsLz'] = 1
+    if UserPost.objects.filter(user=user, post=post, is_liked=1):
+        post['userLike'] = 1
+    if UserPost.objects.filter(user=user, post=post, is_disliked=1):
+        post['userDislike'] = 1
+    if UserPost.objects.filter(user=user, post=post, is_favorite=1):
+        post['userFav'] = 1
+    floor_list = get_post_floor_list(user, post)
+    post.update({
+        'floorList': floor_list
+    })
+    return post
+
+
+def get_post_floor_list(user, post):
+    floors = list(Text.objects.filter(t_post=post))
+    floors = [x.to_dict() for x in floors]
+    for floor in floors:
+        floor.update({
+            'childFloorList': get_replies(get_text_by_id(floor.t_id), user),
+            'userLike': 0,
+            'userDislike': 0
+        })
+        if UserPost.objects.filter(user=user, post=post, is_liked=1):
+            floor['userLike'] = 1
+        if UserPost.objects.filter(user=user, post=post, is_disliked=1):
+            floor['userDislike'] = 1
+    return floors
+
+
+def get_replies(text, user):
+    texts = list(Text.objects.filter(t_text=text))
+    texts = [x.to_dict() for x in texts]
+    for text in texts:
+        text.update({
+            'userLike': 0,
+            'userDislike': 0
+        })
+        if UserText.objects.filter(user=user, text=text, is_liked=1):
+            text['userLike'] = 1
+        if UserText.objects.filter(user=user, text=text, is_disliked=1):
+            text['userDislike'] = 1
+    return texts
 
 
 def get_post_status(user, post, group):
@@ -100,7 +130,6 @@ def get_post_status(user, post, group):
         re['userDislike'] = 1
     if UserPost.objects.filter(user=user, post=post, is_favorite=1):
         re['userFav'] = 1
-
     if UserGroup.objects.filter(user=user, group=group, is_admin=1):
         re['userIsAdmin'] = 1
     if post.p_user == user:
