@@ -3,6 +3,7 @@ from post.views import *
 
 urlpatterns = [
     path("add_post/", add_post),
+    path("get_post_status1/", get_post_status1),
     path("like_post/", like_post),
     path("cancel_like_post/", cancel_like_post),
     path("cancel_dislike_post/", cancel_dislike_post),
