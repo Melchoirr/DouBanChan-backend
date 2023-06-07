@@ -282,7 +282,7 @@ class User(models.Model):
     u_medias = models.ManyToManyField(Media, related_name='m_users', through='UserMedia')
     u_texts = models.ManyToManyField(Text, related_name='t_users', through='UserText')
     u_posts = models.ManyToManyField('Post', related_name='p_users', through='UserPost')
-    is_active = models.BooleanField(default=False)
+    is_active = models.IntegerField(default=0)
 
     class Meta:
         managed = True

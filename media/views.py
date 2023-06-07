@@ -419,6 +419,7 @@ def comment_media(request):
         media.m_rate = (media.m_rate * media.m_rate_num + float(request.POST['t_rate'])) / (media.m_rate_num + 1)
         media.m_rate_num += 1
         media.save()
+        re['t_id'] = text.t_id
         re['msg'] = 0
     else:
         re['msg'] = ERR_OTHER
