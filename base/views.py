@@ -1,6 +1,6 @@
 import difflib
 import random
-
+from tools.mjorah7 import *
 from tools.imports import *
 
 
@@ -44,23 +44,75 @@ def _query_user(request):
     return re
 
 
+def query_post(request):
+    return HttpResponse(json.dumps(_query_post(request)))
+
+
+def _query_post(request):
+    re = []
+    if request.method == 'POST':
+        qstr = request.POST['qstr']
+        user = get_cur_user(request)
+        ################################
+        print(qstr)
+        ################################
+        data = Post.objects.filter(Q(p_title__icontains=qstr))
+        data = sorted(data, key=lambda x: weight(qstr, x.p_title))
+        result = []
+        for post in data:
+            tmp = post.to_dict()
+            tmp.update({
+                'userIsAdmin': 0,
+                'userIsLz': 0,
+                'userLike': 0,
+                'userDislike': 0,
+                'userFav': 0
+            })
+            if UserPost.objects.filter(user=user, post=post, is_liked=1):
+                tmp['userLike'] = 1
+            if UserPost.objects.filter(user=user, post=post, is_disliked=1):
+                tmp['userDislike'] = 1
+            if UserPost.objects.filter(user=user, post=post, is_favorite=1):
+                tmp['userFav'] = 1
+            if post.p_user == user:
+                tmp['userIsLz'] = 1
+            if UserGroup(user=user, group=get_group_by_id(post.p_group.g_id), is_admin=1):
+                tmp['userIsAdmin'] = 1
+            result.append(tmp)
+        re = result
+        ################################
+        print(re)
+        ################################
+    return re
+
+
 def query_chat(request):
     return HttpResponse(json.dumps(_query_chat(request)))
 
 
 def _query_chat(request):
-    re = {}
+    re = []
     if request.method == 'POST':
         qstr = request.POST['qstr']
-        data = Chat.objects.filter(Q(c_name__icontains=qstr) or Q(c_description__icontains=qstr))
+        user = get_cur_user(request)
+        ################################
+        print(qstr)
+        ################################
+        data = Chat.objects.filter(Q(c_name__icontains=qstr) or
+                                   Q(c_description__icontains=qstr))
         data = sorted(data, key=lambda x: weight(qstr, x.c_name + x.c_description))
-        re['msg'] = 0
         result = []
-        for item in data:
-            result.append(item.to_dict())
-        re['data'] = result
-    else:
-        re['msg'] = ERR_REQUEST_METHOD_WRONG
+        for chat in data:
+            tmp = chat.to_dict()
+            tmp.update({
+                'follow': get_chat_follow_num(chat),
+                'post': get_chat_post_num(chat)
+            })
+            result.append(tmp)
+        re = result
+        ################################
+        print(re)
+        ################################
     return re
 
 
@@ -69,20 +121,33 @@ def query_group(request):
 
 
 def _query_group(request):
-    re = {}
+    re = []
     if request.method == 'POST':
         qstr = request.POST['qstr']
+        ################################
+        # print(qstr)
+        ################################
+        user = get_cur_user(request)
         data = Group.objects.filter(Q(g_name__icontains=qstr) or
                                     Q(g_description__icontains=qstr) or
                                     Q(g_tag__icontains=qstr))
         data = sorted(data, key=lambda x: weight(qstr, x.g_name + x.g_description))
-        re['msg'] = 0
-        result = []
-        for item in data:
-            result.append(item.to_dict())
-        re['data'] = result
-    else:
-        re['msg'] = ERR_REQUEST_METHOD_WRONG
+        re_data = []
+        for group in data:
+            tmp = group.to_dict()
+            tmp.update({
+                'userIsAdmin': 0,
+                'userInGroup': 0
+            })
+            if user_is_group_admin(user, group):
+                tmp['userIsAdmin'] = 1
+            if user_in_group(user, group):
+                tmp['userInGroup'] = 1
+            re_data.append(tmp)
+        re = re_data
+        ################################
+        # print(re)
+        ################################
     return re
 
 
