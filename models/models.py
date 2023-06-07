@@ -118,7 +118,9 @@ class Chat(models.Model):
             'topicHeadBgUrl': settings.ROOT_URL + self.c_profile_photo.p_content.url,
             'topicAvatarUrl': settings.ROOT_URL + self.c_head_photo.p_content.url,
             'topicIntro': self.c_description.__str__(),
-            'date': self.c_last_modify_time.__str__(),
+            'date': self.c_last_modify_time.__str__()[:19],
+            'follow': UserChat.objects.all().count(),
+            'post': Post.objects.filter(p_chat=self).count(),
 
             'c_id': self.c_id,
             'c_name': self.c_name,
@@ -242,7 +244,7 @@ class Text(models.Model):
             'userId': self.t_user.u_id,
             'userName': self.t_user.u_name,
             'userImageUrl': settings.ROOT_URL + self.t_user.u_profile_photo.p_content.url,
-            'date': self.t_create_time.__str__()[:10],
+            'date': self.t_create_time.__str__()[:19],
             'text': self.t_description,
             'imageUrlList': self.get_image_list(),
             'comments': Text.objects.filter(t_text=self).count(),
@@ -261,7 +263,7 @@ class Text(models.Model):
 
     def get_image_list(self):
         images = list(Picture.objects.filter(p_father_text=self))
-        images = [x.p_content for x in images]
+        images = [settings.ROOT_URL + x.p_content.url for x in images]
         return images
 
     def like(self):
@@ -376,7 +378,7 @@ class Post(models.Model):
             'lzId': self.p_user.u_id,
             'lzName': self.p_user.u_name,
             'lzImageUrl': settings.ROOT_URL + self.p_user.u_profile_photo.p_content.url,
-            'date': self.p_create_time.__str__()[:10],
+            'date': self.p_create_time.__str__()[:19],
             'title': self.p_title,
             'text': self.get_first_floor().t_description,
             'postImageUrlList': self.get_first_floor_image_list(),
@@ -389,9 +391,10 @@ class Post(models.Model):
             'dislike': self.p_dislike,
             'isTopped': self.p_is_top,
             'isGoodPost': self.p_is_essence,
-            'groupName': self.p_group.g_name,
-            'groupId': self.p_group.g_id
         }
+        if self.p_group:
+            re['groupName'] = self.p_group.g_name
+            re['groupId'] = self.p_group.g_id
         # if self.p_group is not None:
         #     re['p_group'] = self.p_group.to_dict()
         return re
@@ -405,6 +408,7 @@ class Post(models.Model):
     def get_first_floor_image_list(self):
         text = self.get_first_floor()
         re = list(Picture.objects.filter(p_father_text=text))
+
         return [settings.ROOT_URL + x.p_content.url for x in re]
 
 
@@ -422,6 +426,7 @@ class Message(models.Model):
     m_post = models.ForeignKey(Post, on_delete=models.DO_NOTHING, default=None, blank=True, null=True)
     m_title = models.CharField(max_length=255)
     m_description = models.CharField(max_length=255)
+    m_is_handled = models.IntegerField(default=0)
     m_type = models.IntegerField()  # 1.点赞 2.评论 3.系统消息 4.申请管理员 5.举报消息
     # 文本内容 1.给b发 2.给b发 3.管理员判定申请成功or失败，举报批准，都同时发消息
     # 返回时分类依据：消息内部分类
@@ -456,9 +461,20 @@ class Message(models.Model):
             'userImgUrl': settings.ROOT_URL + self.m_applier.u_profile_photo.p_content.url,
             'name': self.m_applier.u_name,
             'msg': self.m_description,
-            'time': self.m_time.__str__()[:10],
+            'time': self.m_time.__str__()[:19],
         }
         return re
+
+    def to_dict_report(self):
+        re = {
+            'id': self.m_id,
+            'userImgUrl': settings.ROOT_URL + self.m_applier.u_profile_photo.p_content.url,
+            'name': self.m_applier.u_name,
+            'msg': self.m_description,
+            'time': self.m_time.__str__()[:19],
+        }
+        return re
+
 class UserText(models.Model):
     text = models.ForeignKey(Text, models.DO_NOTHING)
     user = models.ForeignKey(User, models.DO_NOTHING)

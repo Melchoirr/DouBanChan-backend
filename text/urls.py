@@ -3,7 +3,7 @@ from text.views import *
 
 urlpatterns = [
     path("query_single/", query_single_text),
-    path("reply/", reply_text),
+    path("reply_text/", reply_text),
     path("delete/", delete_text),
     path("like/", like_text),
     path("cancel_like/", cancel_like_text),
