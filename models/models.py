@@ -425,7 +425,7 @@ class Message(models.Model):
     m_time = models.DateTimeField(auto_now_add=True)
     m_post = models.ForeignKey(Post, on_delete=models.DO_NOTHING, default=None, blank=True, null=True)
     m_title = models.CharField(max_length=255)
-    m_description = models.CharField(max_length=255)
+    m_description = models.TextField(default='')
     m_is_handled = models.IntegerField(default=0)
     m_type = models.IntegerField()  # 1.点赞 2.评论 3.系统消息 4.申请管理员 5.举报消息
     # 文本内容 1.给b发 2.给b发 3.管理员判定申请成功or失败，举报批准，都同时发消息
