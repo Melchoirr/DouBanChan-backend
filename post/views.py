@@ -292,18 +292,36 @@ def reply_post(request):
 
 def delete_post(request):
     re = {}
-    if basic_check(request):
+    p_id = request.POST['p_id']
+    post = get_post_by_id(p_id)
+    post.delete()
+    return HttpResponse(json.dumps(re))
+
+
+def set_essence(request):
+    re = {}
+    post = get_post_by_id(request.POST['p_id'])
+    post.p_is_essence = 1
+    post.save()
+    return HttpResponse(json.dumps(re))
+
+
+def set_top(request):  # 只修改post详情页返回顺序 ?
+    #  ?
+    re = {}
+    if request.method == 'POST':
         user = get_cur_user(request)
-        p_id = request.POST['p_id']
-        post = get_post_by_id(p_id)
-        if post.p_user == user:
-            post.delete()
+        group = get_group_by_id(request.POST['g_id'])
+        user_group = UserGroup.objects.get(user=user, group=group)
+        if user_group is not None and user_group.is_admin == 1:  # 这个检查方式ok吗？
+            post = get_post_by_id(request.POST['p_id'])
+            post.p_is_top = 1
+            post.save()
+            re['msg'] = 0
         else:
-            re['msg'] = ERR_NOT_POSSESSION
-            return HttpResponse(json.dumps(re))
-        re['msg'] = 0
+            re['msg'] = ERR_NOT_GROUP_ADMIN
     else:
-        re['msg'] = ERR_OTHER
+        re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
 
 

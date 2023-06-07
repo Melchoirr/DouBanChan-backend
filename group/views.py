@@ -207,43 +207,6 @@ def quit_group(request):  # 直接退出
     return HttpResponse(json.dumps(re))
 
 
-def set_essence(request):
-    re = {}
-    if request.method == 'POST':
-        user = get_cur_user(request)
-        group = get_group_by_id(request.POST['g_id'])
-        user_group = UserGroup.objects.get(user=user, group=group)
-        if user_group is not None and user_group.is_admin == 1:  # 这个检查方式ok吗？
-            post = get_post_by_id(request.POST['p_id'])
-            post.p_is_essence = 1
-            post.save()
-            re['msg'] = 0
-        else:
-            re['msg'] = ERR_NOT_GROUP_ADMIN
-    else:
-        re['msg'] = ERR_REQUEST_METHOD_WRONG
-    return HttpResponse(json.dumps(re))
-
-
-def set_top(request):  # 只修改post详情页返回顺序 ?
-    #  ?
-    re = {}
-    if request.method == 'POST':
-        user = get_cur_user(request)
-        group = get_group_by_id(request.POST['g_id'])
-        user_group = UserGroup.objects.get(user=user, group=group)
-        if user_group is not None and user_group.is_admin == 1:  # 这个检查方式ok吗？
-            post = get_post_by_id(request.POST['p_id'])
-            post.p_is_top = 1
-            post.save()
-            re['msg'] = 0
-        else:
-            re['msg'] = ERR_NOT_GROUP_ADMIN
-    else:
-        re['msg'] = ERR_REQUEST_METHOD_WRONG
-    return HttpResponse(json.dumps(re))
-
-
 def apply_admin(request):  # 和加入小组类似 不需要检查是否加入小组，前端检查
     re = {}
     if request.method == 'POST':
