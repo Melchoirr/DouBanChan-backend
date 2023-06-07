@@ -12,8 +12,8 @@ def _query_single_text(request):
     text = get_text_by_id(t_id)
     replies = list(Text.objects.filter(t_type=3).filter(t_text=text))
     replies = [x.to_dict() for x in replies]
-    replies_sorted_by_time = sorted(replies, key=lambda x: x['t_create_time'].__str__())
-    replies_sorted_by_like = sorted(replies, key=lambda x: x['t_like'])
+    replies_sorted_by_time = sorted(replies, key=lambda x: x['t_create_time'].__str__(), reverse=True)
+    replies_sorted_by_like = sorted(replies, key=lambda x: x['t_like'], reverse=True)
     re['msg'] = 0
     re['text'] = text.to_dict()
     re['replies_sorted_by_time'] = replies_sorted_by_time

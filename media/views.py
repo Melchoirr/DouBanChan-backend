@@ -253,45 +253,60 @@ def get_heat_comment_for_book(request):
 
 
 def heated_movie(request):
+    re = _heated_movie(request)
+    return HttpResponse(json.dumps(re))
+
+
+def _heated_movie(request):
     re = {}
     if basic_check(request):
-        _heated_movie = list(Media.objects.filter(m_type=1))[:10]
-        _heated_movie = [x.to_dict() for x in _heated_movie]
-        _heated_movie = sorted(_heated_movie, key=lambda x: x['m_heat'], reverse=True)
+        __heated_movie = list(Media.objects.filter(m_type=1))[:10]
+        __heated_movie = [x.to_dict() for x in __heated_movie]
+        __heated_movie = sorted(__heated_movie, key=lambda x: x['m_heat'], reverse=True)
         ##############################################
         # print(_heated_movie)
         ##############################################
         re['msg'] = 0
-        re['heat_movie'] = _heated_movie
+        re['heat_movie'] = __heated_movie
     else:
         re['msg'] = ERR_OTHER
-    return HttpResponse(json.dumps(re))
+    return re
 
 
 def heated_series(request):
+    re = _heated_series(request)
+    return HttpResponse(json.dumps(re))
+
+
+def _heated_series(request):
     re = {}
     if basic_check(request):
-        _heated_series = list(Media.objects.filter(m_type=2))[:10]
-        _heated_series = [x.to_dict() for x in _heated_series]
-        _heated_series = sorted(_heated_series, key=lambda x: x['m_heat'], reverse=True)
+        __heated_series = list(Media.objects.filter(m_type=2))[:10]
+        __heated_series = [x.to_dict() for x in __heated_series]
+        __heated_series = sorted(__heated_series, key=lambda x: x['m_heat'], reverse=True)
         re['msg'] = 0
-        re['heat_series'] = _heated_series
+        re['heat_series'] = __heated_series
     else:
         re['msg'] = ERR_OTHER
-    return HttpResponse(json.dumps(re))
+    return re
 
 
 def heated_book(request):
+    re = _heated_book(request)
+    return HttpResponse(json.dumps(re))
+
+
+def _heated_book(request):
     re = {}
     if basic_check(request):
-        _heated_series = list(Media.objects.filter(m_type=3))[:10]
-        _heated_series = [x.to_dict() for x in _heated_series]
-        _heated_series = sorted(_heated_series, key=lambda x: x['m_heat'], reverse=True)
+        __heated_series = list(Media.objects.filter(m_type=3))[:10]
+        __heated_series = [x.to_dict() for x in __heated_series]
+        __heated_series = sorted(__heated_series, key=lambda x: x['m_heat'], reverse=True)
         re['msg'] = 0
-        re['heat_book'] = _heated_series
+        re['heat_book'] = __heated_series
     else:
         re['msg'] = ERR_OTHER
-    return HttpResponse(json.dumps(re))
+    return re
 
 
 def related_group(request):
