@@ -155,4 +155,93 @@ def show_report_message(request):
 def show_text_message(request):
     pass
 
-#  处理请求单独一栏
+
+def get_user_movie(request):
+    re = {}
+    if basic_check(request):
+        user = get_cur_user(request)
+        ums = list(UserMedia.objects.filter(user=user, is_in_collection=1, media__m_type=1))
+        movies = [x.media.to_dict() for x in ums]
+        re['msg'] = 0
+        re['movies'] = movies
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def get_user_series(request):
+    re = {}
+    if basic_check(request):
+        user = get_cur_user(request)
+        ums = list(UserMedia.objects.filter(user=user, is_in_collection=1, media__m_type=2))
+        movies = [x.media.to_dict() for x in ums]
+        re['msg'] = 0
+        re['series'] = movies
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def get_user_book(request):
+    re = {}
+    if basic_check(request):
+        user = get_cur_user(request)
+        ums = list(UserMedia.objects.filter(user=user, is_in_collection=1, media__m_type=3))
+        movies = [x.media.to_dict() for x in ums]
+        re['msg'] = 0
+        re['books'] = movies
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def get_user_fav_post(request):
+    re = {}
+    if basic_check(request):
+        user = get_cur_user(request)
+        ups = list(UserPost.objects.filter(user=user, is_favorite=1))
+        posts = [x.post.to_dict() for x in ups]
+        re['msg'] = 0
+        re['posts'] = posts
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def get_user_fav_text1(request):
+    re = {}
+    if basic_check(request):
+        user = get_cur_user(request)
+        ups = list(UserText.objects.filter(user=user, is_favorite=1))
+        posts = [x.text.to_dict() for x in ups]
+        re['msg'] = 0
+        re['texts'] = posts
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def get_self_post(request):
+    re = {}
+    if basic_check(request):
+        user = get_cur_user(request)
+        posts = list(Post.objects.filter(p_user=user))
+        posts = [x.to_dict() for x in posts]
+        re['msg'] = 0
+        re['posts'] = posts
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def get_self_group(request):
+    re = {}
+    if basic_check(request):
+        user = get_cur_user(request)
+        ugs = list(UserGroup.objects.filter(user=user))
+        groups = [x.group.to_dict() for x in ugs]
+        re['msg'] = 0
+        re['groups'] = groups
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))

@@ -25,4 +25,5 @@ urlpatterns = [
     path("get_status/", get_status),
     path("get_heat_comment_for_book/", get_heat_comment_for_book),
     path("get_heat_book/", heated_book),
+    path("get_media_status/", get_media_status),
 ]
