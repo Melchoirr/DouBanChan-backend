@@ -81,7 +81,7 @@ def query_chat_by_tag(request):  # !
     re = {}
     chatList = []
     if request.POST['c_tag'] != '':
-        for chat in list(Chat.objects.filter(g_tag=request.POST['c_tag'])):
+        for chat in list(Chat.objects.filter(c_tag=request.POST['c_tag'])):
             each = chat.to_dict()
             chatList.append(each)
     else:

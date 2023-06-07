@@ -1,3 +1,4 @@
+from post.views import delete_post
 from tools.imports import *
 
 
@@ -33,13 +34,33 @@ def report_text(request):  # 或者发布到一个特定区域，直邮管理员
 
 def query_report(request):
     re = {}
-    re['report_list'] = [x.to_dict() for x in list(Message.objects.filter(m_type=5))]
+    re['report_list'] = [x.to_dict_report() for x in list(Message.objects.filter(m_type=5))]
+    return HttpResponse(json.dumps(re))
+
+
+def grant_report(request):
+    re = {}
+    report = Message.objects.get(m_id=request.POST['m_id'])
+    report.m_is_handled = 1
+    report.save()
+    p_id = request.POST['p_id']
+    post = get_post_by_id(p_id)
+    post.delete()
+    return HttpResponse(json.dumps(re))
+
+
+def deny_report(request):
+    re = {}
+    report = Message.objects.get(m_id=request.POST['m_id'])
+    report.m_is_handled = 1
+    report.save()
     return HttpResponse(json.dumps(re))
 
 
 def delete_message(request):
     message = get_message_by_id(request.POST['m_id'])
     message.delete()
+    return
 
 
 def query_report(request):
