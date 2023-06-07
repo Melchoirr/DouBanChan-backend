@@ -582,6 +582,14 @@ def get_ratio(request):
             cnt78 += 1
         if um.rate == 9 or um.rate == 10:
             cnt90 += 1
+    if cnt == 0:
+        return HttpResponse(json.dumps({
+            '12': '0.0%',
+            '34': '0.0%',
+            '56': '0.0%',
+            '78': '0.0%',
+            '90': '0.0%',
+        }))
     return HttpResponse(json.dumps({
         '12': str(round(100.0 * cnt12 / cnt, 1)) + '%',
         '34': str(round(100.0 * cnt34 / cnt, 1)) + '%',

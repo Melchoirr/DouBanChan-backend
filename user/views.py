@@ -247,6 +247,19 @@ def get_self_group(request):
     return HttpResponse(json.dumps(re))
 
 
+def get_self_chat(request):
+    re = {}
+    if basic_check(request):
+        user = get_cur_user(request)
+        ucs = list(UserChat.objects.filter(user=user))
+        chats = [x.chat.to_dict() for x in ucs]
+        re['msg'] = 0
+        re['chats'] = chats
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
 def change_profile(request):
     re = {}
     if basic_check(request):
