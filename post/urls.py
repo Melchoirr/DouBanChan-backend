@@ -2,6 +2,7 @@ from django.urls import path
 from post.views import *
 
 urlpatterns = [
+    path("add_post/", add_post),
     path("like_post/", like_post),
     path("dislike_post/", dislike_post),
     path("post_set_favorite/", post_set_favorite),

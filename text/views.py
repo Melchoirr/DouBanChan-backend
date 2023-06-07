@@ -88,12 +88,6 @@ def cancel_like_text(request):
         user_text = UserText.objects.get(user=applier, text=text)
         user_text.is_liked = 0
         user_text.save()
-        # 发信息，
-        message = Message(m_applier=applier,
-                          m_description='您的评论\'' + text.t_topic + '\'被' + applier.u_name + '点赞了',
-                          m_user=text.t_user, m_type=1)
-        # 就直接用topic了，空的也不管了
-        message.save()
         re['msg'] = 0
     else:
         re['msg'] = ERR_OTHER

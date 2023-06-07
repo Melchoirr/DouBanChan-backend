@@ -133,40 +133,6 @@ def quit_chat(request):  # 前端应该不会调用
     return HttpResponse(json.dumps(re))
 
 
-def add_post(request):
-    re = {}
-    if basic_check(request):
-        c_id = request.POST['c_id']
-        user = get_cur_user(request)
-        chat = get_chat_by_id(c_id)
-        chat.c_users.add(user)
-        chat.c_heat += 1
-        chat.save()
-        post = Post(p_title=request.POST['p_title'],
-                    p_user=user,
-                    p_chat=chat,
-                    p_floor_num=1)
-        text = Text(t_type=2,
-                    t_user=user,
-                    t_description=request.POST['text'],
-                    t_topic=request.POST['topic'],
-                    t_floor=1,
-                    t_post=post)
-        if 'group' in request.POST:
-            group = get_group_by_id(request.POST['group'])
-            if UserGroup.objects.filter(user=user, group=group):
-                post.p_group = group
-            else:
-                re['msg'] = ERR_NOT_JOINED
-                return HttpResponse(json.dumps(re))
-        text.save()
-        post.save()
-        re['msg'] = 0
-    else:
-        re['msg'] = ERR_OTHER
-    return HttpResponse(json.dumps(re))
-
-
 def delete_post(request):
     re = {}
     if basic_check(request):
@@ -184,31 +150,3 @@ def delete_post(request):
     return HttpResponse(json.dumps(re))
 
 
-def like_post(request):
-    re = {}
-    if basic_check(request):
-        user = get_cur_user(request)
-        post = request.POST['p_id']
-        post.p_like += 1
-        post.save()
-        user_post = UserPost(post=post, user=user, is_liked=1)
-        user_post.save()
-        re['msg'] = 0
-    else:
-        re['msg'] = ERR_OTHER
-    return HttpResponse(json.dumps(re))
-
-
-def dislike_post(request):
-    re = {}
-    if basic_check(request):
-        user = get_cur_user(request)
-        post = request.POST['p_id']
-        post.p_dislike += 1
-        post.save()
-        user_post = UserPost(post=post, user=user, is_disliked=1)
-        user_post.save()
-        re['msg'] = 0
-    else:
-        re['msg'] = ERR_OTHER
-    return HttpResponse(json.dumps(re))

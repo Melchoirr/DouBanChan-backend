@@ -9,6 +9,7 @@ def upload(request):  # ERR?
         picture.save()
         re['msg'] = 0
         re['picture'] = picture.to_dict()
+        re['picture_id'] = picture.p_id
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
