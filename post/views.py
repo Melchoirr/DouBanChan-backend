@@ -157,7 +157,7 @@ def like_post(request):
     re = {}
     if basic_check(request):
         applier = get_cur_user(request)
-        post = request.POST['p_id']
+        post = get_post_by_id(request.POST['p_id'])
         post.p_like += 1
         post.save()
         if UserPost.objects.filter(user=applier, post=post):
@@ -165,8 +165,8 @@ def like_post(request):
             user_post.is_liked = 1
             user_post.save()
         else:
-            user_text = UserText(user=applier, post=post, is_liked=1)
-            user_text.save()
+            user_post = UserPost(user=applier, post=post, is_liked=1)
+            user_post.save()
         # 发信息，
         message = Message(m_applier=applier, m_description='您的帖子\'' + post.p_title + '\'被' + applier.u_name + '点赞了', m_user=post.p_user, m_type=1)
         message.save()
@@ -194,8 +194,8 @@ def cancel_like_post(request):
 
 def post_set_favorite(request):
     user = get_cur_user(request)
-    post = get_post_by_id(request.POST['t_id'])
-    post.t_favorite += 1
+    post = get_post_by_id(request.POST['p_id'])
+    post.p_favorite += 1
     post.save()
     if UserPost.objects.filter(user=user, post=post):
         user_post = UserPost.objects.get(user=user, post=post)
@@ -228,7 +228,7 @@ def dislike_post(request):
         user_post.is_dislike = 1
         user_post.save()
     else:
-        user_post = UserPost(user=user, post=post, is_dislike=1)
+        user_post = UserPost(user=user, post=post, is_disliked=1)
         user_post.save()
     return HttpResponse(json.dumps({}))
 
@@ -236,7 +236,7 @@ def dislike_post(request):
 def cancel_dislike_post(request):
     user = get_cur_user(request)
     post = get_post_by_id(request.POST['p_id'])
-    post.t_dislike -= 1
+    post.p_dislike -= 1
     post.save()
     user_post = UserPost.objects.get(user=user, post=post)
     user_post.is_dislike = 0
@@ -307,23 +307,27 @@ def set_essence(request):
 
 
 def set_top(request):  # 只修改post详情页返回顺序 ?
-    #  ?
     re = {}
-    if request.method == 'POST':
-        user = get_cur_user(request)
-        group = get_group_by_id(request.POST['g_id'])
-        user_group = UserGroup.objects.get(user=user, group=group)
-        if user_group is not None and user_group.is_admin == 1:  # 这个检查方式ok吗？
-            post = get_post_by_id(request.POST['p_id'])
-            post.p_is_top = 1
-            post.save()
-            re['msg'] = 0
-        else:
-            re['msg'] = ERR_NOT_GROUP_ADMIN
-    else:
-        re['msg'] = ERR_REQUEST_METHOD_WRONG
+    post = get_post_by_id(request.POST['p_id'])
+    post.p_is_top = 1
+    post.save()
     return HttpResponse(json.dumps(re))
 
+
+def cancel_essence(request):
+    re = {}
+    post = get_post_by_id(request.POST['p_id'])
+    post.p_is_essence = 0
+    post.save()
+    return HttpResponse(json.dumps(re))
+
+
+def cancel_top(request):  # 只修改post详情页返回顺序 ?
+    re = {}
+    post = get_post_by_id(request.POST['p_id'])
+    post.p_is_top = 0
+    post.save()
+    return HttpResponse(json.dumps(re))
 
 def query_group_posts(request):
     re = {}

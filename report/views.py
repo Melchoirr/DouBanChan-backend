@@ -38,7 +38,7 @@ def query_report(request):
     return HttpResponse(json.dumps(re))
 
 
-def grant_report(request):
+def grant_report_post(request):
     re = {}
     report = Message.objects.get(m_id=request.POST['m_id'])
     report.m_is_handled = 1
@@ -46,6 +46,17 @@ def grant_report(request):
     p_id = request.POST['p_id']
     post = get_post_by_id(p_id)
     post.delete()
+    return HttpResponse(json.dumps(re))
+
+
+def grant_report_text(request):
+    re = {}
+    report = Message.objects.get(m_id=request.POST['m_id'])
+    report.m_is_handled = 1
+    report.save()
+    t_id = request.POST['t_id']
+    text = get_text_by_id(t_id)
+    text.delete()
     return HttpResponse(json.dumps(re))
 
 

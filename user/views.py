@@ -208,7 +208,7 @@ def get_user_fav_post(request):
     return HttpResponse(json.dumps(re))
 
 
-def get_user_fav_text1(request):
+def get_user_fav_text(request):
     re = {}
     if basic_check(request):
         user = get_cur_user(request)
