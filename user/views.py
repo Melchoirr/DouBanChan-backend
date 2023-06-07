@@ -245,3 +245,20 @@ def get_self_group(request):
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
+
+
+def change_profile(request):
+    re = {}
+    if basic_check(request):
+        user = get_cur_user(request)
+        user.u_nickname = request.POST['u_nickname']
+        user.u_gender = request.POST['u_gender']
+        user.u_birthday = request.POST['u_birthday']
+        user.u_signature = request.POST['u_signature']
+        user.u_desc = request.POST['u_desc']
+        user.save()
+        re['msg'] = 0
+        re['user'] = user.to_dict()
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))

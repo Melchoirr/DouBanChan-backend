@@ -288,7 +288,7 @@ def heated_book(request):
         _heated_series = [x.to_dict() for x in _heated_series]
         _heated_series = sorted(_heated_series, key=lambda x: x['m_heat'], reverse=True)
         re['msg'] = 0
-        re['heat_series'] = _heated_series
+        re['heat_book'] = _heated_series
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
