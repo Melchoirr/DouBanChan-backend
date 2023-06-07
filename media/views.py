@@ -171,6 +171,7 @@ def media_filter(request):
             start = 0
             end = 3000
         else:
+            m_year = m_year[:-2]
             start = int(m_year) - 1
             end = int(m_year) + 10
         media = list(Media.objects.filter(
@@ -287,7 +288,7 @@ def heated_book(request):
         _heated_series = [x.to_dict() for x in _heated_series]
         _heated_series = sorted(_heated_series, key=lambda x: x['m_heat'], reverse=True)
         re['msg'] = 0
-        re['heat_series'] = _heated_series
+        re['heat_book'] = _heated_series
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))

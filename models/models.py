@@ -26,6 +26,8 @@ class Media(models.Model):
     # book
     m_author = models.CharField(max_length=255, default='', blank=True, null=True)
     m_characters = models.IntegerField(default=0, blank=True, null=True)
+    m_page = models.IntegerField(default=0)
+    m_publisher = models.CharField(max_length=255, default='', blank=True, null=True)
 
     class Meta:
         managed = True
@@ -50,7 +52,9 @@ class Media(models.Model):
             'm_author': self.m_author,
             'm_characters': self.m_characters,
             'm_language': self.m_language,
-            'm_writer': self.m_writer
+            'm_writer': self.m_writer,
+            'm_page': self.m_page,
+            'm_publisher': self.m_publisher
         }
         if self.m_profile_photo is not None:
             re['m_profile_photo'] = settings.ROOT_URL + self.m_profile_photo.p_content.url
@@ -284,6 +288,11 @@ class User(models.Model):
     u_texts = models.ManyToManyField(Text, related_name='t_users', through='UserText')
     u_posts = models.ManyToManyField('Post', related_name='p_users', through='UserPost')
     is_active = models.IntegerField(default=0)
+    u_nickname = models.CharField(max_length=255, default='', blank=True, null=True)
+    u_gender = models.CharField(max_length=16, default='保密', blank=True, null=True)
+    u_birthday = models.CharField(max_length=128, default='保密', blank=True, null=True)
+    u_signature = models.CharField(max_length=255, default='', blank=True, null=True)
+    u_desc = models.CharField(max_length=2048, default='', blank=True, null=True)
 
     class Meta:
         managed = True
@@ -293,8 +302,12 @@ class User(models.Model):
         re = {
             'u_id': self.u_id,
             'u_name': self.u_name,
-            # 'u_password': self.u_password, 没必要吧？
-            'u_email': self.u_email.__str__()
+            'u_email': self.u_email.__str__(),
+            'u_nickname': self.u_nickname,
+            'u_gender': self.u_gender,
+            'u_birthday': self.u_birthday,
+            'u_signature': self.u_signature,
+            'u_desc': self.u_desc
         }
         if self.u_profile_photo is not None:
             re['u_profile_photo'] = settings.ROOT_URL + self.u_profile_photo.p_content.url
