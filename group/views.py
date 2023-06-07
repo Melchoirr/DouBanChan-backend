@@ -187,13 +187,9 @@ def join_group(request):  # 这个不需要申请，管理员需要申请
     if request.method == 'POST':
         user = get_cur_user(request)
         group = get_group_by_id(request.POST['g_id'])
-        user_group = UserGroup.objects.get(user=user, group=group)
-        if user_group is None:
-            new_user_group = UserGroup(user=user, group=group)
-            new_user_group.save()
-            # 前端把“在小组里”置为1
-        else:
-            re['msg'] = ERR_ALREADY_JOINED
+        user_group = UserGroup(user=user, group=group)
+        user_group.save()
+
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
@@ -253,8 +249,21 @@ def apply_admin(request):  # 和加入小组类似 不需要检查是否加入�
     if request.method == 'POST':
         user = get_cur_user(request)
         group = get_group_by_id(request.POST['g_id'])
-        apply = Message(m_applier=user, m_group=group, m_type=4)
+        apply = Message(m_applier=user, m_group=group, m_type=4, m_description=request.POST['text'])
         apply.save()
+    else:
+        re['msg'] = ERR_REQUEST_METHOD_WRONG
+    return HttpResponse(json.dumps(re))
+
+
+def cancel_admin(request):
+    re = {}
+    if request.method == 'POST':
+        user = get_cur_user(request)
+        group = get_group_by_id(request.POST['g_id'])
+        user_group = UserGroup.objects.get(user=user, group=group)
+        user_group.is_admin = 0
+        user_group.save()
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return HttpResponse(json.dumps(re))
@@ -267,8 +276,8 @@ def query_apply(request):
     re = {}
     apply_list = []
     for each in list(Message.objects.filter(m_type=4, m_group=get_group_by_id(request.POST['g_id']))):
-        apply_list.append(each.to_dict())
-    re['apply_list'] = apply_list
+        apply_list.append(each.to_dict_apply())
+    re['li'] = apply_list
     return HttpResponse(json.dumps(re))
 
 
@@ -279,24 +288,27 @@ def remove_member(request):
 
 def grant_apply(request):
     # if agree，加入，均删掉
+    re = {}
     apply = get_message_by_id(request.POST['m_id'])
     user = apply.m_applier
     group = apply.m_group
-    user_group = UserGroup(user=user, group=group, is_admin=True)
+    user_group = UserGroup(user=user, group=group)
+    user_group.is_admin = 1
     user_group.save()
     # 后端组合字符串：您的发言“xxx”被举报了：取前几个字？ 最好有标题
     message = Message(m_user=user, m_description=group.g_name + '小组：恭喜你成为管理员', m_group=group, m_type=3)
     delete_message(request)
-    return
+    return HttpResponse(json.dumps(re))
 
 
 def deny_apply(request):
+    re = {}
     apply = get_message_by_id(request.POST['m_id'])
     user = apply.m_applier
     group = apply.m_group
     message = Message(m_user=user, m_description=group.g_name + '小组：申请管理员未通过', m_group=group, m_type=3)
     delete_message(request)
-    return
+    return HttpResponse(json.dumps(re))
 
 
 def query_group_by_tag(request):

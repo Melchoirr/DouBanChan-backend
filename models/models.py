@@ -371,7 +371,7 @@ class Post(models.Model):
             'lzId': self.p_user.u_id,
             'lzName': self.p_user.u_name,
             'lzImageUrl': settings.ROOT_URL + self.p_user.u_profile_photo.p_content.url,
-            'date': self.p_create_time.__str__(),
+            'date': self.p_create_time.__str__()[:10],
             'title': self.p_title,
             'text': self.get_first_floor().t_description,
             'postImageUrlList': self.get_first_floor_image_list(),
@@ -418,7 +418,6 @@ class Message(models.Model):
     m_title = models.CharField(max_length=255)
     m_description = models.CharField(max_length=255)
     m_type = models.IntegerField()  # 1.点赞 2.评论 3.系统消息 4.申请管理员 5.举报消息
-
     # 文本内容 1.给b发 2.给b发 3.管理员判定申请成功or失败，举报批准，都同时发消息
     # 返回时分类依据：消息内部分类
     # 怎么做到给文章点赞返回信息？ 在点赞的时候
@@ -446,7 +445,15 @@ class Message(models.Model):
             re['m_post'] = self.m_post.to_dict()
         return re
 
-
+    def to_dict_apply(self):
+        re = {
+            'id': self.m_id,
+            'userImgUrl': settings.ROOT_URL + self.m_applier.u_profile_photo.p_content.url,
+            'name': self.m_applier.u_name,
+            'msg': self.m_description,
+            'time': self.m_time.__str__()[:10],
+        }
+        return re
 class UserText(models.Model):
     text = models.ForeignKey(Text, models.DO_NOTHING)
     user = models.ForeignKey(User, models.DO_NOTHING)
