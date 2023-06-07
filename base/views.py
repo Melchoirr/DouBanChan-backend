@@ -54,7 +54,7 @@ def _query_post(request):
         qstr = request.POST['qstr']
         user = get_cur_user(request)
         ################################
-        print(qstr)
+        # print(qstr)
         ################################
         data = Post.objects.filter(Q(p_title__icontains=qstr))
         data = sorted(data, key=lambda x: weight(qstr, x.p_title))
@@ -81,7 +81,7 @@ def _query_post(request):
             result.append(tmp)
         re = result
         ################################
-        print(re)
+        # print(re)
         ################################
     return re
 
@@ -96,7 +96,7 @@ def _query_chat(request):
         qstr = request.POST['qstr']
         user = get_cur_user(request)
         ################################
-        print(qstr)
+        # print(qstr)
         ################################
         data = Chat.objects.filter(Q(c_name__icontains=qstr) or
                                    Q(c_description__icontains=qstr))
@@ -111,7 +111,7 @@ def _query_chat(request):
             result.append(tmp)
         re = result
         ################################
-        print(re)
+        # print(re)
         ################################
     return re
 
@@ -276,6 +276,36 @@ def col_book(request):
         random.shuffle(_list)
         re['msg'] = 0
         re['list'] = _list[:6]
+        ###################################
+        # print(_list)
+        ###################################
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def col_chat(request):
+    re = {}
+    if basic_check(request):
+        _list = list(Chat.objects.filter())
+        random.shuffle(_list)
+        _list = [x.to_dict() for x in _list][:5]
+        re['msg'] = 0
+        re['chats'] = _list
+        print(re)
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def col_group(request):
+    re = {}
+    if basic_check(request):
+        _list = list(Group.objects.filter())
+        random.shuffle(_list)
+        _list = [x.to_dict() for x in _list][:6]
+        re['msg'] = 0
+        re['groups'] = _list
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))

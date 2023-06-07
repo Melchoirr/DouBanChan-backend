@@ -534,3 +534,27 @@ def dislike_comment(request):
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
 
+
+def get_ratio(request):
+    media = get_media_by_id(request.POST['m_id'])
+    _list = UserMedia.objects.filter(media=media)
+    cnt, cnt12, cnt34, cnt56, cnt78, cnt90 = 0, 0, 0, 0, 0, 0
+    for um in _list:
+        cnt += 1
+        if um.rate == 1 or um.rate == 2:
+            cnt12 += 1
+        if um.rate == 3 or um.rate == 4:
+            cnt34 += 1
+        if um.rate == 5 or um.rate == 6:
+            cnt56 += 1
+        if um.rate == 7 or um.rate == 8:
+            cnt78 += 1
+        if um.rate == 9 or um.rate == 10:
+            cnt90 += 1
+    return HttpResponse(json.dumps({
+        '12': round(100.0 * cnt12 / cnt, 1),
+        '34': round(100.0 * cnt34 / cnt, 1),
+        '56': round(100.0 * cnt56 / cnt, 1),
+        '78': round(100.0 * cnt78 / cnt, 1),
+        '90': round(100.0 * cnt90 / cnt, 1),
+    }))
