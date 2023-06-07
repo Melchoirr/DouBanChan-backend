@@ -98,7 +98,7 @@ def _query_chat(request):
         ################################
         # print(qstr)
         ################################
-        data = Chat.objects.filter(Q(c_name__icontains=qstr) or
+        data = Chat.objects.filter(Q(c_name__icontains=qstr) |
                                    Q(c_description__icontains=qstr))
         data = sorted(data, key=lambda x: weight(qstr, x.c_name + x.c_description))
         result = []
@@ -128,8 +128,8 @@ def _query_group(request):
         # print(qstr)
         ################################
         user = get_cur_user(request)
-        data = Group.objects.filter(Q(g_name__icontains=qstr) or
-                                    Q(g_description__icontains=qstr) or
+        data = Group.objects.filter(Q(g_name__icontains=qstr) |
+                                    Q(g_description__icontains=qstr) |
                                     Q(g_tag__icontains=qstr))
         data = sorted(data, key=lambda x: weight(qstr, x.g_name + x.g_description))
         re_data = []
@@ -159,17 +159,20 @@ def _query_media(request):
     re = {}
     if request.method == 'POST':
         qstr = request.POST['qstr']
-        data = Media.objects.filter(Q(m_name__icontains=qstr) or Q(m_description__icontains=qstr)
-                                    or Q(m_genre__icontains=qstr) or Q(m_region__icontains=qstr)
-                                    or Q(m_director__icontains=qstr) or Q(m_actor__icontains=qstr)
-                                    or Q(m_author__icontains=qstr))
-        data = sorted(data, key=lambda x: weight(qstr, x.m_name + x.m_description + x.m_genre
-                                                 + x.m_region + x.m_director + x.m_actor + x.m_author))
+        op = request.POST['op']
+        # print(op, int(int(op)+1))
+        data = list(Media.objects.filter(Q(m_name__icontains=qstr) | Q(m_description__icontains=qstr)
+                                         | Q(m_genre__icontains=qstr) | Q(m_region__icontains=qstr)
+                                         | Q(m_director__icontains=qstr) | Q(m_actor__icontains=qstr)
+                                         | Q(m_author__icontains=qstr)).filter(Q(m_type=op) | Q(m_type=int(int(op)+1))))
+        data = sorted(data, key=lambda x: weight(qstr,
+                                                 x.m_name + x.m_description + x.m_genre + x.m_region + x.m_director if x.m_director else '' + x.m_actor if x.m_actor else '' + x.m_author if x.m_author else ''))
         re['msg'] = 0
         result = []
         for item in data:
             result.append(item.to_dict())
         re['data'] = result
+        # print([x['m_id'] for x in result])
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
     return re
@@ -183,7 +186,7 @@ def weight(str1, str2):
 def base_movie_series_list(request):
     re = {}
     if basic_check(request):
-        my_list = list(Media.objects.filter(Q(m_type=1) or Q(m_type=2)))[:6]
+        my_list = list(Media.objects.filter(Q(m_type=1) | Q(m_type=2)))[:6]
         my_list = sorted(my_list, key=lambda x: x.m_rate)
         my_list = [
             {

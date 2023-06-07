@@ -262,9 +262,19 @@ def _heated_movie(request):
     if basic_check(request):
         __heated_movie = list(Media.objects.filter(m_type=1))[:10]
         __heated_movie = [x.to_dict() for x in __heated_movie]
+        user = get_cur_user(request)
+        for xx in __heated_movie:
+            if UserMedia.objects.filter(user=user, media=get_media_by_id(xx['m_id']), is_in_collection=1):
+                xx.update({
+                    'is_fav': 1
+                })
+            else:
+                xx.update({
+                    'is_fav': 0
+                })
         __heated_movie = sorted(__heated_movie, key=lambda x: x['m_heat'], reverse=True)
         ##############################################
-        # print(_heated_movie)
+        # print(__heated_movie)
         ##############################################
         re['msg'] = 0
         re['heat_movie'] = __heated_movie
@@ -283,6 +293,16 @@ def _heated_series(request):
     if basic_check(request):
         __heated_series = list(Media.objects.filter(m_type=2))[:10]
         __heated_series = [x.to_dict() for x in __heated_series]
+        user = get_cur_user(request)
+        for x in __heated_series:
+            if UserMedia.objects.filter(user=user, media=get_media_by_id(x['m_id']), is_in_collection=1):
+                x.update({
+                    'is_fav': 1
+                })
+            else:
+                x.update({
+                    'is_fav': 0
+                })
         __heated_series = sorted(__heated_series, key=lambda x: x['m_heat'], reverse=True)
         re['msg'] = 0
         re['heat_series'] = __heated_series
@@ -301,6 +321,16 @@ def _heated_book(request):
     if basic_check(request):
         __heated_series = list(Media.objects.filter(m_type=3))[:10]
         __heated_series = [x.to_dict() for x in __heated_series]
+        user = get_cur_user(request)
+        for x in __heated_series:
+            if UserMedia.objects.filter(user=user, media=get_media_by_id(x['m_id']), is_in_collection=1):
+                x.update({
+                    'is_fav': 1
+                })
+            else:
+                x.update({
+                    'is_fav': 0
+                })
         __heated_series = sorted(__heated_series, key=lambda x: x['m_heat'], reverse=True)
         re['msg'] = 0
         re['heat_book'] = __heated_series
