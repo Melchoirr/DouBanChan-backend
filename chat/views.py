@@ -13,18 +13,19 @@ def create_chat(request):  # 检查是否登录
         default_profile_photo = get_picture_by_id(DEFAULT_PROFILE_PHOTO_ID)
         chat = Chat(c_name=request.POST['c_name'],
                     c_description=request.POST['c_description'],
-                    c_profile_photo=default_profile_photo,
-                    c_users_num=1,
+                    c_tag=request.POST['c_tag'],
+                    c_profile_photo=get_picture_by_id(request.POST['avatar']),
+                    c_head_photo=get_picture_by_id(request.POST['head']),
                     )
         chat.save()
         user_chat = UserChat(user=get_cur_user(request), chat=chat)
         user_chat.save()
-        if 'group' in request.POST:
-            chat.c_father_group = get_group_by_id(request.POST['group'])
-            chat.save()
+        # if 'group' in request.POST:
+        #     chat.c_father_group = get_group_by_id(request.POST['group'])
+        #     chat.save()
         # users
         re['msg'] = 0
-        re['chat'] = chat.to_dict()
+        # re['chat'] = chat.to_dict()
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
@@ -76,6 +77,38 @@ def query_single_chat(request):
     return HttpResponse(json.dumps(re))
 
 
+def query_chat_by_tag(request):
+    re = {}
+    user = get_cur_user(request)  # 不一定有用
+    chatList = []
+    if request.POST['c_tag'] != '':
+        for chat in list(Chat.objects.filter(g_tag=request.POST['c_tag'])):
+            each = chat.to_dict()
+            chatList.append(each)
+    else:
+        for chat in list(Chat.objects.all()):
+            each = chat.to_dict()
+            chatList.append(each)
+    re['chatList'] = chatList
+    return HttpResponse(json.dumps(re))
+
+
+def query_chat_by_group(request):
+    re = {}
+    user = get_cur_user(request)
+    chatList = []
+    if request.POST['c_tag'] != '':
+        for chat in list(Chat.objects.filter(g_tag=request.POST['c_tag'])):
+            each = chat.to_dict()
+            chatList.append(each)
+    else:
+        for chat in list(Chat.objects.all()):
+            each = chat.to_dict()
+            chatList.append(each)
+    re['chatList'] = chatList
+    return HttpResponse(json.dumps(re))
+
+
 def chat_home(request):
     re = {}
     if request.method != 'POST':
@@ -113,7 +146,7 @@ def join_chat(request):  # 前端应该不会调用
     return HttpResponse(json.dumps(re))
 
 
-def quit_chat(request):  # 前端应该不会调用
+def quit_chat(request):
     re = {}
     if basic_check(request):
         c_id = request.POST['c_id']
@@ -133,20 +166,5 @@ def quit_chat(request):  # 前端应该不会调用
     return HttpResponse(json.dumps(re))
 
 
-def delete_post(request):
-    re = {}
-    if basic_check(request):
-        user = get_cur_user(request)
-        p_id = request.POST['p_id']
-        post = get_post_by_id(p_id)
-        if post.p_user == user:
-            post.delete()
-        else:
-            re['msg'] = ERR_NOT_POSSESSION
-            return HttpResponse(json.dumps(re))
-        re['msg'] = 0
-    else:
-        re['msg'] = ERR_OTHER
-    return HttpResponse(json.dumps(re))
 
 

@@ -299,30 +299,6 @@ def deny_apply(request):
     return
 
 
-def query_group_posts(request):
-    re = {}
-    if basic_check(request):
-        group = get_group_by_id(request.POST['g_id'])
-        posts = [x.to_dict() for x in list(Post.objects.filter(p_group=group))]
-        re['msg'] = 0
-        re['posts'] = posts
-    else:
-        re['msg'] = ERR_OTHER
-    return HttpResponse(json.dumps(re))
-
-
-def query_tagged_posts(request):
-    re = {}
-    if basic_check(request):
-        group = get_group_by_id(request.POST['g_id'])
-        posts = [x.to_dict() for x in list(Post.objects.filter(p_group=group))]
-        re['msg'] = 0
-        re['posts'] = posts
-    else:
-        re['msg'] = ERR_OTHER
-    return HttpResponse(json.dumps(re))
-
-
 def query_group_by_tag(request):
     re = {}
     user = get_cur_user(request)
@@ -354,3 +330,5 @@ def query_group_by_tag(request):
             groupList.append(each)
     re['groupList'] = groupList
     return HttpResponse(json.dumps(re))
+
+

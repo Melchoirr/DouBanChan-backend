@@ -209,3 +209,39 @@
 
 
 
+
+
+* query single post 逻辑
+* query post list
+  * 返回
+  * 筛选
+* query chat list
+  * 返回
+  * 筛选
+* group-chat-post
+  * 先创建chat：自由chat，无group
+  * group内发帖
+  * 在话题内发帖，回帖即为加入话题
+  * 话题需不需要显示
+* tag关系
+  * chat的tag直接给post
+  * group的tag
+  * chat的
+  * 话题有标题吗？
+* 体现出来不是假数据
+* message
+  * 小红点：统计各类数量
+  * 举报
+    * 举报信息
+    * 被举报消息
+* user
+  * 收藏的影视
+  * 收藏的图书
+  * 收藏的帖子
+  * 收藏的影评
+
+
+
+加入话题
+
+挪位置

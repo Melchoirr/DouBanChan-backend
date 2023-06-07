@@ -79,7 +79,7 @@ class Chat(models.Model):
     c_description = models.CharField(max_length=255, default='')
     c_create_time = models.DateTimeField(auto_now_add=True)
     c_last_modify_time = models.DateTimeField(auto_now_add=True)
-    c_father_group = models.ForeignKey('Group', models.CASCADE, default=None)
+    c_father_group = models.ForeignKey('Group', models.CASCADE, default=None, blank=True, null=True)
     c_heat = models.IntegerField(default=0)
     c_tag = models.CharField(max_length=255, default='')
 

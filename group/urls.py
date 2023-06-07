@@ -19,6 +19,5 @@ urlpatterns = [
     path("apply_admin/", apply_admin),
     path("grant_admin/", grant_apply),
     path("deny_apply/", deny_apply),
-    path("query_posts/", query_group_posts),
     path("query_group_by_tag/", query_group_by_tag)
 ]

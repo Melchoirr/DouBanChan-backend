@@ -303,9 +303,12 @@ url:    /chat/create
 param:  c_id
 return: msg
 ```
-### chat home
+### heat_chat
 
 ```
+url:    /chat/heat_chat
+param:  c_id
+return: msg
 ```
 
 ### query single chat
@@ -318,32 +321,36 @@ return: msg chat
 ### reply post 
 
 ```
+topic p_id text 
 ```
 
 ### reply text
 
 ```
+t_description t_father_text_id
+```
+
+### like post + 取消
 
 ```
 
+```
 
+### dislike post+ 取消
 
-### like post
+```
+p_id u_id
+```
+
+### delete post+ 取消
 
 ```
 ```
 
-### dislike post
-
-```
-```
-
-### delete post
-
-```
-```
+### 收藏post+取消
 
 ## group
+
 ### create group
 ```
 url:    /group/create
@@ -423,7 +430,7 @@ return: msg
 ### set_top
 
 ```
-url:    /media/set_top
+url:    /group/set_top
 param:  u_id g_id p_id
 return: msg
 ```
@@ -431,7 +438,7 @@ return: msg
 ### apply_admin
 
 ```
-url:    /media/apply_admin
+url:    /group/apply_admin
 param:  u_id g_id
 return: msg
 ```
@@ -439,7 +446,7 @@ return: msg
 ### query_apply
 
 ```
-url:    /media/query_apply
+url:    /group/query_apply
 param:  u_id g_id
 return: apply_list
 ```
@@ -447,52 +454,35 @@ return: apply_list
 ### grant_apply
 
 ```
-url:    /media/grant_apply
-param:  m_id u_id g_id
+url:    /group/grant_apply
+param:  m_id u_id g_id m是message
 return: 
 ```
 
 ### deny_apply
 
 ```
-url:    /media/deny_apply
+url:    /group/deny_apply
 param:  m_id u_id g_id
 return: 
 ```
-
-### 
 
 ### add post (发帖)
 
 ```
-```
-
-### create chat
-
-```
-url:    /media/create
-param:  m_id u_id g_id
-return: 
-```
-
-### join group
-
-```
-```
-
-### quit group
-
-```
+已经有了
 ```
 
 ### set essence
 
 ```
+p_id
 ```
 
 ### set top
 
 ```
+p_id
 ```
 
 ### apply admin
@@ -500,12 +490,10 @@ return:
 ```
 ```
 
-### grant admin
+### grant apply
 
 ```
 ```
-
-### 
 
 ## picture
 ### upload single picture 

@@ -9,6 +9,4 @@ urlpatterns = [
     path("chat_home/", chat_home),
     path("join_chat/", join_chat),
     path("quit_chat/", quit_chat),
-    # path('reply_post/', reply_post),
-    path('delete_post/', delete_post),
 ]
