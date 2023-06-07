@@ -359,24 +359,24 @@ class Post(models.Model):
 
     def to_dict(self):
         re = {
-            'p_id': self.p_id,
-            'p_user': self.p_user.to_dict(),
-            'p_title': self.p_title,
-            'p_like': self.p_like,
-            'p_dislike': self.p_dislike,
-            'p_chat': self.p_chat.to_dict(),
-            'p_first_floor_text': Text.objects.get(t_post=self, t_floor=1).to_dict(),
-            'p_create_time': self.p_create_time.__str__(),
-            'p_floor_num': self.p_floor_num,
-            'p_is_essence': self.p_is_essence,
-            'p_is_top': self.p_is_top,
-            'p_heat': self.p_heat,
+            # 'p_id': self.p_id,
+            # 'p_user': self.p_user.to_dict(),
+            # 'p_title': self.p_title,
+            # 'p_like': self.p_like,
+            # 'p_dislike': self.p_dislike,
+            # 'p_chat': self.p_chat.to_dict(),
+            # 'p_first_floor_text': Text.objects.get(t_post=self, t_floor=1).to_dict(),
+            # 'p_create_time': self.p_create_time.__str__(),
+            # 'p_floor_num': self.p_floor_num,
+            # 'p_is_essence': self.p_is_essence,
+            # 'p_is_top': self.p_is_top,
+            # 'p_heat': self.p_heat,
             ##########################################################
             'postId': self.p_id,
             'lzId': self.p_user.u_id,
             'lzName': self.p_user.u_name,
             'lzImageUrl': settings.ROOT_URL + self.p_user.u_profile_photo.p_content.url,
-            'date': self.p_create_time,
+            'date': self.p_create_time.__str__(),
             'title': self.p_title,
             'text': self.get_first_floor().t_description,
             'postImageUrlList': self.get_first_floor_image_list(),
@@ -392,12 +392,12 @@ class Post(models.Model):
             'groupName': self.p_group.g_name,
             'groupId': self.p_group.g_id
         }
-        if self.p_group is not None:
-            re['p_group'] = self.p_group.to_dict()
+        # if self.p_group is not None:
+        #     re['p_group'] = self.p_group.to_dict()
         return re
 
     def get_text_num(self):
-        return len(Text.objects.filter(t_post=self))
+        return len(Text.objects.filter(t_post=self)) - 1
 
     def get_first_floor(self):
         return Text.objects.get(t_post=self, t_floor=1)
