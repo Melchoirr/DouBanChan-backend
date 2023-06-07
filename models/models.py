@@ -26,6 +26,7 @@ class Media(models.Model):
     # book
     m_author = models.CharField(max_length=255, default='', blank=True, null=True)
     m_characters = models.IntegerField(default=0, blank=True, null=True)
+    m_page = models.IntegerField(default=0)
 
     class Meta:
         managed = True
@@ -50,7 +51,8 @@ class Media(models.Model):
             'm_author': self.m_author,
             'm_characters': self.m_characters,
             'm_language': self.m_language,
-            'm_writer': self.m_writer
+            'm_writer': self.m_writer,
+            'm_page': self.m_page
         }
         if self.m_profile_photo is not None:
             re['m_profile_photo'] = settings.ROOT_URL + self.m_profile_photo.p_content.url

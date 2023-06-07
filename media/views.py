@@ -171,6 +171,7 @@ def media_filter(request):
             start = 0
             end = 3000
         else:
+            m_year = m_year[:-2]
             start = int(m_year) - 1
             end = int(m_year) + 10
         media = list(Media.objects.filter(
