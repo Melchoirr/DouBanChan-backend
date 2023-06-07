@@ -26,7 +26,6 @@ def add_post(request):
                     t_post=post)
         text.save()
         if 'g_id' in request.POST:
-            print("hihihi")
             group = get_group_by_id(request.POST['g_id'])
             post.p_group = group
             chat.c_father_group = group
@@ -90,7 +89,7 @@ def get_post_floor_list(user, post):
     floors = [x.to_dict() for x in floors]
     for floor in floors:
         floor.update({
-            'childFloorList': get_replies(get_text_by_id(floor['postId']), user),
+            'childFloorList': get_replies(get_text_by_id(floor['textId']), user),
             'userLike': 0,
             'userDislike': 0
         })
@@ -104,15 +103,15 @@ def get_post_floor_list(user, post):
 def get_replies(text, user):
     texts = list(Text.objects.filter(t_text=text))
     texts = [x.to_dict() for x in texts]
-    for text in texts:
-        text.update({
+    for tmp in texts:
+        tmp.update({
             'userLike': 0,
             'userDislike': 0
         })
         if UserText.objects.filter(user=user, text=text, is_liked=1):
-            text['userLike'] = 1
+            tmp['userLike'] = 1
         if UserText.objects.filter(user=user, text=text, is_disliked=1):
-            text['userDislike'] = 1
+            tmp['userDislike'] = 1
     return texts
 
 
@@ -265,12 +264,7 @@ def cancel_dislike_post(request):
 def reply_post(request):
     re = {}
     if basic_check(request):
-        c_id = request.POST['c_id']
         user = get_cur_user(request)
-        chat = get_chat_by_id(c_id)
-        chat.c_users.add(user)
-        chat.c_heat += 1
-        chat.save()
         p_id = request.POST['p_id']
         post = get_post_by_id(p_id)
         text = Text(t_type=2,
@@ -278,16 +272,18 @@ def reply_post(request):
                     t_description=request.POST['text'],
                     t_floor=post.p_floor_num + 1,
                     t_post=post)
-        if 'group' in request.POST:
-            group = get_group_by_id(request.POST['group'])
-            if UserGroup.objects.filter(user=user, group=group):
-                post.p_group = group
-            else:
-                re['msg'] = ERR_NOT_JOINED
-                return HttpResponse(json.dumps(re))
         post.p_floor_num += 1
         post.save()
         text.save()
+        if 'picture_list' in request.POST:
+            picture_string = request.POST['picture_list']
+            picture_list = picture_string.split(',')
+            picture_list = [int(x) for x in picture_list]
+            for p_id in picture_list:
+                print(p_id)
+                picture = get_picture_by_id(p_id)
+                picture.p_father_text = text
+                picture.save()
         re['msg'] = 0
     else:
         re['msg'] = ERR_OTHER
@@ -344,12 +340,19 @@ def query_posts_by_tag(request):
     re = {}
     if basic_check(request):
         user = get_cur_user(request)
+        print(request.POST)
         postList = []
-        for x in list(Post.objects.filter(p_tag=request.POST['c_tag'])):
-            post = x.to_dict()
-            #group =
-            post.update(get_post_status(user, x, group))
-            postList.append(post)
+        if request.POST['c_tag'] != '':
+            for x in list(Post.objects.filter(p_tag=request.POST['c_tag'])):
+                post = x.to_dict()
+                post.update(get_post_status(user, x, x.p_group))
+                postList.append(post)
+        else:
+            for x in list(Post.objects.all()):
+                post = x.to_dict()
+
+                post.update(get_post_status(user, x, x.p_group))
+                postList.append(post)
         re['msg'] = 0
         re['postList'] = postList
     else:

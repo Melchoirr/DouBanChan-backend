@@ -77,9 +77,8 @@ def query_single_chat(request):
     return HttpResponse(json.dumps(re))
 
 
-def query_chat_by_tag(request):
+def query_chat_by_tag(request):  # !
     re = {}
-    user = get_cur_user(request)  # 不一定有用
     chatList = []
     if request.POST['c_tag'] != '':
         for chat in list(Chat.objects.filter(g_tag=request.POST['c_tag'])):
@@ -89,6 +88,22 @@ def query_chat_by_tag(request):
         for chat in list(Chat.objects.all()):
             each = chat.to_dict()
             chatList.append(each)
+    re['chatList'] = chatList
+    return HttpResponse(json.dumps(re))
+
+
+def query_chat_by_heat(request):  # !
+    re = {}
+    chatList = []
+    if request.POST['c_tag'] != '':
+        for chat in list(Chat.objects.filter(c_tag=request.POST['c_tag'])):
+            each = chat.to_dict()
+            chatList.append(each)
+    else:
+        for chat in list(Chat.objects.all()):
+            each = chat.to_dict()
+            chatList.append(each)
+    chatList = sorted(chatList, key=lambda x: x['follow'], reverse=True)
     re['chatList'] = chatList
     return HttpResponse(json.dumps(re))
 
@@ -113,21 +128,15 @@ def query_free_chat(request):
     return HttpResponse(json.dumps(re))
 
 
-def chat_home(request):
+def chat_brief(request):
     re = {}
-    if request.method != 'POST':
-        heat_list = []
-        heat_set = list(Chat.objects.all().order_by('-c_heat'))[: 10]
-        for each in heat_set:
-            heat_list.append(each.to_dict())
-        re['chat_heat_list'] = heat_list
-        post_heat_list = []
-        post_heat_set = list(Post.objects.all().order_by('-p_like'))
-        for each in post_heat_set:
-            post_heat_list.append(each.to_dict())
-        re['post_heat_list'] = post_heat_list
+    chat = get_chat_by_id(request.POST['c_id'])
+    user = get_cur_user(request)
+    re = chat.to_dict()
+    if UserChat.objects.filter(user=user, chat=chat):
+        re['userInTopic'] = 1
     else:
-        re['msg'] = ERR_REQUEST_METHOD_WRONG
+        re['userInTopic'] = 0
     return HttpResponse(json.dumps(re))
 
 
@@ -137,14 +146,10 @@ def join_chat(request):  # 前端应该不会调用
         c_id = request.POST['c_id']
         user = get_cur_user(request)
         chat = get_chat_by_id(c_id)
-        if UserChat.objects.filter(user=user, chat=chat):
-            re['msg'] = ERR_ALREADY_JOINED
-        else:
-            chat.c_users_num += 1
-            chat.save()
-            user_chat = UserChat(user=user, chat=chat)
-            user_chat.save()
-            re['msg'] = 0
+        chat.save()
+        user_chat = UserChat(user=user, chat=chat)
+        user_chat.save()
+        re['msg'] = 0
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))

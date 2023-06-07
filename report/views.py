@@ -1,20 +1,39 @@
 from tools.imports import *
 
 
-def add_report(request):  # 或者发布到一个特定区域，直邮管理员有权限访问
+def report_post(request):  # 或者发布到一个特定区域，直邮管理员有权限访问
     # 发两份
     re = {}
-    if basic_check(request):
-        report = Message(
-            r_user=get_cur_user(request),
-            r_text=get_text_by_id(request.POST['t_id']),
-            r_details=request.POST['r_details']
-        )
-        report.save()
-        re['msg'] = 0
-        re['report'] = report.to_dict()
-    else:
-        re['msg'] = ERR_OTHER
+    report = Message(
+        m_applier=get_cur_user(request),
+        m_post=get_post_by_id(request.POST['p_id']),
+        m_title=request.POST['m_title'],
+        m_description=request.POST['m_description'],
+        m_type=5
+    )
+    report.save()
+    re['msg'] = 0
+    return HttpResponse(json.dumps(re))
+
+
+def report_text(request):  # 或者发布到一个特定区域，直邮管理员有权限访问
+    # 发两份
+    re = {}
+    report = Message(
+        m_applier=get_cur_user(request),
+        m_text=get_text_by_id(request.POST['t_id']),
+        m_title=request.POST['m_title'],
+        m_description=request.POST['m_description'],
+        m_type=5
+    )
+    report.save()
+    re['msg'] = 0
+    return HttpResponse(json.dumps(re))
+
+
+def query_report(request):
+    re = {}
+    re['report_list'] = [x.to_dict() for x in list(Message.objects.filter(m_type=5))]
     return HttpResponse(json.dumps(re))
 
 
