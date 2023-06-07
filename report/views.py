@@ -51,7 +51,7 @@ def handle_report_post(request):
         report.m_is_handled = 1
         if Post.objects.filter(p_id=request.POST['p_id']):
             post = get_post_by_id(request.POST['p_id'])
-            report.delete()
+            # report.delete()
             post.delete()
     if handle == '2':
         report.m_is_handled = 2

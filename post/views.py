@@ -46,6 +46,28 @@ def add_post(request):
     return HttpResponse(json.dumps(re))
 
 
+def get_post_status1(request):
+    re = {}
+    user = get_cur_user(request)
+    post = get_post_by_id(request.POST['p_id'])
+    re['post_like_num'] = post.p_like
+    if UserPost.objects.filter(user=user, post=post) and UserPost.objects.get(user=user, post=post).is_liked == 1:
+        re['post_is_like'] = 1
+    else:
+        re['post_is_like'] = 0
+    re['post_dislike_num'] = post.p_dislike
+    if UserPost.objects.filter(user=user, post=post) and UserPost.objects.get(user=user, post=post).is_disliked == 1:
+        re['post_is_dislike'] = 1
+    else:
+        re['post_is_dislike'] = 0
+    re['post_favorite_num'] = post.p_favorite
+    if UserPost.objects.filter(user=user, post=post) and UserPost.objects.get(user=user, post=post).is_favorite == 1:
+        re['post_is_favorite'] = 1
+    else:
+        re['post_is_favorite'] = 0
+    return HttpResponse(json.dumps(re))
+
+
 def query_single_post(request):
     re = {}
     if basic_check(request):
@@ -350,7 +372,12 @@ def query_posts_by_chat(request):
     re = {}
     if basic_check(request):
         chat = get_chat_by_id(request.POST['c_id'])
-        postList = [x.to_dict() for x in list(Post.objects.filter(p_chat=chat))]
+        user = get_cur_user(request)
+        postList = []
+        for x in list(Post.objects.filter(p_chat=chat)):
+            post = x.to_dict()
+            post.update(get_post_status(user, x, x.p_group))
+            postList.append(post)
         re['msg'] = 0
         re['postList'] = postList
     else:

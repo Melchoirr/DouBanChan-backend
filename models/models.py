@@ -382,7 +382,7 @@ class Post(models.Model):
             'title': self.p_title,
             'text': self.get_first_floor().t_description,
             'postImageUrlList': self.get_first_floor_image_list(),
-            'topic': self.p_title,
+            'topic': self.p_chat.c_name,
             'topicId': self.p_chat.c_id,
             'visits': self.p_heat,
             'fav': self.p_favorite,
