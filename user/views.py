@@ -275,3 +275,13 @@ def change_password(request):
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
+
+
+def user_collection_media(request):
+    print(request.POST)
+    user = get_cur_user(request)
+    ums = list(UserMedia.objects.filter(user=user, is_in_collection=1))
+    re = []
+    for um in ums:
+        re.append(um.media.to_dict())
+    return HttpResponse(json.dumps(re))
