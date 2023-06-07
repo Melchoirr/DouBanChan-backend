@@ -13,15 +13,11 @@ def add_post(request):
         chat.c_heat += 1
         chat.save()
         print(request.POST)
-        picture_string = request.POST['picture_list']
-        picture_list = picture_string.split(',')
-        picture_list = [int(x) for x in picture_list]
-        print(picture_list)
         post = Post(p_title=request.POST['title'],
                     p_user=user,
                     p_chat=chat,
-                    p_floor_num=1)
-        post.p_chat = chat
+                    p_floor_num=1,
+                    p_tag=chat.c_tag)
         post.save()
         text = Text(t_type=2,
                     t_user=user,
@@ -30,10 +26,14 @@ def add_post(request):
                     t_post=post)
         text.save()
         if 'g_id' in request.POST:
+            print("hihihi")
             group = get_group_by_id(request.POST['g_id'])
             post.p_group = group
             chat.c_father_group = group
-        if picture_list:
+        if 'picture_list' in request.POST:
+            picture_string = request.POST['picture_list']
+            picture_list = picture_string.split(',')
+            picture_list = [int(x) for x in picture_list]
             for p_id in picture_list:
                 print(p_id)
                 picture = get_picture_by_id(p_id)
@@ -86,7 +86,29 @@ def query_single_post(request):
     return HttpResponse(json.dumps(re))
 
 
-def get_post_text_status(user, text):
+def get_post_status(user, post, group):
+    re = {
+        'userLike': 0,
+        'userDislike': 0,
+        'userFav': 0,
+        'userIsAdmin': 0,
+        'userIsLz': 0,
+    }
+    if UserPost.objects.filter(user=user, post=post, is_liked=1):
+        re['userLike'] = 1
+    if UserPost.objects.filter(user=user, post=post, is_disliked=1):
+        re['userDislike'] = 1
+    if UserPost.objects.filter(user=user, post=post, is_favorite=1):
+        re['userFav'] = 1
+
+    if UserGroup.objects.filter(user=user, group=group, is_admin=1):
+        re['userIsAdmin'] = 1
+    if post.p_user == user:
+        re['userIsLz'] = 1
+    return re
+
+
+def get_text_status(user, text):
     re = {
         'userLike': 0,
         'userDislike': 0,
@@ -264,21 +286,37 @@ def query_group_posts(request):
     re = {}
     if basic_check(request):
         group = get_group_by_id(request.POST['g_id'])
-        posts = [x.to_dict() for x in list(Post.objects.filter(p_group=group))]
+        user = get_cur_user(request)
+        postList = []
+        for x in list(Post.objects.filter(p_group=group)):
+            post = x.to_dict()
+            post.update(get_post_status(user, x, group))
+            postList.append(post)
         re['msg'] = 0
-        re['posts'] = posts
+        re['postList'] = postList
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
 
 
-def query_tagged_posts(request):
+def query_chat_posts(request):
     re = {}
     if basic_check(request):
-        group = get_group_by_id(request.POST['g_id'])
-        posts = [x.to_dict() for x in list(Post.objects.filter(p_group=group))]
+        chat = get_chat_by_id(request.POST['c_id'])
+        postList = [x.to_dict() for x in list(Post.objects.filter(p_chat=chat))]
         re['msg'] = 0
-        re['posts'] = posts
+        re['postList'] = postList
+    else:
+        re['msg'] = ERR_OTHER
+    return HttpResponse(json.dumps(re))
+
+
+def query_posts_by_tag(request):
+    re = {}
+    if basic_check(request):
+        postList = [x.to_dict() for x in list(Post.objects.filter(p_tag=request.POST['p_tag']))]
+        re['msg'] = 0
+        re['postList'] = postList
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))

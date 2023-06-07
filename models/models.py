@@ -249,14 +249,14 @@ class Text(models.Model):
             'like': self.t_like,
             'dislike': self.t_dislike,
         }
-        if self.t_media is not None:
-            re['t_media'] = self.t_media.to_dict()  #
-        if self.t_floor != 0:
-            re['t_floor'] = self.t_floor
-        if self.t_post:
-            re['t_post'] = self.t_post.to_dict()
-        if self.t_type == 1:
-            re['t_media_id'] = self.t_media.m_id
+        # if self.t_media is not None:
+        #     re['t_media'] = self.t_media.to_dict()  #
+        # if self.t_floor != 0:
+        #     re['t_floor'] = self.t_floor
+        # if self.t_post:
+        #     re['t_post'] = self.t_post.to_dict()
+        # if self.t_type == 1:
+        #     re['t_media_id'] = self.t_media.m_id
         return re
 
     def like(self):
@@ -330,6 +330,7 @@ class Post(models.Model):
     p_is_top = models.IntegerField(default=0)  # key
     p_floor_num = models.IntegerField(default=0)
     p_heat = models.IntegerField(default=0)
+    p_tag = models.CharField(default='', max_length=255)
 
     class Meta:
         managed = True

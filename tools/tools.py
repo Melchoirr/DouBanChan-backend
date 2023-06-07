@@ -59,4 +59,4 @@ def get_post_by_id(i):
 
 
 def basic_check(request):
-    return request.method == 'POST' and is_logged_in(request)
+    return request.method == 'POST'

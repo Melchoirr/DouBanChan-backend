@@ -93,18 +93,22 @@ def query_chat_by_tag(request):
     return HttpResponse(json.dumps(re))
 
 
-def query_chat_by_group(request):
+def query_chat_by_group(request):  # ?
     re = {}
-    user = get_cur_user(request)
     chatList = []
-    if request.POST['c_tag'] != '':
-        for chat in list(Chat.objects.filter(g_tag=request.POST['c_tag'])):
-            each = chat.to_dict()
-            chatList.append(each)
-    else:
-        for chat in list(Chat.objects.all()):
-            each = chat.to_dict()
-            chatList.append(each)
+    for tmp in list(Chat.objects.filter(c_father_group=get_group_by_id(request.POST['g_id']))):
+        chatList.append(tmp.to_dict())
+    re['chatList'] = chatList
+    return HttpResponse(json.dumps(re))
+
+
+def query_free_chat(request):
+    re = {}
+    chatList = []
+    for tmp in list(Chat.objects.filter(c_father_group=get_group_by_id(request.POST['g_id']))):
+        chatList.append(tmp.to_dict())
+    for tmp in list(Chat.objects.filter(c_father_group=None)):
+        chatList.append(tmp.to_dict())
     re['chatList'] = chatList
     return HttpResponse(json.dumps(re))
 
