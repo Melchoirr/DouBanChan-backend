@@ -274,7 +274,7 @@ def _heated_movie(request):
                 })
         __heated_movie = sorted(__heated_movie, key=lambda x: x['m_heat'], reverse=True)
         ##############################################
-        # print(__heated_movie)
+        # print(len(__heated_movie))
         ##############################################
         re['msg'] = 0
         re['heat_movie'] = __heated_movie

@@ -248,7 +248,7 @@ def col_media_series(request):
     re = {}
     if basic_check(request):
         user = get_cur_user(request)
-        _list = list(Media.objects.filter(m_type__lt=3))
+        _list = list(Media.objects.filter(m_type__lt=2))
         _list = [x.to_dict() for x in _list]
         for item in _list:
             item.update({
