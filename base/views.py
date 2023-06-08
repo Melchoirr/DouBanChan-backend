@@ -160,7 +160,7 @@ def _query_media(request):
     if request.method == 'POST':
         qstr = request.POST['qstr']
         op = request.POST['op']
-        # print(op, int(int(op)+1))
+        print(op, int(int(op)+1))
         data = list(Media.objects.filter(Q(m_name__icontains=qstr) | Q(m_description__icontains=qstr)
                                          | Q(m_genre__icontains=qstr) | Q(m_region__icontains=qstr)
                                          | Q(m_director__icontains=qstr) | Q(m_actor__icontains=qstr)
@@ -172,6 +172,8 @@ def _query_media(request):
         for item in data:
             result.append(item.to_dict())
         re['data'] = result
+        print(len(result))
+        print(result)
         # print([x['m_id'] for x in result])
     else:
         re['msg'] = ERR_REQUEST_METHOD_WRONG
