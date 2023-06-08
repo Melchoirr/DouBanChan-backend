@@ -144,18 +144,6 @@ def update_profile(request):
     return HttpResponse(json.dumps(re))
 
 
-def show_like_message(request):
-    pass
-
-
-def show_report_message(request):
-    pass
-
-
-def show_text_message(request):
-    pass
-
-
 def get_user_movie(request):
     re = {}
     if basic_check(request):
@@ -223,6 +211,7 @@ def get_user_fav_text(request):
 
 def get_self_post(request):
     re = {}
+    print(request.POST)
     if basic_check(request):
         user = get_cur_user(request)
         posts = list(Post.objects.filter(p_user=user))
