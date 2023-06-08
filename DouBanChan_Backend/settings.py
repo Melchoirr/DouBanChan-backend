@@ -131,6 +131,9 @@ DATABASES = {
         'PASSWORD': '123456',  # 密码
         'HOST': '82.156.25.78',  # mysql服务所在的主机ip
         'PORT': '3306',         # mysql服务端口
+        'OPTIONS': {
+            'init_command': 'SET foreign_key_checks = 0;'
+        }
     }
 }
 

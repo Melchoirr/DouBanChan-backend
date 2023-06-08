@@ -51,11 +51,11 @@ def handle_report_post(request):
         report.m_is_handled = 1
         if Post.objects.filter(p_id=request.POST['p_id']):
             post = get_post_by_id(request.POST['p_id'])
-            # report.delete()
+            report.delete()
             post.delete()
     if handle == '2':
         report.m_is_handled = 2
-    report.save()
+        report.save()
     return HttpResponse(json.dumps(re))
 
 
@@ -82,6 +82,19 @@ def delete_message(request):
     message = get_message_by_id(request.POST['m_id'])
     message.delete()
     return
+
+
+def show_like_message(request):
+    pass
+
+
+def show_delete_message(request):
+
+    pass
+
+
+def show_comment_message(request):
+    pass
 
 
 # def query_report(request):
