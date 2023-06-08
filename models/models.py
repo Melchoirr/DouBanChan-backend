@@ -9,7 +9,7 @@ class Media(models.Model):
     m_type = models.IntegerField(default=0)  # 1 -> movie  2 -> series  3 -> book
     m_rate = models.FloatField(default=0)
     m_rate_num = models.IntegerField(default=0)
-    m_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, db_column='m_profile_photo', default=None,
+    m_profile_photo = models.ForeignKey('Picture', models.CASCADE, db_column='m_profile_photo', default=None,
                                         null=True)
     m_genre = models.CharField(max_length=255, default='')
     m_description = models.TextField(max_length=65535, default='')
@@ -76,9 +76,9 @@ class Media(models.Model):
 class Chat(models.Model):
     c_id = models.AutoField(primary_key=True)
     c_name = models.CharField(max_length=255, default='')
-    c_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, related_name='c_profile_photo', default=None,
+    c_profile_photo = models.ForeignKey('Picture', models.CASCADE, related_name='c_profile_photo', default=None,
                                         null=True)
-    c_head_photo = models.ForeignKey('Picture', models.DO_NOTHING, related_name='c_head_photo', default=None,
+    c_head_photo = models.ForeignKey('Picture', models.CASCADE, related_name='c_head_photo', default=None,
                                         null=True)
     c_description = models.CharField(max_length=255, default='')
     c_create_time = models.DateTimeField(auto_now_add=True)
@@ -135,9 +135,9 @@ class Chat(models.Model):
 class Group(models.Model):
     g_id = models.AutoField(primary_key=True)
     g_name = models.CharField(max_length=255, default='')
-    g_profile_photo = models.ForeignKey('Picture', models.DO_NOTHING, related_name='g_profile_photo', default=None,
+    g_profile_photo = models.ForeignKey('Picture', models.CASCADE, related_name='g_profile_photo', default=None,
                                         null=True)
-    g_head_photo = models.ForeignKey('Picture', models.DO_NOTHING, related_name='g_head_photo', default=None, null=True)
+    g_head_photo = models.ForeignKey('Picture', models.CASCADE, related_name='g_head_photo', default=None, null=True)
     g_description = models.CharField(max_length=255, default='')
     g_create_time = models.DateTimeField(auto_now_add=True)
     g_last_modify_time = models.DateTimeField(auto_now_add=True)
@@ -189,9 +189,9 @@ class Group(models.Model):
 class Picture(models.Model):
     p_id = models.AutoField(primary_key=True)
     p_content = models.ImageField(upload_to='')
-    p_father_text = models.ForeignKey('Text', models.DO_NOTHING, db_column='p_father_text', default=None, blank=True,
+    p_father_text = models.ForeignKey('Text', models.CASCADE, db_column='p_father_text', default=None, blank=True,
                                       null=True)
-    p_media = models.ForeignKey('Media', models.DO_NOTHING, db_column='p_media', default=None, blank=True, null=True)
+    p_media = models.ForeignKey('Media', models.CASCADE, db_column='p_media', default=None, blank=True, null=True)
 
     class Meta:
         managed = True
@@ -207,7 +207,7 @@ class Picture(models.Model):
 class Text(models.Model):
     t_id = models.AutoField(primary_key=True)
     t_type = models.IntegerField()  # 1 -> 长评  2 -> 帖子  3 -> 回复
-    t_user = models.ForeignKey('User', models.DO_NOTHING, default=None)
+    t_user = models.ForeignKey('User', models.CASCADE, default=None)
     t_rate = models.FloatField(default=0)
     t_like = models.IntegerField(default=0)
     t_dislike = models.IntegerField(default=0)
@@ -287,7 +287,7 @@ class User(models.Model):
     u_id = models.AutoField(primary_key=True)
     u_name = models.CharField(max_length=255, default='')
     u_password = models.CharField(max_length=255)
-    u_profile_photo = models.ForeignKey(Picture, models.DO_NOTHING, db_column='u_profile_photo', default=None,
+    u_profile_photo = models.ForeignKey(Picture, models.CASCADE, db_column='u_profile_photo', default=None,
                                         null=True)
     u_email = models.EmailField(max_length=255, default='')
     u_authority = models.IntegerField(default=0)  # 0 : normal 1 : admin
@@ -414,13 +414,13 @@ class Post(models.Model):
 
 class Message(models.Model):
     m_id = models.AutoField(primary_key=True, default=None)
-    m_user = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='user', default=None, blank=True,
+    m_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user', default=None, blank=True,
                                null=True)  # a
-    m_applier = models.ForeignKey(User, on_delete=models.DO_NOTHING, related_name='applier', default=None, blank=True,
+    m_applier = models.ForeignKey(User, on_delete=models.CASCADE, related_name='applier', default=None, blank=True,
                                   null=True)  # b
-    m_group = models.ForeignKey(Group, on_delete=models.DO_NOTHING, related_name='applier', default=None, blank=True,
+    m_group = models.ForeignKey(Group, on_delete=models.CASCADE, related_name='applier', default=None, blank=True,
                                 null=True)
-    m_text = models.ForeignKey(Text, on_delete=models.DO_NOTHING, default=None, blank=True, null=True)
+    m_text = models.ForeignKey(Text, on_delete=models.CASCADE, default=None, blank=True, null=True)
     # 举报和申请的时候需要标记组
     m_time = models.DateTimeField(auto_now_add=True)
     m_post = models.ForeignKey(Post, on_delete=models.CASCADE, default=None, blank=True, null=True)
@@ -478,7 +478,7 @@ class Message(models.Model):
 
 class UserText(models.Model):
     text = models.ForeignKey(Text, models.CASCADE)
-    user = models.ForeignKey(User, models.DO_NOTHING)
+    user = models.ForeignKey(User, models.CASCADE)
     is_liked = models.IntegerField(default=0)
     is_disliked = models.IntegerField(default=0)
     is_favorite = models.IntegerField(default=0)
@@ -489,7 +489,7 @@ class UserText(models.Model):
 
 
 class UserPost(models.Model):
-    user = models.ForeignKey(User, models.DO_NOTHING)
+    user = models.ForeignKey(User, models.CASCADE)
     post = models.ForeignKey(Post, models.CASCADE)
     is_liked = models.IntegerField(default=0)
     is_disliked = models.IntegerField(default=0)
@@ -501,8 +501,8 @@ class UserPost(models.Model):
 
 
 class UserMedia(models.Model):
-    user = models.ForeignKey(User, models.DO_NOTHING)
-    media = models.ForeignKey(Media, models.DO_NOTHING)
+    user = models.ForeignKey(User, models.CASCADE)
+    media = models.ForeignKey(Media, models.CASCADE)
     is_in_collection = models.IntegerField(default=0)
     is_to_be_watched = models.IntegerField(default=0)
     is_watching = models.IntegerField(default=0)
@@ -515,8 +515,8 @@ class UserMedia(models.Model):
 
 
 class UserGroup(models.Model):
-    user = models.ForeignKey(User, models.DO_NOTHING)
-    group = models.ForeignKey(Group, models.DO_NOTHING)
+    user = models.ForeignKey(User, models.CASCADE)
+    group = models.ForeignKey(Group, models.CASCADE)
     is_admin = models.IntegerField(default=0)
     # is_applying = models.IntegerField(default=0)  # ?
     is_member = models.IntegerField(default=0)
@@ -529,8 +529,8 @@ class UserGroup(models.Model):
 
 
 class UserChat(models.Model):
-    user = models.ForeignKey(User, models.DO_NOTHING)
-    chat = models.ForeignKey(Chat, models.DO_NOTHING)
+    user = models.ForeignKey(User, models.CASCADE)
+    chat = models.ForeignKey(Chat, models.CASCADE)
     is_admin = models.IntegerField(default=0)
     join_time = models.DateTimeField(auto_now_add=True)
     user_heat = models.IntegerField(default=0)
@@ -541,8 +541,8 @@ class UserChat(models.Model):
 
 
 class MediaGroup(models.Model):
-    media = models.ForeignKey(Media, models.DO_NOTHING)
-    group = models.ForeignKey(Group, models.DO_NOTHING)
+    media = models.ForeignKey(Media, models.CASCADE)
+    group = models.ForeignKey(Group, models.CASCADE)
 
     class Meta:
         managed = True
@@ -550,8 +550,8 @@ class MediaGroup(models.Model):
 
 
 class MediaChat(models.Model):
-    media = models.ForeignKey(Media, models.DO_NOTHING)
-    chat = models.ForeignKey(Chat, models.DO_NOTHING)
+    media = models.ForeignKey(Media, models.CASCADE)
+    chat = models.ForeignKey(Chat, models.CASCADE)
 
     class Meta:
         managed = True

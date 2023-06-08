@@ -3,4 +3,5 @@ from sender.views import *
 
 urlpatterns = [
     path("activate/<int:u_id>", activate),
+    path("find/", find),
 ]

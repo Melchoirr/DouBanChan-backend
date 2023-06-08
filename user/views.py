@@ -240,8 +240,8 @@ def get_self_chat(request):
     re = {}
     if basic_check(request):
         user = get_cur_user(request)
-        ugs = list(UserChat.objects.filter(user=user))
-        chats = [x.group.to_dict() for x in ugs]
+        ucs = list(UserChat.objects.filter(user=user))
+        chats = [x.chat.to_dict() for x in ucs]
         re['msg'] = 0
         re['chats'] = chats
     else:
