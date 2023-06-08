@@ -190,15 +190,15 @@ def media_filter(request):
         ##############################################
         media = [x.to_dict() for x in media]
         if m_order == 'timedown':  # 时间递减
-            sorted(media, key=lambda x: x['m_year'].__str__())
+            media = sorted(media, key=lambda x: x['m_year'].__str__())
             media.reverse()
         if m_order == 'timeup':  # 时间递增
-            sorted(media, key=lambda x: x['m_year'].__str__())
+            media = sorted(media, key=lambda x: x['m_year'].__str__())
         if m_order == 'ratedown':  # 评分递减
-            sorted(media, key=lambda x: x['m_rate'])
+            media = sorted(media, key=lambda x: x['m_rate'])
             media.reverse()
         if m_order == 'rateup':  # 评分递增
-            sorted(media, key=lambda x: x['m_rate'])
+            media = sorted(media, key=lambda x: x['m_rate'])
         re['msg'] = 0
         re['media'] = media
     else:
