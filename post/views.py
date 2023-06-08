@@ -193,6 +193,16 @@ def like_post(request):
         message = Message(m_applier=applier, m_description='您的帖子\'' + post.p_title + '\'被' + applier.u_name + '点赞了', m_user=post.p_user, m_type=1)
         message.save()
         re['msg'] = 0
+        if UserPost.objects.filter(user=applier, post=post):
+            user_post = UserPost.objects.get(user=applier, post=post)
+            if user_post.is_disliked == 1:
+                post.p_dislike -= 1
+                post.save()
+                user_post.is_disliked = 0
+                user_post.save()
+        else:
+            user_post = UserPost(user=applier, post=post, is_disliked=0)
+            user_post.save()
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
@@ -247,10 +257,22 @@ def dislike_post(request):
     post.save()
     if UserPost.objects.filter(user=user, post=post):
         user_post = UserPost.objects.get(user=user, post=post)
-        user_post.is_dislike = 1
+        user_post.is_disliked = 1
         user_post.save()
     else:
         user_post = UserPost(user=user, post=post, is_disliked=1)
+        user_post.save()
+
+    if UserPost.objects.filter(user=user, post=post):
+        print('hi')
+        user_post = UserPost.objects.get(user=user, post=post)
+        if user_post.is_liked == 1:
+            user_post.is_liked = 0
+            user_post.save()
+            post.p_like -= 1
+            post.save()
+    else:
+        user_post = UserPost(user=user, post=post, is_liked=0)
         user_post.save()
     return HttpResponse(json.dumps({}))
 
@@ -261,7 +283,7 @@ def cancel_dislike_post(request):
     post.p_dislike -= 1
     post.save()
     user_post = UserPost.objects.get(user=user, post=post)
-    user_post.is_dislike = 0
+    user_post.is_disliked = 0
     user_post.save()
     return HttpResponse(json.dumps({}))
 # def add_text(request):

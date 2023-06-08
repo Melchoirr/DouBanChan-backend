@@ -51,50 +51,47 @@ def handle_report_post(request):
         report.m_is_handled = 1
         if Post.objects.filter(p_id=request.POST['p_id']):
             post = get_post_by_id(request.POST['p_id'])
+            message = Message(m_title='您的评论违规，已被管理员删除', m_description='您的帖子\'' + post.p_title + '\'已被管理员删除',
+                              m_user=post.p_user, m_type=3)
+            message.save()
             report.delete()
             post.delete()
+
     if handle == '2':
         report.m_is_handled = 2
         report.save()
     return HttpResponse(json.dumps(re))
 
 
-def grant_report_text(request):
+def query_system_message(request):
     re = {}
-    report = Message.objects.get(m_id=request.POST['m_id'])
-    report.m_is_handled = 1
-    report.save()
-    t_id = request.POST['t_id']
-    text = get_text_by_id(t_id)
-    text.delete()
+    user = get_cur_user(request)
+    print(request.POST)
+    re['system_message_list'] = [x.to_dict_system() for x in list(Message.objects.filter(m_type=3, m_user=user))]
     return HttpResponse(json.dumps(re))
 
 
-def deny_report(request):
+def query_like_message(request):
     re = {}
-    report = Message.objects.get(m_id=request.POST['m_id'])
-    report.m_is_handled = 1
-    report.save()
+    user = get_cur_user(request)
+    print(request.POST)
+    re['system_message_list'] = [x.to_dict_system() for x in list(Message.objects.filter(m_type=3, m_user=user))]
     return HttpResponse(json.dumps(re))
 
 
 def delete_message(request):
-    message = get_message_by_id(request.POST['m_id'])
+    re = {}
+    message = Message.objects.get(m_id=request.POST['m_id'])
     message.delete()
-    return
+    return HttpResponse(json.dumps(re))
 
 
-def show_like_message(request):
-    pass
-
-
-def show_delete_message(request):
-
-    pass
-
-
-def show_comment_message(request):
-    pass
+def query_comment_message(request):
+    re = {}
+    user = get_cur_user(request)
+    print(request.POST)
+    re['comment_message_list'] = [x.to_dict_comment() for x in list(Message.objects.filter(m_type=2, m_user=user))]
+    return HttpResponse(json.dumps(re))
 
 
 # def query_report(request):

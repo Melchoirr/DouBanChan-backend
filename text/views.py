@@ -62,7 +62,7 @@ def reply_text(request):
         re['text'] = text.to_dict()
         applier = get_cur_user(request)
         message = Message(m_applier=applier,
-                          m_description='您的评论\'' + text.t_topic + '\'被' + applier.u_name + '评论了',
+                          m_description=text.t_description,
                           m_user=text.t_user, m_type=2)
         message.save()
     else:
