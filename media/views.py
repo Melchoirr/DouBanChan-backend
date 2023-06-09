@@ -349,7 +349,7 @@ def related_group(request):
             Q(g_tag__icontains=media.m_name)
         ))[:4]
         groups = sorted(groups, key=lambda x: weight(x.g_name + x.g_description + x.g_tag, media.m_name))
-        re['groups'] = groups
+        re['groups'] = [x.to_dict() for x in groups]
         re['msg'] = 0
         print(re)
     else:
@@ -367,7 +367,7 @@ def related_chat(request):
             Q(c_tag__icontains=media.m_name)
         ))[:4]
         groups = sorted(chats, key=lambda x: weight(x.c_name + x.c_description + x.c_tag, media.m_name))
-        re['chats'] = groups
+        re['chats'] = [x.to_dict() for x in groups]
         re['msg'] = 0
     else:
         re['msg'] = ERR_OTHER

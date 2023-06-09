@@ -25,7 +25,7 @@ def add_post(request):
                     t_floor=1,
                     t_post=post)
         text.save()
-        if 'g_id' in request.POST:
+        if request.POST['g_id']:
             group = get_group_by_id(request.POST['g_id'])
             post.p_group = group
             chat.c_father_group = group

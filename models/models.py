@@ -119,7 +119,7 @@ class Chat(models.Model):
             'topicAvatarUrl': settings.ROOT_URL + self.c_head_photo.p_content.url,
             'topicIntro': self.c_description.__str__(),
             'date': self.c_last_modify_time.__str__()[:19],
-            'follow': UserChat.objects.all().count(),
+            'follow': UserChat.objects.filter(chat=self).count(),
             'post': Post.objects.filter(p_chat=self).count(),
 
             'c_id': self.c_id,
@@ -251,8 +251,8 @@ class Text(models.Model):
             'like': self.t_like,
             'dislike': self.t_dislike,
         }
-        # if self.t_media is not None:
-        #     re['t_media'] = self.t_media.to_dict()  #
+        if self.t_media is not None:
+            re['t_media'] = self.t_media.to_dict()  #
         # if self.t_floor != 0:
         #     re['t_floor'] = self.t_floor
         # if self.t_post:
