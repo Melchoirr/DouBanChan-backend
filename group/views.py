@@ -278,6 +278,7 @@ def deny_apply(request):
 
 def query_group_by_tag(request):
     re = {}
+    print(request.POST['u_id'])
     user = get_cur_user(request)
     groupList = []
     print(request.POST)

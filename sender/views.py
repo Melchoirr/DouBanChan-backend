@@ -23,15 +23,16 @@ def send_email(email, u_id):
 
 
 def activate(request, u_id):
-    try:
-        user = User.objects.get(u_id=u_id)
-        user.is_active = True
-        user.save()
-        data = {"title": "感谢注册", "message": "注册豆瓣酱图书影视交流平台成功！", "url": "http://10.193.202.49:8000/"}
-        return render(request, 'EmailContent-check.html', data)
-    except Exception:
-        data = {"title": "注册失败", "message": "注册豆瓣酱图书影视交流平台失败！", "url": "http://10.193.202.49:8000/"}
-        return render(request, 'EmailContent-check.html', data)
+    # try:
+    user = User.objects.get(u_id=u_id)
+    print(user.to_dict())
+    user.is_active = 1
+    user.save()
+    data = {"title": "感谢注册", "message": "注册豆瓣酱图书影视交流平台成功！", "url": "http://10.193.202.49:8000/"}
+    return render(request, 'EmailContent-check.html', data)
+    # except Exception:
+    #     data = {"title": "注册失败", "message": "注册豆瓣酱图书影视交流平台失败！", "url": "http://10.193.202.49:8000/"}
+    #     return render(request, 'EmailContent-check.html', data)
 
 
 def find(request):

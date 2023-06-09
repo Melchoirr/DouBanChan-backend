@@ -60,11 +60,11 @@ def reply_text(request):
         text.save()
         re['msg'] = 0
         re['text'] = text.to_dict()
-        applier = get_cur_user(request)
-        message = Message(m_applier=applier,
-                          m_description=text.t_description,
-                          m_user=text.t_user, m_type=2)
-        message.save()
+        # applier = get_cur_user(request)
+        # message = Message(m_applier=applier,
+        #                   m_description=text.t_description,
+        #                   m_user=text.t_user, m_type=2)
+        # message.save()
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
