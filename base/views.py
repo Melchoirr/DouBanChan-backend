@@ -314,3 +314,13 @@ def col_group(request):
     else:
         re['msg'] = ERR_OTHER
     return HttpResponse(json.dumps(re))
+
+
+def get_um_rate(request):
+    user = get_cur_user(request)
+    media = get_media_by_id(request.POST['m_is'])
+    if UserMedia.objects.filter(user=user, media=media):
+        um = UserMedia.objects.get(user=user, media=media)
+        return HttpResponse(json.dumps(um.rate))
+    else:
+        return HttpResponse(json.dumps(0))

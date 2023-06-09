@@ -14,4 +14,5 @@ urlpatterns = [
     path("col_book/", col_book),
     path("col_chat/", col_chat),
     path("col_group/", col_group),
+    path("get_um_rate/", get_um_rate),
 ]
