@@ -318,7 +318,7 @@ def col_group(request):
 
 def get_um_rate(request):
     user = get_cur_user(request)
-    media = get_media_by_id(request.POST['m_is'])
+    media = get_media_by_id(request.POST['m_id'])
     if UserMedia.objects.filter(user=user, media=media):
         um = UserMedia.objects.get(user=user, media=media)
         return HttpResponse(json.dumps(um.rate))
